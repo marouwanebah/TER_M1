@@ -2,6 +2,8 @@
 # coding: utf-8
 #pip install beautifulsoup4
 
+#ceci n'est pas le code final, il sera amelioré par la suite
+
 from email.parser import BytesParser, Parser
 from email.policy import default
 from email.message import EmailMessage
@@ -10,7 +12,7 @@ from bs4 import BeautifulSoup
 
 #ouverture du fichier et parsing du mail avec la fonction bytesparser et parse
 #si vous voulez compiler un autre fichier, changer juste le path dans la variable filename
-#ceci n'est pas le code final, il sera amelioré par la suite
+
 
 filename = './data/president_2010/president_2010-06/1'
 with open(filename, 'rb') as file:
@@ -32,7 +34,7 @@ if headers.is_multipart() :
     ctype = part.get_content_type()
     cdispo = str(part.get('Content-Disposition'))
 
-    # skip any text/plain (txt) attachments
+    
     if ctype == 'text/plain' and 'attachment' not in cdispo:
       body = part.get_payload(decode=True)  # decode
       soup=BeautifulSoup(body, "html.parser")
