@@ -9,6 +9,8 @@ from bs4 import BeautifulSoup
 
 
 #ouverture du fichier et parsing du mail avec la fonction bytesparser et parse
+#si vous voulez compiler un autre fichier, changer juste le path dans la variable filename
+#ceci n'est pas le code final, il sera amelioré par la suite
 
 filename = './data/president_2010/president_2010-06/1'
 with open(filename, 'rb') as file:
