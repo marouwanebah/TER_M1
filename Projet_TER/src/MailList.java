@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import javax.mail.internet.MimeBodyPart;
 
 public class MailList {
-
+	private String idMail;
 	private String from; 
 	private ArrayList<String> destinataire;  
 	private String sujet; 
@@ -13,10 +13,9 @@ public class MailList {
 	private ArrayList<lien> liens;
 	private String signature; 
 	
-	
-	
-	public MailList(String from, ArrayList<String> destinataire, String sujet, String body, String date,
+	public MailList(String idMail,String from, ArrayList<String> destinataire, String sujet, String body, String date,
 			ArrayList<MimeBodyPart> attachments, ArrayList<lien> liens) {
+    this.idMail = idMail;
 		this.from = from;
 		this.destinataire = destinataire;
 		this.sujet = sujet;
@@ -24,6 +23,14 @@ public class MailList {
 		this.date = date;
 		this.attachments = attachments;
 		this.liens = liens;
+	}
+	
+	public String getIdMail() {
+		return idMail;
+	}
+
+	public void setIdMail(String idMail) {
+		this.idMail = idMail;
 	}
 	public String getFrom() {
 		return from;
