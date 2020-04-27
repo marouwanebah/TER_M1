@@ -12,12 +12,20 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import org.jsoup.Jsoup;
 
+import beans.Mail;
+import beans.MailDestinataire;
+import beans.Personne;
+import beans.TypePersonne;
+import dao.MailDao;
+import dao.MailDestinataireDao;
+import dao.PersonneDAO;
+
 
 
 
 public class parseur {
 
-	private static final String LIEN_FICHIER = "/home/etudiant/M1/S2/TER/Projet/TER_M1/Data/president/";  
+	private static final String LIEN_FICHIER = "/home/diallo/Documents/projetTER/corpus/president_2010/president_2010/president_2010-06/";  
 	
 	
 	
@@ -32,7 +40,6 @@ public class parseur {
 	    Properties props = System.getProperties(); 
 	    Session session = Session.getInstance(props, null);
 	    MimeMessage message = new MimeMessage(session, mailFileInputStream);
-
 	    String body = "";
 	    String from = "";
 	    ArrayList<String> destinataire = new ArrayList<String>(); 
@@ -89,7 +96,8 @@ public class parseur {
 	                    body += content;
 	            }
 	        }
-	        MailList a = new MailList(from, destinataire, message.getSubject(), body,
+	        
+	        MailList a = new MailList(message.getMessageID(), from, destinataire, message.getSubject(), body,
 	                message.getSentDate().toString(), attachments);
 	    
 /*
@@ -103,6 +111,13 @@ public class parseur {
 	}
 	
 	public static void main (String[] args) throws MessagingException, IOException {
+		PersonneDAO personneDao;
+		MailDao mailDao;
+		MailDestinataireDao malDestinataireDao;
+		dao.DaoFactory daoFactory = dao.DaoFactory.getInstance();
+		personneDao = daoFactory.getPersonneDao();
+		mailDao = daoFactory.getMailDao();
+		malDestinataireDao = daoFactory.getMailDestinataireDao();
 		
 		ArrayList<MailList> listeMail = new ArrayList<MailList>(); 
 		
@@ -111,6 +126,48 @@ public class parseur {
 		}
 		int i=1; 
 		for(MailList a : listeMail) {
+			//insert Personne
+			TypePersonne typePersonne = new TypePersonne();
+			typePersonne.setCodePersonne("PH");
+			typePersonne.setLibellePersonne("Physique");
+			Personne personne= new Personne();
+			personne.setEmailPersonne(a.getFrom());
+			personne.setNomPersonne("test");
+			personne.setPrenomPersonne("test");
+			personne.setRolePersonne("test");
+			personne.setTypePersonne(typePersonne);
+			if(personneDao.getPersonne(personne.getEmailPersonne())== null )
+				personneDao.ajouterPersonne(personne);
+			//insert Mail
+			Mail mail = new Mail();
+			Mail mailPere = new Mail();
+			mail.setIdMail(a.getIdMail());
+			mail.setContenuMail(a.getBody());
+			mail.setSujetMail(a.getSujet());
+			mail.setDateEnvoiMail(a.getDate());
+			mail.setExpediteur(personne);
+			mail.setMailPère(mailPere);
+			if(mailDao.getMail(mail.getIdMail()) == null)
+				mailDao.ajouterMail(mail);
+			//insert Destinataire
+			MailDestinataire mailDestinataire = new MailDestinataire();
+			mailDestinataire.setMail(mail);
+			for(String dest : a.getDestinataire()) {
+				personne = personneDao.getPersonne(dest);
+				if(personne == null ) {
+					Personne destinat= new Personne();
+					destinat.setEmailPersonne(dest);
+					destinat.setNomPersonne("test");
+					destinat.setPrenomPersonne("test");
+					destinat.setRolePersonne("test");
+					destinat.setTypePersonne(typePersonne);
+					personneDao.ajouterPersonne(destinat);
+					personne = destinat;
+				}
+				mailDestinataire.setPersonne(personne);
+				if(malDestinataireDao.getMailDestinataire(mail, personne) == null)
+					malDestinataireDao.ajouterDestinataire(mailDestinataire);
+			}
 			System.out.println(a.getBody());
 			System.out.println("-------------"+(i++)+"--------------");
 		}
