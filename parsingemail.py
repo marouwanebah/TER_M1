@@ -17,7 +17,7 @@ with open(filename, 'rb') as file:
   headers = BytesParser(policy=default).parse(file)
 
 
-#recuperation des elements souhaités (le destinataire,la date...etc)
+#affichage des elements souhaités (le destinataire,la date, le sujet, cc...etc)
 
 print('To: {}'.format(headers['to']))
 print('From: {}'.format(headers['from']))
