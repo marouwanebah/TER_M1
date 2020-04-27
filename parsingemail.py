@@ -22,7 +22,7 @@ print('From: {}'.format(headers['from']))
 print('Subject: {}'.format(headers['subject']))
 print('Date: {}'.format(headers['date']))
 print('CC: {}'.format(headers['Cc']))
-print('href: {}'.format(headers['https']))
+
 
 #recuperation du contenu du mail, avec parsing des elements html pour donner un rendu propre du mail
 if headers.is_multipart() :
