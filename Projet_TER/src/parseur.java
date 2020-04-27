@@ -91,31 +91,27 @@ public class parseur {
 	           
 	        for(int count = 0; count < numParts; count++)
 	        {	    
-	        	
 	        	MimeBodyPart part = (MimeBodyPart)mp.getBodyPart(count);
 	            String content = part.getContent().toString();
-	                if(MimeBodyPart.ATTACHMENT.equalsIgnoreCase(part.getDisposition()))
-	                    attachments.add(part);
-	                else if(part.getContentType().contains("text/html")) {
-	                	body += Jsoup.parse(content).text();
-	            		//exemple de recuperation des liens
-	            		for (org.jsoup.nodes.Element a: Jsoup.parse(content).select("a")) {
-	            			lien link= new lien(a.attr("href"),"contenulink");
+	            //pour les piéce jointe on te recupere juste pour l'instant quel traiment faire ? 
+	            if(MimeBodyPart.ATTACHMENT.equalsIgnoreCase(part.getDisposition()))
+	            	attachments.add(part);
+	            //pour les parts qui sont de type content text.html on utlise la libraire jsoup  
+	            else if(part.getContentType().contains("text/html")) {
+	            	body += Jsoup.parse(content).text();
+	            	//exemple de recuperation des liens
+	            	for (org.jsoup.nodes.Element a: Jsoup.parse(content).select("a")) {
+	            			lien link= new lien(a.attr("abs:href"), a.text() );
 	            			liens.add(link);
 	            		}
-	                } 
-	                else if(part.getContent() instanceof MimeMultipart )
-	                    body += getTextFromMimeMultipart((MimeMultipart) part.getContent()); 
-	                else 
+	            }    
+	            else if(part.getContent() instanceof MimeMultipart )
+	            	body += getTextFromMimeMultipart((MimeMultipart) part.getContent()); 
+	            else 
 	                	body +=content;
 	            }
 
 	        }
-	       
-	    }
-
-
-	    
 	    //creation 
 	    MailList a = new MailList(message.getMessageID(),from, destinataire, message.getSubject(), body,
 	                message.getSentDate().toString(), attachments, liens);
@@ -128,7 +124,13 @@ public class parseur {
 */        
 	        return a; 
 		
-	}
+	       
+	    }
+
+
+	    
+	   
+	
 	
 	private static String getTextFromMimeMultipart(
 	        MimeMultipart mimeMultipart)  throws MessagingException, IOException{
@@ -159,15 +161,20 @@ public class parseur {
 		malDestinataireDao = daoFactory.getMailDestinataireDao();
 		
 		
-		MailList a= ParseMail(LIEN_FICHIER+17); 
-		System.out.println(a.toString());
+		//MailList a= ParseMail(LIEN_FICHIER+17); 
+		//System.out.println(a.toString());
 		
 		ArrayList<MailList> listeMail = new ArrayList<MailList>(); 
 		
 		for(int i = 1; i<32; ++i) {
 			listeMail.add(ParseMail(LIEN_FICHIER+i)); 
 		}
-		int i=1; 
+		/*
+					System.out.println("--------------"+"message numero : "+(i)+"-------------------");
+			System.out.println(a.toString());
+			System.out.println("-------------"+" fin message numero : "+(i)+"--------------");
+			++i;
+		*/
 		for(MailList a : listeMail) {
 
 			//insert Personne
@@ -212,12 +219,9 @@ public class parseur {
 				if(malDestinataireDao.getMailDestinataire(mail, personne) == null)
 					malDestinataireDao.ajouterDestinataire(mailDestinataire);
 			}
-			System.out.println("--------------"+"message numero : "+(i)+"-------------------");
-			System.out.println(a.toString());
-			System.out.println("-------------"+" fin message numero : "+(i)+"--------------");
-			++i;
+
 		}
 		
-	}
+	
 	}
 }
