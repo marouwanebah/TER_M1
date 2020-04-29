@@ -1,11 +1,17 @@
 package beans;
 
+import java.util.ArrayList;
+
 public class Mail {
 	private String idMail;
+	private Personne expediteur;
+	private ArrayList<Personne> destinaire;
+	private String sujetMail;
 	private String dateEnvoiMail;
 	private String contenuMail;
-	private String sujetMail;
-	private Personne expediteur;
+	private ArrayList<PieceJointe> pieceJoints; 
+	
+	
 	private Mail mailPère;
 	public Mail() {
 		super();

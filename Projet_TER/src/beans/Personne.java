@@ -5,11 +5,24 @@ public class Personne {
 	private String nomPersonne;
 	private String prenomPersonne;
 	private String rolePersonne;
-	private TypePersonne typePersonne;
+
 	public Personne() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
+	
+
+
+
+	public Personne(String emailPersonne, String nomPersonne, String prenomPersonne) {
+		super();
+		this.emailPersonne = emailPersonne;
+		this.nomPersonne = nomPersonne;
+		this.prenomPersonne = prenomPersonne;
+	}
+
+
 	public String getEmailPersonne() {
 		return emailPersonne;
 	}
@@ -34,11 +47,6 @@ public class Personne {
 	public void setRolePersonne(String rolePersonne) {
 		this.rolePersonne = rolePersonne;
 	}
-	public TypePersonne getTypePersonne() {
-		return typePersonne;
-	}
-	public void setTypePersonne(TypePersonne typePersonne) {
-		this.typePersonne = typePersonne;
-	}
+
 	
 }
