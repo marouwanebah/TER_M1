@@ -22,6 +22,7 @@ import javax.mail.internet.MimeUtility;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
 
+import beans.Mail;
 import beans.Personne;
 import beans.PieceJointe;
 
@@ -238,6 +239,7 @@ public class parseur{
 	            //pour les piéce jointe on te recupere juste pour l'instant quel traiment faire ? 
 	            if(MimeBodyPart.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
 	            	PieceJointe piece = new PieceJointe(); 
+	            	Mail mail = new Mail();
 	            	String nomPiceJointe = MimeUtility.decodeText(part.getFileName());
 	            	String messageID = GetMessageId(); 
 
@@ -251,7 +253,8 @@ public class parseur{
 //	System.out.println(part.getParent().g);
 	            	//System.out.println(part.getDescription()); 
 	            	piece.setNomPieceJointe(nomPiceJointe);
-	            	piece.setMailID(messageID);
+	            	mail.setIdMail(messageID);
+	            	piece.setMail(mail);
 	            	
 	            }
 	            	
