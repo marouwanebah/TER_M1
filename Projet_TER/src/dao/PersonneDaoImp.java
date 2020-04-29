@@ -10,8 +10,8 @@ import dao.DaoFactory;
 
 public class PersonneDaoImp implements PersonneDAO {
 	private DaoFactory daoFactory;
-	private static final String SQL_INSERT = "INSERT INTO td_personne (email_personne, nom_personne, prenom_personne, role_personne, code_type_personne)"
-			+ " VALUES(?,?,?,?,?)";
+	private static final String SQL_INSERT = "INSERT INTO td_personne (email_personne, nom_personne, prenom_personne, role_personne )"
+			+ " VALUES(?,?,?,?)";
 	private static final String SQL_SELECT_ONLY = "SELECT email_personne, nom_personne, prenom_personne, role_personne FROM td_personne WHERE email_personne=?";
 	
 	public PersonneDaoImp(DaoFactory daoFactory ) {
@@ -32,7 +32,6 @@ public class PersonneDaoImp implements PersonneDAO {
             preparedStatement.setString(2, personne.getNomPersonne());
             preparedStatement.setString(3, personne.getPrenomPersonne());
             preparedStatement.setString(4, personne.getRolePersonne());
-            preparedStatement.setString(5, personne.getTypePersonne().getCodePersonne());
             
             preparedStatement.executeUpdate();
             preparedStatement.close();
