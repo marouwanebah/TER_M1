@@ -2,47 +2,59 @@ import java.util.ArrayList;
 
 import javax.mail.internet.MimeBodyPart;
 
+import beans.Lien;
+import beans.Personne;
+import beans.PieceJointe;
+
 public class MailList {
 	private String idMail;
-	private String from; 
-	private ArrayList<String> destinataire;  
+	private Personne from; 
+	private ArrayList<Personne> destinataire;  
+	private ArrayList<Personne> destinataireEnCopie;
 	private String sujet; 
 	private String Body; 
 	private String date; 
-	private ArrayList<MimeBodyPart> attachments;
-	private ArrayList<lien> liens;
-	private String signature; 
-	
-	public MailList(String idMail,String from, ArrayList<String> destinataire, String sujet, String body, String date,
-			ArrayList<MimeBodyPart> attachments, ArrayList<lien> liens) {
-    this.idMail = idMail;
+	private ArrayList<PieceJointe> attachments;
+	private ArrayList<Lien> liens;
+	private String signature;
+	public MailList(String idMail, Personne from, ArrayList<Personne> destinataire,
+			ArrayList<Personne> destinataireEnCopie, String sujet, String body, String date,
+			ArrayList<PieceJointe> attachments, ArrayList<Lien> liens, String signature) {
+		super();
+		this.idMail = idMail;
 		this.from = from;
 		this.destinataire = destinataire;
+		this.destinataireEnCopie = destinataireEnCopie;
 		this.sujet = sujet;
 		Body = body;
 		this.date = date;
 		this.attachments = attachments;
 		this.liens = liens;
+		this.signature = signature;
 	}
-	
 	public String getIdMail() {
 		return idMail;
 	}
-
 	public void setIdMail(String idMail) {
 		this.idMail = idMail;
 	}
-	public String getFrom() {
+	public Personne getFrom() {
 		return from;
 	}
-	public void setFrom(String from) {
+	public void setFrom(Personne from) {
 		this.from = from;
 	}
-	public ArrayList<String> getDestinataire() {
+	public ArrayList<Personne> getDestinataire() {
 		return destinataire;
 	}
-	public void setDestinataire(ArrayList<String> destinataire) {
+	public void setDestinataire(ArrayList<Personne> destinataire) {
 		this.destinataire = destinataire;
+	}
+	public ArrayList<Personne> getDestinataireEnCopie() {
+		return destinataireEnCopie;
+	}
+	public void setDestinataireEnCopie(ArrayList<Personne> destinataireEnCopie) {
+		this.destinataireEnCopie = destinataireEnCopie;
 	}
 	public String getSujet() {
 		return sujet;
@@ -62,20 +74,18 @@ public class MailList {
 	public void setDate(String date) {
 		this.date = date;
 	}
-	public ArrayList<MimeBodyPart> getAttachments() {
+	public ArrayList<PieceJointe> getAttachments() {
 		return attachments;
 	}
-	public void setAttachments(ArrayList<MimeBodyPart> attachments) {
+	public void setAttachments(ArrayList<PieceJointe> attachments) {
 		this.attachments = attachments;
 	}
-	public ArrayList<lien> getLiens() {
+	public ArrayList<Lien> getLiens() {
 		return liens;
 	}
-	public void setLiens(ArrayList<lien> liens) {
+	public void setLiens(ArrayList<Lien> liens) {
 		this.liens = liens;
 	}
-	
-	
 	public String getSignature() {
 		return signature;
 	}
@@ -84,9 +94,11 @@ public class MailList {
 	}
 	@Override
 	public String toString() {
-		return "MailList [from=" + from + ", destinataire=" + destinataire + ", sujet=" + sujet + ", Body=" + Body
-				+ ", date=" + date + ", attachments=" + attachments + ", liens=" + liens + "]";
-	}
+		return "MailList [idMail=" + idMail + ", from=" + from + ", destinataire=" + destinataire
+				+ ", destinataireEnCopie=" + destinataireEnCopie + ", sujet=" + sujet + ", Body=" + Body + ", date="
+				+ date + ", attachments=" + attachments + ", liens=" + liens + ", signature=" + signature + "]";
+	} 
+	
 	
 	
 	

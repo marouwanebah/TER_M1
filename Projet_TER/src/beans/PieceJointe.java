@@ -4,7 +4,8 @@ public class PieceJointe {
 	private String numPieceJointe;
 	private String nomPieceJointe;
 	private String contenuJointe;
-	private Mail mail;  // j'ai transfromé l'atribut Mail en juste l'ID du mail
+	private Mail mail;  
+	private String MailId;// j'ai transfromé l'atribut Mail en juste l'ID du mail
 	private TypePieceJointe typePieceJointe;
 	public PieceJointe() {
 		super();
@@ -40,6 +41,12 @@ public class PieceJointe {
 	}
 	public void setTypePieceJointe(TypePieceJointe typePieceJointe) {
 		this.typePieceJointe = typePieceJointe;
+	}
+	public String getMailId() {
+		return MailId;
+	}
+	public void setMailId(String mailId) {
+		MailId = mailId;
 	}
 	
 	

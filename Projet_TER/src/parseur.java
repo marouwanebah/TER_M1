@@ -1,11 +1,14 @@
 
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Properties;
 import javax.mail.Address;
 import javax.mail.BodyPart;
@@ -33,7 +36,8 @@ public class parseur{
 
 
 	//private static final String LIEN_FICHIER = "/home/etudiant/M1/S2/TER/Projet/TER_M1/Projet_TER/Data/president/";  
-	
+	private static final String dossierAttachement = "/home/etudiant/M1/S2/TER/Projet/TER_M1/Projet_TER/Data/Attachement/";
+
 	private MimeMessage message; 
 	
 	
@@ -131,14 +135,12 @@ public class parseur{
 	 * @throws IOException
 	 */
 	public String GetMailContenu() throws MessagingException, IOException {
-		String body =""; 
-		
+		String body ="";
 		String contentType = this.message.getContentType();
 		     
 		//recuperation du contenu si le contain type=text/plain
 		if(contentType.contains("text/plain"))
 		{  
-			System.out.println("text plain detected--1");
 		    Object content = this.message.getContent();
 		    if(content != null)
 		                body += content.toString();
@@ -146,15 +148,12 @@ public class parseur{
 
 		//recuperation du contenu si le contain type=text/html utilisation de la librairie JSOUP pour gerer les partie html 	    
 		if(contentType.contains("text/html")){
-			System.out.println("text/html detected ");
-		      	
 			Object content = this.message.getContent();
 		    if(content != null)
 		       		body += Jsoup.parse((String)content).text();
 		}
 		//pour les mails de type multupart avec ou sans piéce joint piéce joint
 		if(contentType.contains("multipart")){  
-			System.out.println("mutipart");
 		    Multipart mp = (Multipart)this.message.getContent();
 		    int numParts = mp.getCount();
 		           
@@ -188,12 +187,11 @@ public class parseur{
 
 		String content = this.message.getContent().toString(); 
 		if(contentType.contains("text/html" )) {
-			System.out.println("signature ");
 			org.jsoup.nodes.Document doc=  Jsoup.parse(content);
 			Elements a = doc.getElementsByClass("moz-signature"); 
 			signature = a.text();
 		}
-		else {
+		if(contentType.contains("multipart" )) {
 			Multipart mp = (Multipart)this.message.getContent();
 			int numParts = mp.getCount();
 			           
@@ -202,9 +200,9 @@ public class parseur{
 				MimeBodyPart part = (MimeBodyPart)mp.getBodyPart(count);
 			    //pour les parts qui sont de type content text.html on utlise la libraire jsoup  
 			    if(part.isMimeType("text/html")) {
-					System.out.println("tedddddddddddddddddddddddd ");
 					org.jsoup.nodes.Document doc=  Jsoup.parse(content);
 					Elements a = doc.getElementsByClass("moz-signature"); 
+					System.out.println(a);
 					signature = a.text();
 			        	
 			      }    
@@ -219,18 +217,17 @@ public class parseur{
 	}
 	/**
 	 * recuperation des piéce jointe 
-	 * il reste les contenu la piece a décoder 
+	 * recreation des piéce joint  
 	 * @return
 	 * @throws MessagingException
 	 * @throws IOException
 	 */
-	//il reste a gere le contenue de la piéce jointe  recuperation du nom et de l'id de la piece joint fait 
+
 	public ArrayList<PieceJointe> getPieceJointe() throws MessagingException, IOException{
 		String contentType = this.message.getContentType();
 		ArrayList<PieceJointe> attachments = new ArrayList<PieceJointe>(); 
-		 //pour les mails de type multupart avec ou sans piéce joint piéce joint
+		//pour les mails de type multupart avec ou sans piéce joint piéce joint
 	    if(contentType.contains("multipart")){  
-	    	System.out.println("mutipart");
 	    	Multipart mp = (Multipart)this.message.getContent();
 	    	int numParts = mp.getCount();   
 	        for(int count = 0; count < numParts; count++)
@@ -243,28 +240,56 @@ public class parseur{
 	            	String nomPiceJointe = MimeUtility.decodeText(part.getFileName());
 	            	String messageID = GetMessageId(); 
 
-	            	//Base64.Decoder decodeur = Base64.getMimeDecoder(); 
-	            	//byte[] decryptes = decodeur.decode(part.getContent().toString().getBytes());
-	            	//System.out.println(new String(decryptes))
-	            	//MimeUtility.re
-	            	//System.out.println(part.get);
-	            	//MimeUtility.decode(new ByteArrayInputStream(part.getContent().toString() ), "UTF-8"); 
-	            	System.out.println(nomPiceJointe); 
-//	System.out.println(part.getParent().g);
-	            	//System.out.println(part.getDescription()); 
+					File f = new File(dossierAttachement + nomPiceJointe);
+	            	InputStream is = part.getInputStream();
+	            	FileOutputStream fos = new FileOutputStream(f);
+	                byte[] buf = new byte[4096];
+	                int bytesRead;
+	                while((bytesRead = is.read(buf))!=-1) {
+	                    fos.write(buf, 0, bytesRead);
+	                }
+	                fos.close();
+
 	            	piece.setNomPieceJointe(nomPiceJointe);
-	            	mail.setIdMail(messageID);
-	            	piece.setMail(mail);
+	            	piece.setMailId(messageID);
+	            	piece.setContenuJointe(nomPiceJointe); //dans le contenu de la piece joint pour l'instant on met le nom en attendant 
 	            	
-	            }
-	            	
+	            	attachments.add(piece); 
+	            }	            	
 	        }
 	    }
-		
 		return attachments;
+	}
+	public void getMailTest() throws MessagingException, IOException {
+		System.out.println("************************MessageID********************");
+		System.out.println(this.GetMessageId()); 	
+		System.out.println("************************expéditeur********************");		
+		this.getExpediteur();
+		System.out.println("************************Destinataire********************");		
+		ArrayList<Personne>  destinatire = this.getDestinataire(Message.RecipientType.TO);
+		System.out.println("************************en copie********************");
+		Address[] test = this.message.getRecipients(Message.RecipientType.CC); 
+		if(test==null) {
+			System.out.println("pas de personne en copie ");
+		}else 
+		{
+			System.out.println(test.length);
+			ArrayList<Personne>  destinatireCC = this.getDestinataire(Message.RecipientType.CC);
+		}
+		System.out.println("************************subject********************");
+		System.out.println(this.GetSubject());
+		System.out.println("************************BODY********************");
+		System.out.println(this.GetMailContenu()); 
+		System.out.println("************************attachement********************");
+		this.getPieceJointe();
+		System.out.println("************************Signature********************");
+		System.out.println(this.getSignature());
+		
+		System.out.println("************************fin Signature********************");
+		
+		
 		
 	}
-	
 	
 	
 	
@@ -358,8 +383,7 @@ public class parseur{
 
 	        }
 	    //creation de l'object 
-	    MailList a = new MailList(message.getMessageID(),from, destinataire, message.getSubject(), body,
-	                message.getSentDate().toString(), attachments, liens);
+	 //   MailList a = new MailList(message.getMessageID(),from, destinataire, message.getSubject(), body, message.getSentDate().toString(), attachments, liens);
 	    
 /*
 	        System.out.println(a.toString());
@@ -367,7 +391,7 @@ public class parseur{
 	        	System.out.println(part.getContent());
 	        }
 */        
-	        return a; 
+	        return null; 
 		
 	       
 	    }
@@ -410,6 +434,7 @@ public class parseur{
 	        BodyPart bodyPart = mimeMultipart.getBodyPart(i);
 	        if (bodyPart.isMimeType("text/html")) {
 				org.jsoup.nodes.Document doc=  Jsoup.parse(bodyPart.getContent().toString());
+				
 				Elements a = doc.getElementsByClass("moz-signature"); 
 	            result = a.text();
 	        } else if (bodyPart.getContent() instanceof MimeMultipart){

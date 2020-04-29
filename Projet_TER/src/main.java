@@ -24,25 +24,9 @@ public class main {
 	//	malDestinataireDao = daoFactory.getMailDestinataireDao();
 		
 		
-		parseur test = new parseur(LIEN_FICHIER+30);
+		parseur test = new parseur(LIEN_FICHIER+17);
+		test.getMailTest();
 		
-		System.out.println("************************MessageID********************");
-		System.out.println(test.GetMessageId()); 	
-		System.out.println("************************expéditeur********************");		
-		test.getExpediteur();
-		System.out.println("************************Destinataire********************");		
-		ArrayList<Personne>  destinatire = test.getDestinataire(Message.RecipientType.TO);
-		System.out.println("************************en copie********************");
-		//ArrayList<Personne>  destinatireCC = test.getDestinataire(Message.RecipientType.CC);
-		System.out.println("************************subject********************");
-		System.out.println(test.GetSubject());
-		System.out.println("************************BODY********************");
-		System.out.println(test.GetMailContenu()); 
-		test.getPieceJointe();
-		System.out.println("************************Signature********************");
-		System.out.println(test.getSignature());
-		
-		System.out.println("************************fin Signature********************");
 		//MailList a= parseur.ParseMail(LIEN_FICHIER+10); 
 		//System.out.println(a.toString());
 		
