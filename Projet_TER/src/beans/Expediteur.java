@@ -1,9 +1,9 @@
 package beans;
 
-public class MailDestinataire {
+public class Expediteur {
 	private Mail mail;
 	private Email email;
-	public MailDestinataire() {
+	public Expediteur() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -19,6 +19,5 @@ public class MailDestinataire {
 	public void setEmail(Email email) {
 		this.email = email;
 	}
-	
 	
 }

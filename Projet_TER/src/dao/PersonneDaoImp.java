@@ -10,9 +10,9 @@ import dao.DaoFactory;
 
 public class PersonneDaoImp implements PersonneDAO {
 	private DaoFactory daoFactory;
-	private static final String SQL_INSERT = "INSERT INTO td_personne (email_personne, nom_personne, prenom_personne, role_personne )"
-			+ " VALUES(?,?,?,?)";
-	private static final String SQL_SELECT_ONLY = "SELECT email_personne, nom_personne, prenom_personne, role_personne FROM td_personne WHERE email_personne=?";
+	private static final String SQL_INSERT = "INSERT INTO td_personne (email_personne, nom_personne, prenom_personne)"
+			+ " VALUES(?,?,?)";
+	private static final String SQL_SELECT_ONLY = "SELECT email_personne, nom_personne, prenom_personne FROM td_personne WHERE email_personne=?";
 	
 	public PersonneDaoImp(DaoFactory daoFactory ) {
 		super();
@@ -31,7 +31,6 @@ public class PersonneDaoImp implements PersonneDAO {
             preparedStatement.setString(1, personne.getEmailPersonne());
             preparedStatement.setString(2, personne.getNomPersonne());
             preparedStatement.setString(3, personne.getPrenomPersonne());
-            preparedStatement.setString(4, personne.getRolePersonne());
             
             preparedStatement.executeUpdate();
             preparedStatement.close();
@@ -57,7 +56,6 @@ public class PersonneDaoImp implements PersonneDAO {
 				personne.setEmailPersonne(rs.getString("email_personne"));
 				personne.setNomPersonne(rs.getString("nom_personne"));
 				personne.setPrenomPersonne(rs.getString("prenom_personne"));
-				personne.setRolePersonne(rs.getString("role_personne"));
 			}
 			preparedStatement.close();
 		} catch (SQLException e) {

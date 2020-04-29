@@ -4,7 +4,8 @@ public class PieceJointe {
 	private String numPieceJointe;
 	private String nomPieceJointe;
 	private String contenuJointe;
-	private String mailID;  // j'ai transfromé l'atribut Mail en juste l'ID du mail 
+	private Mail mail;  // j'ai transfromé l'atribut Mail en juste l'ID du mail
+	private TypePieceJointe typePieceJointe;
 	public PieceJointe() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -27,20 +28,20 @@ public class PieceJointe {
 	public void setContenuJointe(String contenuJointe) {
 		this.contenuJointe = contenuJointe;
 	}
-	/*
 	public Mail getMail() {
 		return mail;
 	}
 	public void setMail(Mail mail) {
 		this.mail = mail;
 	}
-	*/
-	public String getMailID() {
-		return mailID;
+	
+	public TypePieceJointe getTypePieceJointe() {
+		return typePieceJointe;
 	}
-	public void setMailID(String mailID) {
-		this.mailID = mailID;
+	public void setTypePieceJointe(TypePieceJointe typePieceJointe) {
+		this.typePieceJointe = typePieceJointe;
 	}
+	
 	
 	
 	

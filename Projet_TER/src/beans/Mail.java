@@ -1,17 +1,12 @@
 package beans;
 
-import java.util.ArrayList;
 
 public class Mail {
 	private String idMail;
-	private Personne expediteur;
-	private ArrayList<Personne> destinaire;
+	private Personne expediteurPrincipal;
 	private String sujetMail;
 	private String dateEnvoiMail;
-	private String contenuMail;
-	private ArrayList<PieceJointe> pieceJoints; 
-	
-	
+	private String contenuMail; 
 	private Mail mailPère;
 	public Mail() {
 		super();
@@ -42,10 +37,10 @@ public class Mail {
 		this.sujetMail = sujetMail;
 	}
 	public Personne getExpediteur() {
-		return expediteur;
+		return expediteurPrincipal;
 	}
 	public void setExpediteur(Personne expediteur) {
-		this.expediteur = expediteur;
+		this.expediteurPrincipal = expediteur;
 	}
 	public Mail getMailPère() {
 		return mailPère;
