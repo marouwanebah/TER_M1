@@ -37,7 +37,7 @@ public class parseur{
 
 
 	//private static final String LIEN_FICHIER = "/home/etudiant/M1/S2/TER/Projet/TER_M1/Projet_TER/Data/president/";  
-	private static final String dossierAttachement = "/home/etudiant/M1/S2/TER/Projet/TER_M1/Projet_TER/Data/Attachement/";
+	private static final String dossierAttachement = "/home/diallo/Documents/projetTER/corpus/president_2010/president_2010/DATA/attachments/";
 
 	private MimeMessage message; 
 	
