@@ -3,11 +3,11 @@ package beans;
 
 public class Mail {
 	private String idMail;
-	private Personne expediteurPrincipal;
+	private Email expediteurPrincipal;
 	private String sujetMail;
 	private String dateEnvoiMail;
 	private String contenuMail; 
-	private Mail mailPère;
+	private Mail mailPere;
 	public Mail() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -36,17 +36,17 @@ public class Mail {
 	public void setSujetMail(String sujetMail) {
 		this.sujetMail = sujetMail;
 	}
-	public Personne getExpediteur() {
+	public Email getExpediteur() {
 		return expediteurPrincipal;
 	}
-	public void setExpediteur(Personne expediteur) {
+	public void setExpediteur(Email expediteur) {
 		this.expediteurPrincipal = expediteur;
 	}
-	public Mail getMailPère() {
-		return mailPère;
+	public Mail getMailPere() {
+		return mailPere;
 	}
-	public void setMailPère(Mail mailPère) {
-		this.mailPère = mailPère;
+	public void setMailPere(Mail mailPère) {
+		this.mailPere = mailPère;
 	}
 	
 }
