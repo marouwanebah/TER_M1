@@ -1,8 +1,6 @@
 import java.util.ArrayList;
 
-import javax.mail.internet.MimeBodyPart;
 
-import beans.Lien;
 import beans.Personne;
 import beans.PieceJointe;
 
@@ -17,21 +15,11 @@ public class MailList {
 	private ArrayList<PieceJointe> attachments;
 	//private ArrayList<Lien> liens;
 	private String signature;
-	public MailList(String idMail, Personne from, ArrayList<Personne> destinataire,
-			ArrayList<Personne> destinataireEnCopie, String sujet, String body, String date,
-			ArrayList<PieceJointe> attachments,  String signature) {
-		super();
-		this.idMail = idMail;
-		this.from = from;
-		this.destinataire = destinataire;
-		this.destinataireEnCopie = destinataireEnCopie;
-		this.sujet = sujet;
-		Body = body;
-		this.date = date;
-		this.attachments = attachments;
-		//this.liens = liens;
-		this.signature = signature;
+
+	public MailList() {
+		
 	}
+	
 	public String getIdMail() {
 		return idMail;
 	}

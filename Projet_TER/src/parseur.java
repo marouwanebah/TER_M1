@@ -295,7 +295,7 @@ public class parseur{
 	
 	/*
 	 * Fonction qui recupere toutes les infos  du mail et qui crée un object 
-	 * Maillist qui a toutes des informations du mail 
+	  Maillist qui a toutes des informations du mail 
 	 */
 	public String getDate() throws MessagingException {
 		return this.message.getSentDate().toString(); 
@@ -310,8 +310,20 @@ public class parseur{
 	 */
 	
 	public  MailList mailToObject() throws MessagingException, IOException {
-		MailList mailObject = new MailList(this.GetMessageId(), this.getExpediteur(), this.getDestinataire(RecipientType.TO), this.getDestinataire(RecipientType.CC), this.GetSubject(), this.GetMailContenu(), this.getDate(), this.getPieceJointe(),  this.getSignature()); 
-
+		MailList mailObject = new MailList(); 
+		
+		mailObject.setIdMail(this.GetMessageId());
+		mailObject.setFrom(this.getExpediteur());
+		mailObject.setDestinataire(this.getDestinataire(RecipientType.TO)); 
+		Address[] test = this.message.getRecipients(Message.RecipientType.CC); 
+		if(test!=null) {
+			mailObject.setDestinataireEnCopie(this.getDestinataire(Message.RecipientType.CC));
+		}
+		mailObject.setAttachments(this.getPieceJointe());
+		mailObject.setSignature(this.getSignature());
+		mailObject.setDate(this.getDate());
+		mailObject.setSignature(this.getSignature());
+		mailObject.setBody(this.GetMailContenu());
 	 //   MailList a = new MailList(message.getMessageID(),from, destinataire, message.getSubject(), body, message.getSentDate().toString(), attachments, liens);
 	     return mailObject;   
 	}  
