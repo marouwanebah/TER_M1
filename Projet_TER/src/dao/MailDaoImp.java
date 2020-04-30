@@ -9,7 +9,7 @@ import beans.Mail;
 
 public class MailDaoImp implements MailDao {
 	private DaoFactory daoFactory;
-	private static final String SQL_INSERT = "INSERT INTO td_mail (id_mail, date_envoi_mail, contenu_mail, sujet_mail, email_personne, id_mail_pere)"
+	private static final String SQL_INSERT = "INSERT INTO td_mail (id_mail, date_envoi_mail, contenu_mail, sujet_mail, email_email, id_mail_pere)"
 			+ " VALUES(?,?,?,?,?,?)";
 	private static final String SQL_SELECT_ONLY = "SELECT id_mail, date_envoi_mail, contenu_mail, sujet_mail FROM td_mail WHERE id_mail=?";
 	
@@ -31,8 +31,8 @@ public class MailDaoImp implements MailDao {
             preparedStatement.setString(2, mail.getDateEnvoiMail());
             preparedStatement.setString(3, mail.getContenuMail());
             preparedStatement.setString(4, mail.getSujetMail());
-            preparedStatement.setString(5, mail.getExpediteur().getEmailPersonne());
-            preparedStatement.setString(6, mail.getMailPère().getIdMail());
+            preparedStatement.setString(5, mail.getExpediteur().getEmail());
+            preparedStatement.setString(6, mail.getMailPere().getIdMail());
             preparedStatement.executeUpdate();
             preparedStatement.close();
         } catch (SQLException e) {
