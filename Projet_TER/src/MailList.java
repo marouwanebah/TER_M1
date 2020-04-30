@@ -15,11 +15,11 @@ public class MailList {
 	private String Body; 
 	private String date; 
 	private ArrayList<PieceJointe> attachments;
-	private ArrayList<Lien> liens;
+	//private ArrayList<Lien> liens;
 	private String signature;
 	public MailList(String idMail, Personne from, ArrayList<Personne> destinataire,
 			ArrayList<Personne> destinataireEnCopie, String sujet, String body, String date,
-			ArrayList<PieceJointe> attachments, ArrayList<Lien> liens, String signature) {
+			ArrayList<PieceJointe> attachments,  String signature) {
 		super();
 		this.idMail = idMail;
 		this.from = from;
@@ -29,7 +29,7 @@ public class MailList {
 		Body = body;
 		this.date = date;
 		this.attachments = attachments;
-		this.liens = liens;
+		//this.liens = liens;
 		this.signature = signature;
 	}
 	public String getIdMail() {
@@ -80,12 +80,14 @@ public class MailList {
 	public void setAttachments(ArrayList<PieceJointe> attachments) {
 		this.attachments = attachments;
 	}
+	/*
 	public ArrayList<Lien> getLiens() {
 		return liens;
 	}
 	public void setLiens(ArrayList<Lien> liens) {
 		this.liens = liens;
 	}
+	*/
 	public String getSignature() {
 		return signature;
 	}
@@ -96,7 +98,7 @@ public class MailList {
 	public String toString() {
 		return "MailList [idMail=" + idMail + ", from=" + from + ", destinataire=" + destinataire
 				+ ", destinataireEnCopie=" + destinataireEnCopie + ", sujet=" + sujet + ", Body=" + Body + ", date="
-				+ date + ", attachments=" + attachments + ", liens=" + liens + ", signature=" + signature + "]";
+				+ date + ", attachments=" + attachments + ", liens=" + "" + ", signature=" + signature + "]";
 	} 
 	
 	
