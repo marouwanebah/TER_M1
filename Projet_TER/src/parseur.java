@@ -295,7 +295,7 @@ public class parseur{
 	
 	/*
 	 * Fonction qui recupere toutes les infos  du mail et qui crée un object 
-	 * Maillist qui a toutes des informations du mail 
+	  Maillist qui a toutes des informations du mail 
 	 */
 	public String getDate() throws MessagingException {
 		return this.message.getSentDate().toString(); 
@@ -310,8 +310,20 @@ public class parseur{
 	 */
 	
 	public  MailList mailToObject() throws MessagingException, IOException {
-		MailList mailObject = new MailList(this.GetMessageId(), this.getExpediteur(), this.getDestinataire(RecipientType.TO), this.getDestinataire(RecipientType.CC), this.GetSubject(), this.GetMailContenu(), this.getDate(), this.getPieceJointe(),  this.getSignature()); 
-
+		MailList mailObject = new MailList(); 
+		
+		mailObject.setIdMail(this.GetMessageId());
+		mailObject.setFrom(this.getExpediteur());
+		mailObject.setDestinataire(this.getDestinataire(RecipientType.TO)); 
+		Address[] test = this.message.getRecipients(Message.RecipientType.CC); 
+		if(test!=null) {
+			mailObject.setDestinataireEnCopie(this.getDestinataire(Message.RecipientType.CC));
+		}
+		mailObject.setAttachments(this.getPieceJointe());
+		mailObject.setSignature(this.getSignature());
+		mailObject.setDate(this.getDate());
+		mailObject.setSignature(this.getSignature());
+		mailObject.setBody(this.GetMailContenu());
 	 //   MailList a = new MailList(message.getMessageID(),from, destinataire, message.getSubject(), body, message.getSentDate().toString(), attachments, liens);
 	     return mailObject;   
 	}  
@@ -359,8 +371,11 @@ public class parseur{
 	    return result;
 	}
 
-	public  Personne stringToPersonne(String element)  {
+	public  Personne stringToPersonne(String e) throws UnsupportedEncodingException  {
 		Personne pers = new Personne(); 
+		
+		String element = MimeUtility.decodeText(e);
+		
 		//ca ou le mail a des destinataires non divulgués
 		if (element.contains("undisclosed-recipients:")) {
 		    pers.setNomPersonne("destinataires non divulgués");
@@ -388,23 +403,24 @@ public class parseur{
 		    }
 		    //pour les destinataire qui on un second prenom 
 		    else if(textSplited.length >=4) {
-		    	
+
 		    	 String prenom = textSplited[0]+" "+textSplited[1];
 		    	 //System.out.println(textSplited[textSplited.length-1]+" kk");
 		    	 String nom = textSplited[2];
 		    	 String email = textSplited[textSplited.length-1];
+		    	// System.out.println(prenom);
 				 pers.setNomPersonne(nom);
 				 pers.setPrenomPersonne(prenom);
 				 pers.setEmailPersonne(email);
 		    	
 		    }else {
 		    	//cas exeptionel  de taile 2 mais on sais que le dernier element est toujour le mail 
+		    	 pers.setPrenomPersonne(textSplited[0]);
 				 pers.setEmailPersonne(textSplited[textSplited.length-1]);
 		    	
 		    }
 
 		}
-
 
 	    return pers;
 		
