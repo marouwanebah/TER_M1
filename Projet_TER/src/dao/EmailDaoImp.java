@@ -5,22 +5,20 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import beans.Personne;
-import dao.DaoFactory;
+import beans.Email;
 
-public class PersonneDaoImp implements PersonneDAO {
+public class EmailDaoImp implements EmailDao {
 	private DaoFactory daoFactory;
-	private static final String SQL_INSERT = "INSERT INTO td_personne (email_email, nom_personne, prenom_personne)"
-			+ " VALUES(?,?,?)";
-	private static final String SQL_SELECT_ONLY = "SELECT email_email, nom_personne, prenom_personne FROM td_personne WHERE email_email=?";
+	private static final String SQL_INSERT = "INSERT INTO td_email (email_email, signature_email)"
+			+ " VALUES(?,?)";
+	private static final String SQL_SELECT_ONLY = "SELECT email_email, signature_email FROM td_email WHERE email_email=?";
 	
-	public PersonneDaoImp(DaoFactory daoFactory ) {
+	public EmailDaoImp(DaoFactory daoFactory ) {
 		super();
 		this.daoFactory = daoFactory;
 	}
-	
 	@Override
-	public void ajouterPersonne(Personne personne) {
+	public void ajouterEmail(Email email) {
 		Connection connexion = null;
         PreparedStatement preparedStatement = null;
 
@@ -28,9 +26,8 @@ public class PersonneDaoImp implements PersonneDAO {
             connexion = daoFactory.getConnection();
             preparedStatement = connexion.prepareStatement(SQL_INSERT);
 
-            preparedStatement.setString(1, personne.getEmailPersonne());
-            preparedStatement.setString(2, personne.getNomPersonne());
-            preparedStatement.setString(3, personne.getPrenomPersonne());
+            preparedStatement.setString(1, email.getEmail());
+            preparedStatement.setString(2, email.getSignature());
             
             preparedStatement.executeUpdate();
             preparedStatement.close();
@@ -41,28 +38,27 @@ public class PersonneDaoImp implements PersonneDAO {
 	}
 
 	@Override
-	public Personne getPersonne(String email) {
-		Personne personne = null;
+	public Email getEmail(String vemail) {
+		Email email = null;
 		Connection connexion = null;
         PreparedStatement preparedStatement = null;
 		try {
 			connexion = daoFactory.getConnection();
 			preparedStatement = connexion.prepareStatement
 					(SQL_SELECT_ONLY);
-			preparedStatement.setString(1, email);
+			preparedStatement.setString(1, vemail);
 			ResultSet rs = preparedStatement.executeQuery();
 			if(rs.next()) {
-				personne = new Personne();
-				personne.setEmailPersonne(rs.getString("email_email"));
-				personne.setNomPersonne(rs.getString("nom_personne"));
-				personne.setPrenomPersonne(rs.getString("prenom_personne"));
+				email = new Email();
+				email.setEmail(rs.getString("email_email"));
+				email.setSignature(rs.getString("signature_email"));
 			}
 			preparedStatement.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return personne;
+		return email;
 	}
-	
+
 }

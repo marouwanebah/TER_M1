@@ -1,19 +1,21 @@
 package beans;
 
 public class Pays {
-	private String nom_pays;
+	private String nomPays;
 
 	public Pays() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public String getNom_pays() {
-		return nom_pays;
+	public String getNomPays() {
+		return nomPays;
 	}
 
-	public void setNom_pays(String nom_pays) {
-		this.nom_pays = nom_pays;
+	public void setNomPays(String nomPays) {
+		this.nomPays = nomPays;
 	}
+
+	
 	
 }
