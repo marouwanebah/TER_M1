@@ -49,5 +49,20 @@ public class DaoFactory {
     public MailDestinataireDao getMailDestinataireDao() {
     	return new MailDestinataireDaoImp(this);
     }
+    public PaysDao getPaysDao() {
+    	return new PaysDaoImp(this);
+    }
+    public EmailDao getEmailDao() {
+    	return new EmailDaoImp(this);
+    }
+    public ExpediteurDao getExpediteurDao() {
+    	return new ExpediteurDaoImp(this);
+    }
+    public PieceJointeDao getPieceJointeDao() {
+    	return new PieceJointeDaoImpl(this);
+    }
+    public LienDao getLienDao() {
+    	return new LienDaoImp(this);
+    }
     
 }
