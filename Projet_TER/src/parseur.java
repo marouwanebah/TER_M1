@@ -371,8 +371,11 @@ public class parseur{
 	    return result;
 	}
 
-	public  Personne stringToPersonne(String element)  {
+	public  Personne stringToPersonne(String e) throws UnsupportedEncodingException  {
 		Personne pers = new Personne(); 
+		
+		String element = MimeUtility.decodeText(e);
+		
 		//ca ou le mail a des destinataires non divulgués
 		if (element.contains("undisclosed-recipients:")) {
 		    pers.setNomPersonne("destinataires non divulgués");
@@ -400,23 +403,24 @@ public class parseur{
 		    }
 		    //pour les destinataire qui on un second prenom 
 		    else if(textSplited.length >=4) {
-		    	
+
 		    	 String prenom = textSplited[0]+" "+textSplited[1];
 		    	 //System.out.println(textSplited[textSplited.length-1]+" kk");
 		    	 String nom = textSplited[2];
 		    	 String email = textSplited[textSplited.length-1];
+		    	// System.out.println(prenom);
 				 pers.setNomPersonne(nom);
 				 pers.setPrenomPersonne(prenom);
 				 pers.setEmailPersonne(email);
 		    	
 		    }else {
 		    	//cas exeptionel  de taile 2 mais on sais que le dernier element est toujour le mail 
+		    	 pers.setPrenomPersonne(textSplited[0]);
 				 pers.setEmailPersonne(textSplited[textSplited.length-1]);
 		    	
 		    }
 
 		}
-
 
 	    return pers;
 		
