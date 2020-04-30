@@ -29,7 +29,7 @@ public class MailDestinataireDaoImp implements MailDestinataireDao {
             preparedStatement = connexion.prepareStatement(SQL_INSERT);
 
             preparedStatement.setString(1, mailDestinataire.getMail().getIdMail());
-            preparedStatement.setString(2, mailDestinataire.getPersonne().getEmailPersonne());
+            preparedStatement.setString(2, mailDestinataire.getEmail().getEmail());
             preparedStatement.executeUpdate();
             preparedStatement.close();
         } catch (SQLException e) {
@@ -55,7 +55,7 @@ public class MailDestinataireDaoImp implements MailDestinataireDao {
 			if(rs.next()) {
 				mailDestinataire = new MailDestinataire();
 				mailDestinataire.setMail(mailDao.getMail(rs.getString("id_mail")));
-				mailDestinataire.setPersonne(personneDao.getPersonne(rs.getString("email_personne")));
+				//mailDestinataire.setEmail(email);setPersonne(personneDao.getPersonne(rs.getString("email_personne")));
 			}
 			preparedStatement.close();
 		} catch (SQLException e) {

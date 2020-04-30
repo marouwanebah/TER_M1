@@ -1,20 +1,15 @@
 package beans;
 
 public class Personne {
+	private int idPersonne;
 	private String emailPersonne;
 	private String nomPersonne;
 	private String prenomPersonne;
-	private String rolePersonne;
-
+	private Institution institutionPersonne;
 	public Personne() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
-	
-
-
-
 	public Personne(String emailPersonne, String nomPersonne, String prenomPersonne) {
 		super();
 		this.emailPersonne = emailPersonne;
@@ -22,7 +17,13 @@ public class Personne {
 		this.prenomPersonne = prenomPersonne;
 	}
 
-
+	
+	public int getIdPersonne() {
+		return idPersonne;
+	}
+	public void setIdPersonne(int idPersonne) {
+		this.idPersonne = idPersonne;
+	}
 	public String getEmailPersonne() {
 		return emailPersonne;
 	}
@@ -41,12 +42,12 @@ public class Personne {
 	public void setPrenomPersonne(String prenomPersonne) {
 		this.prenomPersonne = prenomPersonne;
 	}
-	public String getRolePersonne() {
-		return rolePersonne;
+	public Institution getInstitutionPersonne() {
+		return institutionPersonne;
 	}
-	public void setRolePersonne(String rolePersonne) {
-		this.rolePersonne = rolePersonne;
+	public void setInstitutionPersonne(Institution institutionPersonne) {
+		this.institutionPersonne = institutionPersonne;
 	}
-
+	
 	
 }
