@@ -24,10 +24,14 @@ public class main {
 	//	malDestinataireDao = daoFactory.getMailDestinataireDao();
 		
 		
-		parseur test = new parseur(LIEN_FICHIER+17);
-		test.getMailTest();
+		parseur test = new parseur(LIEN_FICHIER+22);
+		//test.getMailTest();
 		
-		//MailList a= parseur.ParseMail(LIEN_FICHIER+10); 
+		
+		//tous est gerer sauf les liens 
+		MailList a= test.mailToObject();
+		
+		System.out.println(a.getFrom().getEmailPersonne());
 		//System.out.println(a.toString());
 		
 		//ArrayList<MailList> listeMail = new ArrayList<MailList>(); 
