@@ -48,6 +48,12 @@ public class Personne {
 	public void setInstitutionPersonne(Institution institutionPersonne) {
 		this.institutionPersonne = institutionPersonne;
 	}
+	@Override
+	public String toString() {
+		return "Personne [idPersonne=" + idPersonne + ", emailPersonne=" + emailPersonne + ", nomPersonne="
+				+ nomPersonne + ", prenomPersonne=" + prenomPersonne + "]";
+	}
+	
 	
 	
 }

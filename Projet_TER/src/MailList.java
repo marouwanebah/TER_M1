@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-
+import beans.Lien;
 import beans.Personne;
 import beans.PieceJointe;
 
@@ -13,7 +13,7 @@ public class MailList {
 	private String Body; 
 	private String date; 
 	private ArrayList<PieceJointe> attachments;
-	//private ArrayList<Lien> liens;
+	private ArrayList<Lien> liens;
 	private String signature;
 
 	public MailList() {
@@ -68,14 +68,14 @@ public class MailList {
 	public void setAttachments(ArrayList<PieceJointe> attachments) {
 		this.attachments = attachments;
 	}
-	/*
+	
 	public ArrayList<Lien> getLiens() {
 		return liens;
 	}
 	public void setLiens(ArrayList<Lien> liens) {
 		this.liens = liens;
 	}
-	*/
+	
 	public String getSignature() {
 		return signature;
 	}
@@ -86,7 +86,7 @@ public class MailList {
 	public String toString() {
 		return "MailList [idMail=" + idMail + ", from=" + from + ", destinataire=" + destinataire
 				+ ", destinataireEnCopie=" + destinataireEnCopie + ", sujet=" + sujet + ", Body=" + Body + ", date="
-				+ date + ", attachments=" + attachments + ", liens=" + "" + ", signature=" + signature + "]";
+				+ date + ", attachments=" + attachments + ", liens=" + liens + ", signature=" + signature + "]";
 	} 
 	
 	

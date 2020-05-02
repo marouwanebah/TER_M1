@@ -4,8 +4,8 @@ public class PieceJointe {
 	private String numPieceJointe;
 	private String nomPieceJointe;
 	private String contenuJointe;
-	private Mail mail;  
-	private String MailId;// j'ai transfromé l'atribut Mail en juste l'ID du mail
+	private Mail mail;  //? 
+	private String MailId;
 	private TypePieceJointe typePieceJointe;
 	public PieceJointe() {
 		super();
@@ -47,6 +47,12 @@ public class PieceJointe {
 	}
 	public void setMailId(String mailId) {
 		MailId = mailId;
+	}
+	@Override
+	public String toString() {
+		return "PieceJointe [numPieceJointe=" + numPieceJointe + ", nomPieceJointe=" + nomPieceJointe
+				+ ", contenuJointe=" + "" + ", mail=" + mail + ", MailId=" + MailId + ", typePieceJointe="
+				+ typePieceJointe + "]";
 	}
 	
 	
