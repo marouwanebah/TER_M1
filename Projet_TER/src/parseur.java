@@ -10,6 +10,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import java.util.Properties;
+import java.util.Scanner;
+
 import javax.mail.Address;
 import javax.mail.BodyPart;
 import javax.mail.Message;
@@ -26,7 +28,7 @@ import javax.mail.internet.MimeUtility;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
 
-import beans.Mail;
+
 import beans.Personne;
 import beans.PieceJointe;
 
@@ -35,10 +37,11 @@ import beans.PieceJointe;
 
 public class parseur{
 
-
+	//ne jamais effacer le lien pour les autres mettre juste en commentaire 
 	//private static final String LIEN_FICHIER = "/home/etudiant/M1/S2/TER/Projet/TER_M1/Projet_TER/Data/president/";  
-	private static final String dossierAttachement = "/home/diallo/Documents/projetTER/corpus/president_2010/president_2010/DATA/attachments/";
-
+	//private static final String dossierAttachement = "/home/diallo/Documents/projetTER/corpus/president_2010/president_2010/DATA/attachments/";
+	private static final String dossierAttachement = "/home/etudiant/M1/S2/TER/Projet/TER_M1/Projet_TER/Data/Attachement/";
+	
 	private MimeMessage message; 
 	
 	
@@ -72,23 +75,16 @@ public class parseur{
 	 */
 	public  Personne getExpediteur() throws MessagingException, UnsupportedEncodingException {
 		Personne expediteur= new Personne (); 
-		
 		Address[] expediteurBrut = this.message.getFrom();
 		String element = expediteurBrut[0].toString();
-    	if(element.startsWith("=?ISO-8859-1")) {
-
-	    	//decodage des ISO-....
-    		String decodedElement = MimeUtility.decodeText(element);
-    		expediteur = stringToPersonne(decodedElement);
-   
-    	}
 		expediteur = stringToPersonne(element); 
 	    return expediteur;
 		
 	}
 	/**
 	 * fonction qui prend en parametre type Message.RecipientType.TO pour les destinataires 
-	 * et  Message.RecipientType.CC  pour destinataires en copies 
+	 * ou  Message.RecipientType.CC  pour destinataires en copies  et tetourne la liste des destinaires 
+	 * ou des destinataire en CC  
 	 * @param type
 	 * @return
 	 * @throws MessagingException
@@ -101,30 +97,21 @@ public class parseur{
 	    //recuperation de tous les destinataire 
 	    for(int num = 0; num < destinataireBrut.length ; num++) {
 	    	String element = destinataireBrut[num].toString(); 
-	    	if(element.startsWith("=?ISO-8859-1")) {
-		    	//decodage 
-	    		String decodedElement = MimeUtility.decodeText(element);
-	    		Personne a = stringToPersonne(decodedElement);
-	    		destinataire.add(a);
-	    	}else {
-	    		//le replace  est utiliser pour enlever le ' qui reste sur certain nom et prenom de destinataire 
 	    		Personne a = stringToPersonne(element);
 		    	destinataire.add(a);
-	    	}
 	    }
-		
 		return destinataire;
-		
 	}
 	/**
 	 * fonction qui retourne le sujet du message 
 	 * @return
 	 * @throws MessagingException
+	 * @throws UnsupportedEncodingException 
 	 */
 	
-	public String GetSubject() throws MessagingException {
-		String a = this.message.getSubject();  
-		return a; 
+	public String GetSubject() throws MessagingException, UnsupportedEncodingException {
+		String element = this.message.getSubject();  
+		return element; 
 	}
 	
 	/**
@@ -135,44 +122,9 @@ public class parseur{
 	 * @throws IOException
 	 */
 	public String GetMailContenu() throws MessagingException, IOException {
-		String body ="";
-		String contentType = this.message.getContentType();
-		     
-		//recuperation du contenu si le contain type=text/plain
-		if(contentType.contains("text/plain"))
-		{  
-		    Object content = this.message.getContent();
-		    if(content != null)
-		                body += content.toString();
-		}
 
-		//recuperation du contenu si le contain type=text/html utilisation de la librairie JSOUP pour gerer les partie html 	    
-		if(contentType.contains("text/html")){
-			Object content = this.message.getContent();
-		    if(content != null)
-		       		body += Jsoup.parse((String)content).text();
-		}
-		//pour les mails de type multupart avec ou sans piéce joint piéce joint
-		if(contentType.contains("multipart")){  
-		    Multipart mp = (Multipart)this.message.getContent();
-		    int numParts = mp.getCount();
-		           
-		    for(int count = 0; count < numParts; count++)
-		    {	    
-		    	MimeBodyPart part = (MimeBodyPart)mp.getBodyPart(count);
-		        String content = part.getContent().toString();
-		        //pour les parts qui sont de type content text.html on utlise la libraire jsoup  
-		        if(part.getContentType().contains("text/html")) {
-		        	body += Jsoup.parse(content).text();
-		        	
-		        }    
-		        else if(part.getContent() instanceof MimeMultipart )
-		            	body += getTextFromMimeMultipart((MimeMultipart) part.getContent()); 
-		        else 
-		        	body += content;
-		    }
-		}
-		body = MimeUtility.decodeText(body);
+		String body = getTextFromMessage(message);     
+		//body = MimeUtility.decodeText(body);
 		return body; 
 	}
 	/**
@@ -240,7 +192,8 @@ public class parseur{
 	            	String messageID = GetMessageId(); 
 
 					File f = new File(dossierAttachement + nomPiceJointe);
-	            	InputStream is = part.getInputStream();
+	            	InputStream is = part.getInputStream(); 
+	            	
 	            	FileOutputStream fos = new FileOutputStream(f);
 	                byte[] buf = new byte[4096];
 	                int bytesRead;
@@ -248,17 +201,29 @@ public class parseur{
 	                    fos.write(buf, 0, bytesRead);
 	                }
 	                fos.close();
-
+	                
+	                //contenue piéce joint to  string 
+	                InputStream inputStream = new FileInputStream(dossierAttachement+nomPiceJointe);
+	                //Creating a Scanner object
+	                Scanner sc = new Scanner(inputStream);
+	                //Reading line by line from scanner to StringBuffer
+	                StringBuffer sb = new StringBuffer();
+	                while(sc.hasNext()){
+	                   sb.append(sc.nextLine());
+	                }
+	                
 	            	piece.setNomPieceJointe(nomPiceJointe);
 	            	piece.setMailId(messageID);
-	            	piece.setContenuJointe(nomPiceJointe); //dans le contenu de la piece joint pour l'instant on met le nom en attendant 
-	            	
+	            	piece.setContenuJointe(sb.toString()); 
 	            	attachments.add(piece); 
 	            }	            	
 	        }
 	    }
+	    
 		return attachments;
 	}
+
+	
 	public void getMailTest() throws MessagingException, IOException {
 		System.out.println("************************MessageID********************");
 		System.out.println(this.GetMessageId()); 	
@@ -315,6 +280,7 @@ public class parseur{
 		mailObject.setIdMail(this.GetMessageId());
 		mailObject.setFrom(this.getExpediteur());
 		mailObject.setDestinataire(this.getDestinataire(RecipientType.TO)); 
+		mailObject.setSujet(this.GetSubject());
 		Address[] test = this.message.getRecipients(Message.RecipientType.CC); 
 		if(test!=null) {
 			mailObject.setDestinataireEnCopie(this.getDestinataire(Message.RecipientType.CC));
@@ -328,6 +294,22 @@ public class parseur{
 	     return mailObject;   
 	}  
 	
+	private static  String getTextFromMessage(Message message) throws MessagingException, IOException {
+	    String result = "";
+	    System.out.println(message.getContentType());
+	    if (message.isMimeType("text/plain")) {
+	        result = message.getContent().toString();
+	    } 
+	    else if (message.isMimeType("text/html")) {
+            String html = (String) message.getContent();
+            result = result + "\n" + org.jsoup.Jsoup.parse(html).text(); 
+	    } else if (message.isMimeType("multipart/*")) {
+	        MimeMultipart mimeMultipart = (MimeMultipart) message.getContent();
+	        result = getTextFromMimeMultipart(mimeMultipart);
+	    }
+	    return result;
+	}
+
 	private static String getTextFromMimeMultipart(MimeMultipart mimeMultipart)  throws MessagingException, IOException{
 	    String result = "";
 	    int count = mimeMultipart.getCount();
@@ -335,19 +317,19 @@ public class parseur{
 	        BodyPart bodyPart = mimeMultipart.getBodyPart(i);
 	        if (bodyPart.isMimeType("text/plain")) {
 	            result = result + "\n" + bodyPart.getContent();
-	            break; // sans break le même texte apparaît deux fois dans mes tests
+	            break; //Sans break affiche deux fois 
 	        } else if (bodyPart.isMimeType("text/html")) {
 	            String html = (String) bodyPart.getContent();
 	            result = result + "\n" + org.jsoup.Jsoup.parse(html).text();
 	        } else if (bodyPart.getContent() instanceof MimeMultipart){
 	            result = result + getTextFromMimeMultipart((MimeMultipart)bodyPart.getContent());
 	        }
-	    }
+	    }  
 	    return result;
 	}
 
 	/**
-	 * fonction qui recuperer les signature dans les mail de type multipart 
+	 * fonction qui recuperer les signatures dans les mail de type multipart qui on une partie text/hml
 	 * 
 	 * @param mimeMultipart
 	 * @return
@@ -356,6 +338,7 @@ public class parseur{
 	 */
 	private static String getSignatureFromMimeMultipart(MimeMultipart mimeMultipart)  throws MessagingException, IOException{
 	    String result = "";
+	    
 	    int count = mimeMultipart.getCount();
 	    for (int i = 0; i < count; i++) {
 	        BodyPart bodyPart = mimeMultipart.getBodyPart(i);
@@ -370,12 +353,19 @@ public class parseur{
 	    }
 	    return result;
 	}
+	/**
+	 * fontion qui prend en parametre un chaine de caratére ou juste un mail et qui 
+	 * retourne une personne (nom, prenom , mail) 
+	 * @param e
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
 
 	public  Personne stringToPersonne(String e) throws UnsupportedEncodingException  {
 		Personne pers = new Personne(); 
 		
+		//decodage systematique des ISO-8859-1
 		String element = MimeUtility.decodeText(e);
-		
 		//ca ou le mail a des destinataires non divulgués
 		if (element.contains("undisclosed-recipients:")) {
 		    pers.setNomPersonne("destinataires non divulgués");
@@ -383,47 +373,63 @@ public class parseur{
 		    pers.setEmailPersonne("destinataires non divulgués");
 		}
 		else {
-			String elementNew= element.replace("<", "").replace(">", "").replace("'", "");
+			//supressiont de tous les caractère 
+			String elementNew= element.replace("<", "").replace(">", "").replace("'", "").replace("[", "").replace("]", "");
 		    String[] textSplited= elementNew.split(" ");
 		    //si le text est =3 on a un format prenom, non et email 
 		    if(textSplited.length==3) {
 			    String prenom = textSplited[0];
-			    String nom = textSplited[1];
+			    String nom = textSplited[1].toUpperCase();
 			    String email = textSplited[2];
 			    pers.setNomPersonne(nom);
 			    pers.setPrenomPersonne(prenom);
 			    pers.setEmailPersonne(email);
 		    }
-		    //on a juste le mail  gestion du des case nom et prénom a determinier avec touria 
-		    else if(textSplited.length==1) {
-			    String email = textSplited[0];
-			    pers.setNomPersonne("");
-			    pers.setPrenomPersonne("");
-			    pers.setEmailPersonne(email);
-		    }
-		    //pour les destinataire qui on un second prenom 
-		    else if(textSplited.length >=4) {
-
-		    	 String prenom = textSplited[0]+" "+textSplited[1];
-		    	 //System.out.println(textSplited[textSplited.length-1]+" kk");
-		    	 String nom = textSplited[2];
-		    	 String email = textSplited[textSplited.length-1];
-		    	// System.out.println(prenom);
-				 pers.setNomPersonne(nom);
-				 pers.setPrenomPersonne(prenom);
-				 pers.setEmailPersonne(email);
-		    	
-		    }else {
-		    	//cas exeptionel  de taile 2 mais on sais que le dernier element est toujour le mail 
-		    	 pers.setPrenomPersonne(textSplited[0]);
-				 pers.setEmailPersonne(textSplited[textSplited.length-1]);
-		    	
+		    //on a juste le mail  gestion des case nom et prénom 
+		    else {
+	    		String email = textSplited[textSplited.length-1];
+		    	pers.setEmailPersonne(email);
+		    	pers.setNomPersonne(nomEmailSplit(email));
+		    	pers.setPrenomPersonne(prenomEmailSplit(email));
 		    }
 
 		}
-
+		//System.out.println(pers.getNomPersonne() +" "+ pers.getPrenomPersonne());
 	    return pers;
 		
 	}
+	/**
+	 * fonction qui retourne le nom sur un email(string) de type marouwane.bah@quesquechose.fr
+	 * @param email
+	 * @return
+	 */
 	
+	public String nomEmailSplit(String email) {
+    	String[] emailSplited = email.split("@"); // exe francoi.calsel @ up.fr
+    	String[] partie1 = emailSplited[0].split("\\.");     // separation du nom et prenom ex francois.cassel 
+    	
+    	String nom=""; 
+    	if(partie1.length==2) {
+		    nom= partie1[1]; 
+    	}
+    	else 
+    		nom=""; 
+    	return nom.toUpperCase(); 
+	}
+	/**
+	 * fonction qui retourne le prenom sur un email(string) de type marouwane.bah@quesquechose.fr
+	 * @param email
+	 * @return
+	 */
+	public String prenomEmailSplit(String email) {
+    	String[] emailSplited = email.split("@"); // exe francoi.calsel @ up.fr
+    	String[] partie1 = emailSplited[0].split("\\.");     // separation du nom et prenom ex francois.cassel 
+    	String prenom=""; 
+    	if(partie1.length==2) {
+    		prenom= partie1[0]; 
+    	}
+    	else 
+    		prenom=""; 
+    	return prenom; 
+	}
 }
