@@ -4,6 +4,7 @@ public class Lien {
 	private int idLien;
 	private String nomLien;
 	private String contenuLien;
+	private String idMail; 
 	private Mail mail;
 	public Lien() {
 		super();
@@ -32,6 +33,17 @@ public class Lien {
 	}
 	public void setMail(Mail mail) {
 		this.mail = mail;
+	}
+	public String getIdMail() {
+		return idMail;
+	}
+	public void setIdMail(String idMail) {
+		this.idMail = idMail;
+	}
+	@Override
+	public String toString() {
+		return "Lien [idLien=" + idLien + ", nomLien=" + nomLien + ", contenuLien=" + contenuLien + ", idMail=" + idMail
+				+ ", mail=" + mail + "]";
 	}
 	
 }

@@ -1,3 +1,4 @@
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -18,7 +19,7 @@ import dao.PersonneDAO;
 public class main {
 
 	//private static final String LIEN_FICHIER = "/home/diallo/Documents/projetTER/corpus/president_2010/president_2010/president_2010-06/";  
-	private static final String LIEN_FICHIER = "/home/etudiant/M1/S2/TER/president_2010/president_2010/president_2010-06/";  
+	private static final String LIEN_FICHIER = "/home/etudiant/M1/S2/TER/president_2010/president_2010/president_2010-07/";  
 
 	
 	public static void main(String[] args) throws MessagingException, IOException {
@@ -35,21 +36,24 @@ public class main {
 		malDestinataireDao = daoFactory.getMailDestinataireDao();
 		
 		
-		parseur test = new parseur(LIEN_FICHIER+32);
+		parseur test = new parseur(LIEN_FICHIER+20);
+		test.getMailTest();
+		test.getLiens();
 
-		MailList tes = test.mailToObject(); 
+		
+		//MailList tes = test.mailToObject(); 
 		//System.out.println(tes.toString());
-		System.out.println(tes.getBody());
-		System.out.println(tes.getFrom().getNomPersonne());
-		System.out.println(tes.getFrom().getPrenomPersonne());
+		//System.out.println(tes.getBody());
+		//System.out.println(tes.getFrom().getNomPersonne());
+		//System.out.println(tes.getFrom().getPrenomPersonne());
 		//System.out.println("attachement"+tes.getAttachments().get(0).getContenuJointe());
 		//tous est gerer sauf les liens 
-		MailList a;
+		//MailList a;
 		//System.out.println(a.getFrom().getEmailPersonne());
 		
 		
 		//System.out.println(a.toString());
-		
+		/*
 		ArrayList<MailList> listeMail = new ArrayList<MailList>(); 
 		
 		for(int i = 1; i<32; ++i) {
@@ -58,7 +62,7 @@ public class main {
 			//System.out.println(a.getFrom().getEmailPersonne());
 			listeMail.add(a); 
 		}
-		/*
+		
 		for(MailList aa : listeMail) {
 			System.out.println(aa.getFrom().getNomPersonne() +" "+ aa.getFrom().getPrenomPersonne()+ " " +aa.getFrom().getEmailPersonne());
 			//insert email

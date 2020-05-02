@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-
+import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -26,9 +26,10 @@ import javax.mail.internet.MimeUtility;
 
 
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-
+import beans.Lien;
 import beans.Personne;
 import beans.PieceJointe;
 
@@ -49,6 +50,7 @@ public class parseur{
 		super();
 	    InputStream mailFileInputStream = new FileInputStream(messagePath);    
 	    Properties props = System.getProperties(); 
+	    props.setProperty("mail.mime.address.strict", "false");
 	    Session session = Session.getInstance(props, null);
 	    this.message = new MimeMessage(session, mailFileInputStream);
 		
@@ -135,15 +137,15 @@ public class parseur{
 	 */
 	public String getSignature() throws MessagingException, IOException {
 		String signature =""; 
-		String contentType = this.message.getContentType();
-
 		String content = this.message.getContent().toString(); 
-		if(contentType.contains("text/html" )) {
+		if(this.message.isMimeType("text/html" )) {
 			org.jsoup.nodes.Document doc=  Jsoup.parse(content);
-			Elements a = doc.getElementsByClass("moz-signature"); 
-			signature = a.text();
+			Elements a = doc.getElementsByTag("pre"); 
+			Elements b = doc.getElementsByClass("moz-signature");
+			signature = a.text()+b.text();  
+	
 		}
-		if(contentType.contains("multipart" )) {
+		else if(this.message.isMimeType("multipart/*" )) {
 			Multipart mp = (Multipart)this.message.getContent();
 			int numParts = mp.getCount();
 			           
@@ -152,10 +154,11 @@ public class parseur{
 				MimeBodyPart part = (MimeBodyPart)mp.getBodyPart(count);
 			    //pour les parts qui sont de type content text.html on utlise la libraire jsoup  
 			    if(part.isMimeType("text/html")) {
-					org.jsoup.nodes.Document doc=  Jsoup.parse(content);
-					Elements a = doc.getElementsByClass("moz-signature"); 
-					signature = a.text();
-			        	
+					org.jsoup.nodes.Document doc=  Jsoup.parse(part.getContent().toString());
+					//System.out.println(body);
+					Elements a =doc.getElementsByTag("pre");		
+					Elements b = doc.getElementsByClass("moz-signature");
+					signature = a.text()+b.text();      	
 			      }    
 			    if(part.getContent() instanceof MimeMultipart){
 			    	signature +=getSignatureFromMimeMultipart((MimeMultipart) part.getContent());
@@ -222,15 +225,60 @@ public class parseur{
 	    
 		return attachments;
 	}
+	
+	public ArrayList<Lien>  getLiens() throws IOException, MessagingException {
+		ArrayList<Lien> liens = new ArrayList<Lien>(); 
+		String content = this.message.getContent().toString(); 
+		if(this.message.isMimeType("text/html" )) {
+			org.jsoup.nodes.Document doc=  Jsoup.parse(content);
+			Elements links = doc.select("a[href]");
+			for (Element a : links) {
+				Lien lien = new Lien(); 
+				lien.setNomLien(a.attr("href"));  
+				lien.setContenuLien(a.text());
+				lien.setIdMail(this.GetMessageId());
+				
+				liens.add(lien); 
+			}
+	
+		}
+		else if(this.message.isMimeType("multipart/*" )) {
+			Multipart mp = (Multipart)this.message.getContent();
+			int numParts = mp.getCount();
+			           
+			for(int count = 0; count < numParts; count++)
+			{	    
+				MimeBodyPart part = (MimeBodyPart)mp.getBodyPart(count);
+			    //pour les parts qui sont de type content text.html on utlise la libraire jsoup  
+			    if(part.isMimeType("text/html")) {
+			    	
+					org.jsoup.nodes.Document doc=  Jsoup.parse(part.getContent().toString());
+					Elements links = doc.select("a[href]");
+					for (Element a : links) {
+						Lien lien = new Lien(); 
+						lien.setNomLien(a.attr("href"));  
+						lien.setContenuLien(a.text());
+						lien.setIdMail(this.GetMessageId());
+						
+						liens.add(lien); 
+					}
+			      }    
+			}
+		}
+		return liens ; 
+	}
 
 	
 	public void getMailTest() throws MessagingException, IOException {
 		System.out.println("************************MessageID********************");
 		System.out.println(this.GetMessageId()); 	
 		System.out.println("************************expéditeur********************");		
-		this.getExpediteur();
+		System.out.println(this.getExpediteur().toString());
 		System.out.println("************************Destinataire********************");		
 		ArrayList<Personne>  destinatire = this.getDestinataire(Message.RecipientType.TO);
+		for (Personne a : destinatire) {
+			System.out.println(a.toString());
+		}
 		System.out.println("************************en copie********************");
 		Address[] test = this.message.getRecipients(Message.RecipientType.CC); 
 		if(test==null) {
@@ -239,28 +287,32 @@ public class parseur{
 		{
 			System.out.println(test.length);
 			ArrayList<Personne>  destinatireCC = this.getDestinataire(Message.RecipientType.CC);
+			for (Personne a : destinatireCC) {
+				System.out.println(a.toString());
+			}
 		}
 		System.out.println("************************subject********************");
-		System.out.println(this.GetSubject());
+		System.out.println("sujet: "+this.GetSubject());
 		System.out.println("************************BODY********************");
 		System.out.println(this.GetMailContenu()); 
 		System.out.println("************************attachement********************");
-		this.getPieceJointe();
+		ArrayList<PieceJointe> arrayPiece=  this.getPieceJointe();
+		for(PieceJointe p : arrayPiece) {
+			System.out.println(p.toString());
+		}
 		System.out.println("************************Signature********************");
 		System.out.println(this.getSignature());
-		
-		System.out.println("************************fin Signature********************");
-		
-		
-		
+		System.out.println("************************Liens ********************");
+		ArrayList<Lien> liens=  this.getLiens();
+		for(Lien p : liens) {
+			System.out.println(p.toString());
+		}
 	}
 	
 	
-	
-	
-	/*
-	 * Fonction qui recupere toutes les infos  du mail et qui crée un object 
-	  Maillist qui a toutes des informations du mail 
+
+	/**
+	 * fonction qui retourne la date d'envoie 
 	 */
 	public String getDate() throws MessagingException {
 		return this.message.getSentDate().toString(); 
@@ -290,13 +342,13 @@ public class parseur{
 		mailObject.setDate(this.getDate());
 		mailObject.setSignature(this.getSignature());
 		mailObject.setBody(this.GetMailContenu());
+		mailObject.setLiens(this.getLiens());
 	 //   MailList a = new MailList(message.getMessageID(),from, destinataire, message.getSubject(), body, message.getSentDate().toString(), attachments, liens);
 	     return mailObject;   
 	}  
 	
 	private static  String getTextFromMessage(Message message) throws MessagingException, IOException {
 	    String result = "";
-	    System.out.println(message.getContentType());
 	    if (message.isMimeType("text/plain")) {
 	        result = message.getContent().toString();
 	    } 
@@ -344,12 +396,16 @@ public class parseur{
 	        BodyPart bodyPart = mimeMultipart.getBodyPart(i);
 	        if (bodyPart.isMimeType("text/html")) {
 				org.jsoup.nodes.Document doc=  Jsoup.parse(bodyPart.getContent().toString());
-				
-				Elements a = doc.getElementsByClass("moz-signature"); 
-	            result = a.text();
+				Elements a =doc.getElementsByTag("pre");
+				Elements b = doc.getElementsByClass("moz-signature");
+	
+				//System.out.println("je suis null"+  b);
+	            result = a.text()+b.text();
 	        } else if (bodyPart.getContent() instanceof MimeMultipart){
-	            result = result + getTextFromMimeMultipart((MimeMultipart)bodyPart.getContent());
+	            result =  getSignatureFromMimeMultipart((MimeMultipart)bodyPart.getContent());
 	        }
+	        else 
+	        	System.out.println("rien found");
 	    }
 	    return result;
 	}
@@ -366,7 +422,7 @@ public class parseur{
 		
 		//decodage systematique des ISO-8859-1
 		String element = MimeUtility.decodeText(e);
-		//ca ou le mail a des destinataires non divulgués
+		//les cas ou le mail a des destinataires non divulgués
 		if (element.contains("undisclosed-recipients:")) {
 		    pers.setNomPersonne("destinataires non divulgués");
 		    pers.setPrenomPersonne("destinataires non divulgués");
