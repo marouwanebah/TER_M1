@@ -25,12 +25,10 @@ import dao.PersonneDAO;
 import dao.PieceJointeDao;
 
 public class main {
-
+	private static final dao.DaoFactory daoFactory = dao.DaoFactory.getInstance();
 	private static final String LIEN_FICHIER = "/home/diallo/Documents/projetTER/corpus/president_2010/president_2010/president_2010-06/";  
 	//private static final String LIEN_FICHIER = "/home/etudiant/M1/S2/TER/president_2010/president_2010/president_2010-07/";  
-
-	
-	public static void main(String[] args) throws MessagingException, IOException {
+	public static void insertBD(MailList aa){
 		EmailDao emailDao;
 		InstitutionDao institutionDao;
 		PersonneDAO personneDao;
@@ -50,35 +48,6 @@ public class main {
 		lienDao = daoFactory.getLienDao();
 		expediteurDao = daoFactory.getExpediteurDao();
 		malDestinataireDao = daoFactory.getMailDestinataireDao();
-		
-		parseur test;
-		/*test.getMailTest();
-		test.getLiens();*/
-
-		
-		//MailList tes = test.mailToObject(); 
-		//System.out.println(tes.toString());
-		//System.out.println(tes.getBody());
-		//System.out.println(tes.getFrom().getNomPersonne());
-		//System.out.println(tes.getFrom().getPrenomPersonne());
-		//System.out.println("attachement"+tes.getAttachments().get(0).getContenuJointe());
-		//tous est gerer sauf les liens 
-		MailList a;
-		//System.out.println(a.getFrom().getEmailPersonne());
-		
-		
-		//System.out.println(a.toString());
-		
-		ArrayList<MailList> listeMail = new ArrayList<MailList>(); 
-		
-		for(int i = 1; i<32; ++i) {
-			test = new parseur(LIEN_FICHIER+i);
-			a= test.mailToObject();
-			//System.out.println(a.getFrom().getEmailPersonne());
-			listeMail.add(a); 
-		}
-		
-		for(MailList aa : listeMail) {
 			//System.out.println(aa.getFrom().getNomPersonne() +" "+ aa.getFrom().getPrenomPersonne()+ " " +aa.getFrom().getEmailPersonne());
 			System.out.println(aa.getFrom().getEmailPersonne());
 			//insert email principal
@@ -236,66 +205,27 @@ public class main {
 				}
 			}
 			}
-		}
 		
-		/*
-					System.out.println("--------------"+"message numero : "+(i)+"-------------------");
-			System.out.println(a.toString());
-			System.out.println("-------------"+" fin message numero : "+(i)+"--------------");
-			++i;
-		
-		
-		
-		for(MailList a : listeMail) {
-
-			//insert Personne
-			TypePersonne typePersonne = new TypePersonne();
-			typePersonne.setCodePersonne("PH");
-			typePersonne.setLibellePersonne("Physique");
-			Personne personne= new Personne();
-			personne.setEmailPersonne(a.getFrom());
-			personne.setNomPersonne("test");
-			personne.setPrenomPersonne("test");
-			personne.setRolePersonne("test");
-			personne.setTypePersonne(typePersonne);
-			if(personneDao.getPersonne(personne.getEmailPersonne())== null )
-				personneDao.ajouterPersonne(personne);
-			//insert Mail
-			Mail mail = new Mail();
-			Mail mailPere = new Mail();
-			mail.setIdMail(a.getIdMail());
-			mail.setContenuMail(a.getBody());
-			mail.setSujetMail(a.getSujet());
-			mail.setDateEnvoiMail(a.getDate());
-			mail.setExpediteur(personne);
-			mail.setMailPère(mailPere);
-			if(mailDao.getMail(mail.getIdMail()) == null)
-				mailDao.ajouterMail(mail);
-			//insert Destinataire
-			MailDestinataire mailDestinataire = new MailDestinataire();
-			mailDestinataire.setMail(mail);
-			for(String dest : a.getDestinataire()) {
-				personne = personneDao.getPersonne(dest);
-				if(personne == null ) {
-					Personne destinat= new Personne();
-					destinat.setEmailPersonne(dest);
-					destinat.setNomPersonne("test");
-					destinat.setPrenomPersonne("test");
-					destinat.setRolePersonne("test");
-					destinat.setTypePersonne(typePersonne);
-					personneDao.ajouterPersonne(destinat);
-					personne = destinat;
-				}
-				mailDestinataire.setPersonne(personne);
-				if(malDestinataireDao.getMailDestinataire(mail, personne) == null)
-					malDestinataireDao.ajouterDestinataire(mailDestinataire);
-			}
-
-		}
-		
-	*/
 	}
+	
+	public static void main(String[] args) throws MessagingException, IOException {
+		
+		
+		parseur test;
+		MailList a;
+		ArrayList<MailList> listeMail = new ArrayList<MailList>(); 
+		
+		for(int i = 1; i<32; ++i) {
+			test = new parseur(LIEN_FICHIER+i);
+			a= test.mailToObject();
+			listeMail.add(a); 
+		}
+		
+		for(MailList aa : listeMail) {
+			insertBD(aa);
+		}
 
 	
 
+	}
 }
