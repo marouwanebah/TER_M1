@@ -50,9 +50,11 @@ public class Personne {
 	}
 	@Override
 	public String toString() {
-		return "Personne [idPersonne=" + idPersonne + ", emailPersonne=" + emailPersonne + ", nomPersonne="
-				+ nomPersonne + ", prenomPersonne=" + prenomPersonne + "]";
+		return "Personne [emailPersonne=" + emailPersonne + ", nomPersonne=" + nomPersonne + ", prenomPersonne="
+				+ prenomPersonne + ", institutionPersonne=" + institutionPersonne.toString() + "]";
 	}
+
+	
 	
 	
 	
