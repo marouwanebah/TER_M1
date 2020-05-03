@@ -23,16 +23,35 @@ public class LienDaoImp implements LienDao {
 
         try {
             connexion = daoFactory.getConnection();
+            connexion.setAutoCommit(false);
             preparedStatement = connexion.prepareStatement(SQL_INSERT);
 
             preparedStatement.setString(1, lien.getNomLien());
-            preparedStatement.setString(1, lien.getContenuLien());
-            preparedStatement.setString(1, lien.getMail().getIdMail());
+            preparedStatement.setString(2, lien.getContenuLien());
+            preparedStatement.setString(3, lien.getIdMail());
             
-            preparedStatement.executeUpdate();
+            int rowAffected = preparedStatement.executeUpdate();
+            if(rowAffected == 1)
+            	connexion.commit();
+            else
+            	connexion.rollback();
             preparedStatement.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ex) {
+        	try{
+                if(connexion != null)
+                	connexion.rollback();
+            }catch(SQLException e){
+                System.out.println(e.getMessage());
+            }
+        	System.out.println(ex.getMessage());
+        } finally {
+        	 try {
+                 if(preparedStatement != null) preparedStatement.close();
+                 if(connexion != null) connexion.close();
+                 
+             } catch (SQLException e) {
+                 System.out.println(e.getMessage());
+             }
         }
 		
 	}

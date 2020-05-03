@@ -64,5 +64,11 @@ public class DaoFactory {
     public LienDao getLienDao() {
     	return new LienDaoImp(this);
     }
+    public FonctionDao getFonctionDao() {
+    	return new FonctionDaoImp(this);
+    }
+    public InstitutionDao getInstitutionDao() {
+    	return new InstitutionDaoImp(this);
+    }
     
 }

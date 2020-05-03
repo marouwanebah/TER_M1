@@ -1,18 +1,11 @@
 package beans;
 
 public class Institution {
-	private int idInstitution;
 	private String nomInstitution;
 	private Ville ville;
 	public Institution() {
 		super();
 		// TODO Auto-generated constructor stub
-	}
-	public int getIdInstitution() {
-		return idInstitution;
-	}
-	public void setIdInstitution(int idInstitution) {
-		this.idInstitution = idInstitution;
 	}
 	public String getNomInstitution() {
 		return nomInstitution;

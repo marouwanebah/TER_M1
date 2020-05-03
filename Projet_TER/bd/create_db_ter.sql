@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Client :  localhost:3306
--- Généré le :  Jeu 30 Avril 2020 à 12:42
+-- Généré le :  Dim 03 Mai 2020 à 18:03
 -- Version du serveur :  5.7.29-0ubuntu0.18.04.1
 -- Version de PHP :  7.2.24-0ubuntu0.18.04.4
 
@@ -23,12 +23,12 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Structure de la table `tc_fontion`
+-- Structure de la table `tc_fonction`
 --
 
-CREATE TABLE `tc_fontion` (
-  `code_fontion` varchar(15) NOT NULL,
-  `libelle_fontion` varchar(45) DEFAULT NULL,
+CREATE TABLE `tc_fonction` (
+  `code_fonction` varchar(15) NOT NULL,
+  `libelle_fonction` varchar(45) DEFAULT NULL,
   `email_email` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -105,9 +105,8 @@ CREATE TABLE `td_expediteur` (
 --
 
 CREATE TABLE `td_institution` (
-  `id_institution` int(11) NOT NULL,
-  `nom_institution` varchar(45) DEFAULT NULL,
-  `code_postal` int(11) NOT NULL
+  `nom_institution` varchar(45) NOT NULL,
+  `code_postal` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -119,7 +118,7 @@ CREATE TABLE `td_institution` (
 CREATE TABLE `td_lien` (
   `id_lien` int(11) NOT NULL,
   `nom_lien` varchar(200) DEFAULT NULL,
-  `contenu_lien` varchar(45) DEFAULT NULL,
+  `contenu_lien` varchar(20000) DEFAULT NULL,
   `id_mail` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -133,7 +132,7 @@ CREATE TABLE `td_mail` (
   `id_mail` varchar(200) NOT NULL,
   `date_envoi_mail` varchar(200) DEFAULT NULL,
   `sujet_mail` varchar(500) DEFAULT NULL,
-  `contenu_mail` varchar(20500) DEFAULT NULL,
+  `contenu_mail` longtext,
   `email_email` varchar(200) NOT NULL,
   `id_mail_pere` varchar(200) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -149,18 +148,18 @@ CREATE TABLE `td_personne` (
   `nom_personne` varchar(100) DEFAULT NULL,
   `prenom_personne` varchar(150) DEFAULT NULL,
   `email_email` varchar(200) NOT NULL,
-  `id_institution` int(11) DEFAULT NULL
+  `nom_institution` varchar(45) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `td_personne_fontion`
+-- Structure de la table `td_personne_fonction`
 --
 
-CREATE TABLE `td_personne_fontion` (
+CREATE TABLE `td_personne_fonction` (
   `id_personne` int(11) NOT NULL,
-  `code_fontion` varchar(15) NOT NULL,
+  `code_fonction` varchar(15) NOT NULL,
   `date_debut_fonction` date DEFAULT NULL,
   `date_fin_fonction` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -174,9 +173,9 @@ CREATE TABLE `td_personne_fontion` (
 CREATE TABLE `td_piece_jointe` (
   `id_piece_jointe` int(11) NOT NULL,
   `nom_piece_jointe` varchar(200) DEFAULT NULL,
-  `contenu_piece_jointe` varchar(45) DEFAULT NULL,
+  `contenu_piece_jointe` longblob,
   `id_mail` varchar(200) NOT NULL,
-  `code_type_piece_jointe` varchar(2) NOT NULL
+  `code_type_piece_jointe` varchar(2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -184,11 +183,11 @@ CREATE TABLE `td_piece_jointe` (
 --
 
 --
--- Index pour la table `tc_fontion`
+-- Index pour la table `tc_fonction`
 --
-ALTER TABLE `tc_fontion`
-  ADD PRIMARY KEY (`code_fontion`),
-  ADD KEY `fk_tc_fontion_td_email1_idx` (`email_email`);
+ALTER TABLE `tc_fonction`
+  ADD PRIMARY KEY (`code_fonction`),
+  ADD KEY `fk_tc_fonction_td_email1_idx` (`email_email`);
 
 --
 -- Index pour la table `tc_pays`
@@ -235,7 +234,7 @@ ALTER TABLE `td_expediteur`
 -- Index pour la table `td_institution`
 --
 ALTER TABLE `td_institution`
-  ADD PRIMARY KEY (`id_institution`),
+  ADD PRIMARY KEY (`nom_institution`),
   ADD KEY `fk_td_institution_tc_ville1_idx` (`code_postal`);
 
 --
@@ -259,15 +258,15 @@ ALTER TABLE `td_mail`
 ALTER TABLE `td_personne`
   ADD PRIMARY KEY (`id_personne`),
   ADD KEY `fk_td_personne_td_email1_idx` (`email_email`),
-  ADD KEY `fk_td_personne_td_institution1_idx` (`id_institution`);
+  ADD KEY `fk_td_personne_td_institution1_idx` (`nom_institution`);
 
 --
--- Index pour la table `td_personne_fontion`
+-- Index pour la table `td_personne_fonction`
 --
-ALTER TABLE `td_personne_fontion`
-  ADD PRIMARY KEY (`id_personne`,`code_fontion`),
-  ADD KEY `fk_td_personne_has_tc_fontion_tc_fontion1_idx` (`code_fontion`),
-  ADD KEY `fk_td_personne_has_tc_fontion_td_personne1_idx` (`id_personne`);
+ALTER TABLE `td_personne_fonction`
+  ADD PRIMARY KEY (`id_personne`,`code_fonction`),
+  ADD KEY `fk_td_personne_has_tc_fonction_tc_fonction1_idx` (`code_fonction`),
+  ADD KEY `fk_td_personne_has_tc_fonction_td_personne1_idx` (`id_personne`);
 
 --
 -- Index pour la table `td_piece_jointe`
@@ -290,7 +289,7 @@ ALTER TABLE `td_lien`
 -- AUTO_INCREMENT pour la table `td_personne`
 --
 ALTER TABLE `td_personne`
-  MODIFY `id_personne` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=157;
+  MODIFY `id_personne` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=163;
 --
 -- AUTO_INCREMENT pour la table `td_piece_jointe`
 --
@@ -301,10 +300,10 @@ ALTER TABLE `td_piece_jointe`
 --
 
 --
--- Contraintes pour la table `tc_fontion`
+-- Contraintes pour la table `tc_fonction`
 --
-ALTER TABLE `tc_fontion`
-  ADD CONSTRAINT `fk_tc_fontion_td_email1` FOREIGN KEY (`email_email`) REFERENCES `td_email` (`email_email`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `tc_fonction`
+  ADD CONSTRAINT `fk_tc_fonction_td_email1` FOREIGN KEY (`email_email`) REFERENCES `td_email` (`email_email`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Contraintes pour la table `tc_ville`
@@ -350,14 +349,14 @@ ALTER TABLE `td_mail`
 --
 ALTER TABLE `td_personne`
   ADD CONSTRAINT `fk_td_personne_td_email1` FOREIGN KEY (`email_email`) REFERENCES `td_email` (`email_email`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_td_personne_td_institution1` FOREIGN KEY (`id_institution`) REFERENCES `td_institution` (`id_institution`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `fk_td_personne_td_institution` FOREIGN KEY (`nom_institution`) REFERENCES `td_institution` (`nom_institution`);
 
 --
--- Contraintes pour la table `td_personne_fontion`
+-- Contraintes pour la table `td_personne_fonction`
 --
-ALTER TABLE `td_personne_fontion`
+ALTER TABLE `td_personne_fonction`
   ADD CONSTRAINT `fk_personne_fonction` FOREIGN KEY (`id_personne`) REFERENCES `td_personne` (`id_personne`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_td_personne_has_tc_fontion_tc_fontion1` FOREIGN KEY (`code_fontion`) REFERENCES `tc_fontion` (`code_fontion`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `fk_td_personne_has_tc_fonction_tc_fonction1` FOREIGN KEY (`code_fonction`) REFERENCES `tc_fonction` (`code_fonction`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Contraintes pour la table `td_piece_jointe`

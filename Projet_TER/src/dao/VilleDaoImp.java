@@ -24,16 +24,35 @@ public class VilleDaoImp implements VilleDao {
 
         try {
             connexion = daoFactory.getConnection();
+            connexion.setAutoCommit(false);
             preparedStatement = connexion.prepareStatement(SQL_INSERT);
 
             preparedStatement.setInt(1, ville.getCodePostal());
             preparedStatement.setString(2, ville.getNomVille());
             preparedStatement.setString(3, ville.getPays().getNomPays());
             
-            preparedStatement.executeUpdate();
+            int rowAffected = preparedStatement.executeUpdate();
+            if(rowAffected == 1)
+            	connexion.commit();
+            else
+            	connexion.rollback();
             preparedStatement.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ex) {
+        	try{
+                if(connexion != null)
+                	connexion.rollback();
+            }catch(SQLException e){
+                System.out.println(e.getMessage());
+            }
+        	System.out.println(ex.getMessage());
+        } finally {
+        	 try {
+                 if(preparedStatement != null) preparedStatement.close();
+                 if(connexion != null) connexion.close();
+                 
+             } catch (SQLException e) {
+                 System.out.println(e.getMessage());
+             }
         }
 		
 	}
@@ -58,6 +77,7 @@ public class VilleDaoImp implements VilleDao {
 				ville.setPays(pays);
 			}
 			preparedStatement.close();
+			connexion.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
