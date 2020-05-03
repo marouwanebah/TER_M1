@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -28,7 +27,9 @@ import javax.mail.internet.MimeUtility;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.omg.CosNaming.IstringHelper;
 
+import beans.Institution;
 import beans.Lien;
 import beans.Personne;
 import beans.PieceJointe;
@@ -139,18 +140,25 @@ public class parseur{
 		String signature =""; 
 		String content = this.message.getContent().toString(); 
 		if(this.message.isMimeType("text/html" )) {
+
 			org.jsoup.nodes.Document doc=  Jsoup.parse(content);
 			Elements a = doc.getElementsByTag("pre"); 
 			Elements b = doc.getElementsByClass("moz-signature");
 			signature = a.text()+b.text();  
 	
 		}
+		else if(this.message.isMimeType("text/plain" )) {
+			
+		}
 		else if(this.message.isMimeType("multipart/*" )) {
+			
 			Multipart mp = (Multipart)this.message.getContent();
+			
 			int numParts = mp.getCount();
 			           
 			for(int count = 0; count < numParts; count++)
 			{	    
+				
 				MimeBodyPart part = (MimeBodyPart)mp.getBodyPart(count);
 			    //pour les parts qui sont de type content text.html on utlise la libraire jsoup  
 			    if(part.isMimeType("text/html")) {
@@ -419,6 +427,7 @@ public class parseur{
 
 	public  Personne stringToPersonne(String e) throws UnsupportedEncodingException  {
 		Personne pers = new Personne(); 
+		Institution institution = new Institution(); 
 		
 		//decodage systematique des ISO-8859-1
 		String element = MimeUtility.decodeText(e);
@@ -437,16 +446,27 @@ public class parseur{
 			    String prenom = textSplited[0];
 			    String nom = textSplited[1].toUpperCase();
 			    String email = textSplited[2];
+			    String nomInsitution = InsitutionEmailSplit(email); 
+			    institution.setNomInstitution(nomInsitution);
+			    
+			    
 			    pers.setNomPersonne(nom);
 			    pers.setPrenomPersonne(prenom);
 			    pers.setEmailPersonne(email);
+			    pers.setInstitutionPersonne(institution);
 		    }
 		    //on a juste le mail  gestion des case nom et prénom 
 		    else {
 	    		String email = textSplited[textSplited.length-1];
+			    String nomInsitution = InsitutionEmailSplit(email); 
+			    institution.setNomInstitution(nomInsitution);
+			    
 		    	pers.setEmailPersonne(email);
 		    	pers.setNomPersonne(nomEmailSplit(email));
 		    	pers.setPrenomPersonne(prenomEmailSplit(email));
+			    pers.setInstitutionPersonne(institution);
+		    	
+		    	
 		    }
 
 		}
@@ -487,5 +507,23 @@ public class parseur{
     	else 
     		prenom=""; 
     	return prenom; 
+	}
+	
+	/**
+	 * fonction qui retourne l'instution 
+	 * @param email
+	 * @return
+	 */
+	public String InsitutionEmailSplit(String email) {
+    	String[] emailSplited = email.split("@"); // exe francoi.calsel @ up.fr
+    	String[] partie2 = emailSplited[1].split("\\.");     // separation du nom et prenom ex francois.cassel 
+    	String institution=""; 
+    	if(partie2.length==2) {
+    		institution= partie2[0]; 
+    	}
+    	if(partie2.length==3) {
+    		institution =  partie2[0]+"."+partie2[1]; 
+    	}
+    	return institution; 
 	}
 }

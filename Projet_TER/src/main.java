@@ -36,7 +36,7 @@ public class main {
 		malDestinataireDao = daoFactory.getMailDestinataireDao();
 		
 		
-		parseur test = new parseur(LIEN_FICHIER+20);
+		parseur test = new parseur(LIEN_FICHIER+60);
 		test.getMailTest();
 		test.getLiens();
 
