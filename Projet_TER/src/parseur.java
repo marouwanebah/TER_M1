@@ -27,6 +27,7 @@ import javax.mail.internet.MimeUtility;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.omg.CosNaming.IstringHelper;
 
 import beans.Institution;
 import beans.Lien;
@@ -509,7 +510,7 @@ public class parseur{
 	}
 	
 	/**
-	 * fonction qui retourne le prenom sur un email(string) de type marouwane.bah@quesquechose.fr
+	 * fonction qui retourne l'instution 
 	 * @param email
 	 * @return
 	 */
@@ -520,7 +521,9 @@ public class parseur{
     	if(partie2.length==2) {
     		institution= partie2[0]; 
     	}
-
+    	if(partie2.length==3) {
+    		institution =  partie2[0]+"."+partie2[1]; 
+    	}
     	return institution; 
 	}
 }
