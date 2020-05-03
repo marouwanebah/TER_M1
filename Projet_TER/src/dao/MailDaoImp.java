@@ -25,6 +25,7 @@ public class MailDaoImp implements MailDao {
 
         try {
             connexion = daoFactory.getConnection();
+            connexion.setAutoCommit(false);
             preparedStatement = connexion.prepareStatement(SQL_INSERT);
 
             preparedStatement.setString(1, mail.getIdMail());
@@ -33,10 +34,28 @@ public class MailDaoImp implements MailDao {
             preparedStatement.setString(4, mail.getSujetMail());
             preparedStatement.setString(5, mail.getExpediteur().getEmail());
             preparedStatement.setString(6, mail.getMailPere().getIdMail());
-            preparedStatement.executeUpdate();
+            int rowAffected = preparedStatement.executeUpdate();
+            if(rowAffected == 1)
+            	connexion.commit();
+            else
+            	connexion.rollback();
             preparedStatement.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ex) {
+        	try{
+                if(connexion != null)
+                	connexion.rollback();
+            }catch(SQLException e){
+                System.out.println(e.getMessage());
+            }
+        	System.out.println(ex.getMessage());
+        } finally {
+        	 try {
+                 if(preparedStatement != null) preparedStatement.close();
+                 if(connexion != null) connexion.close();
+                 
+             } catch (SQLException e) {
+                 System.out.println(e.getMessage());
+             }
         }
 		
 	}
@@ -60,6 +79,7 @@ public class MailDaoImp implements MailDao {
 				mail.setSujetMail(rs.getString("sujet_mail"));
 			}
 			preparedStatement.close();
+			connexion.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

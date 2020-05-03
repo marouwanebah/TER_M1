@@ -10,9 +10,9 @@ import dao.DaoFactory;
 
 public class PersonneDaoImp implements PersonneDAO {
 	private DaoFactory daoFactory;
-	private static final String SQL_INSERT = "INSERT INTO td_personne (email_email, nom_personne, prenom_personne)"
-			+ " VALUES(?,?,?)";
-	private static final String SQL_SELECT_ONLY = "SELECT email_email, nom_personne, prenom_personne FROM td_personne WHERE email_email=?";
+	private static final String SQL_INSERT = "INSERT INTO td_personne (email_email, nom_personne, prenom_personne, nom_institution)"
+			+ " VALUES(?,?,?,?)";
+	private static final String SQL_SELECT_ONLY = "SELECT email_email, nom_personne, prenom_personne, nom_institution FROM td_personne WHERE email_email=?";
 	
 	public PersonneDaoImp(DaoFactory daoFactory ) {
 		super();
@@ -26,16 +26,35 @@ public class PersonneDaoImp implements PersonneDAO {
 
         try {
             connexion = daoFactory.getConnection();
+            connexion.setAutoCommit(false);
             preparedStatement = connexion.prepareStatement(SQL_INSERT);
 
             preparedStatement.setString(1, personne.getEmailPersonne());
             preparedStatement.setString(2, personne.getNomPersonne());
             preparedStatement.setString(3, personne.getPrenomPersonne());
-            
-            preparedStatement.executeUpdate();
+            preparedStatement.setString(4, personne.getInstitutionPersonne().getNomInstitution());
+            int rowAffected = preparedStatement.executeUpdate();
+            if(rowAffected == 1)
+            	connexion.commit();
+            else
+            	connexion.rollback();
             preparedStatement.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ex) {
+        	try{
+                if(connexion != null)
+                	connexion.rollback();
+            }catch(SQLException e){
+                System.out.println(e.getMessage());
+            }
+        	System.out.println(ex.getMessage());
+        } finally {
+        	 try {
+                 if(preparedStatement != null) preparedStatement.close();
+                 if(connexion != null) connexion.close();
+                 
+             } catch (SQLException e) {
+                 System.out.println(e.getMessage());
+             }
         }
 		
 	}
@@ -44,6 +63,7 @@ public class PersonneDaoImp implements PersonneDAO {
 	public Personne getPersonne(String email) {
 		Personne personne = null;
 		Connection connexion = null;
+		InstitutionDao institutionDao  = daoFactory.getInstitutionDao();
         PreparedStatement preparedStatement = null;
 		try {
 			connexion = daoFactory.getConnection();
@@ -56,8 +76,11 @@ public class PersonneDaoImp implements PersonneDAO {
 				personne.setEmailPersonne(rs.getString("email_email"));
 				personne.setNomPersonne(rs.getString("nom_personne"));
 				personne.setPrenomPersonne(rs.getString("prenom_personne"));
+				personne.setPrenomPersonne(rs.getString("prenom_personne"));
+				personne.setInstitutionPersonne(institutionDao.getInstitution(rs.getString("nom_institution")));
 			}
 			preparedStatement.close();
+			connexion.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

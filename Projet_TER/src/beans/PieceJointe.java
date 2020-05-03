@@ -1,9 +1,11 @@
 package beans;
 
+import java.io.FileInputStream;
+
 public class PieceJointe {
 	private String numPieceJointe;
 	private String nomPieceJointe;
-	private String contenuJointe;
+	private FileInputStream contenuJointe;
 	private Mail mail;  //? 
 	private String MailId;
 	private TypePieceJointe typePieceJointe;
@@ -23,10 +25,11 @@ public class PieceJointe {
 	public void setNomPieceJointe(String nomPieceJointe) {
 		this.nomPieceJointe = nomPieceJointe;
 	}
-	public String getContenuJointe() {
+	
+	public FileInputStream getContenuJointe() {
 		return contenuJointe;
 	}
-	public void setContenuJointe(String contenuJointe) {
+	public void setContenuJointe(FileInputStream contenuJointe) {
 		this.contenuJointe = contenuJointe;
 	}
 	public Mail getMail() {

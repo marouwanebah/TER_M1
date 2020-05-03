@@ -27,7 +27,6 @@ import javax.mail.internet.MimeUtility;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.omg.CosNaming.IstringHelper;
 
 import beans.Institution;
 import beans.Lien;
@@ -41,8 +40,8 @@ public class parseur{
 
 	//ne jamais effacer le lien pour les autres mettre juste en commentaire 
 	//private static final String LIEN_FICHIER = "/home/etudiant/M1/S2/TER/Projet/TER_M1/Projet_TER/Data/president/";  
-	//private static final String dossierAttachement = "/home/diallo/Documents/projetTER/corpus/president_2010/president_2010/DATA/attachments/";
-	private static final String dossierAttachement = "/home/etudiant/M1/S2/TER/Projet/TER_M1/Projet_TER/Data/Attachement/";
+	private static final String dossierAttachement = "/home/diallo/Documents/projetTER/corpus/president_2010/president_2010/DATA/attachments/";
+	//private static final String dossierAttachement = "/home/etudiant/M1/S2/TER/Projet/TER_M1/Projet_TER/Data/Attachement/";
 	
 	private MimeMessage message; 
 	
@@ -214,18 +213,18 @@ public class parseur{
 	                fos.close();
 	                
 	                //contenue piéce joint to  string 
-	                InputStream inputStream = new FileInputStream(dossierAttachement+nomPiceJointe);
+	                FileInputStream inputStream = new FileInputStream(dossierAttachement+nomPiceJointe);
 	                //Creating a Scanner object
-	                Scanner sc = new Scanner(inputStream);
+	                //Scanner sc = new Scanner(inputStream);
 	                //Reading line by line from scanner to StringBuffer
-	                StringBuffer sb = new StringBuffer();
-	                while(sc.hasNext()){
-	                   sb.append(sc.nextLine());
-	                }
+	                //StringBuffer sb = new StringBuffer();
+	                //while(sc.hasNext()){
+	                  // sb.append(sc.nextLine());
+	               // }
 	                
 	            	piece.setNomPieceJointe(nomPiceJointe);
 	            	piece.setMailId(messageID);
-	            	piece.setContenuJointe(sb.toString()); 
+	            	piece.setContenuJointe(inputStream); 
 	            	attachments.add(piece); 
 	            }	            	
 	        }
@@ -242,8 +241,8 @@ public class parseur{
 			Elements links = doc.select("a[href]");
 			for (Element a : links) {
 				Lien lien = new Lien(); 
-				lien.setNomLien(a.attr("href"));  
-				lien.setContenuLien(a.text());
+				lien.setNomLien(a.text());  
+				lien.setContenuLien(a.attr("href"));
 				lien.setIdMail(this.GetMessageId());
 				
 				liens.add(lien); 
@@ -436,6 +435,7 @@ public class parseur{
 		    pers.setNomPersonne("destinataires non divulgués");
 		    pers.setPrenomPersonne("destinataires non divulgués");
 		    pers.setEmailPersonne("destinataires non divulgués");
+		    pers.setInstitutionPersonne(institution);
 		}
 		else {
 			//supressiont de tous les caractère 
