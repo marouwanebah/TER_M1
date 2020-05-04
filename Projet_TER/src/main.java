@@ -59,7 +59,6 @@ public class main {
 		expediteurDao = daoFactory.getExpediteurDao();
 		malDestinataireDao = daoFactory.getMailDestinataireDao();
 			//System.out.println(aa.getFrom().getNomPersonne() +" "+ aa.getFrom().getPrenomPersonne()+ " " +aa.getFrom().getEmailPersonne());
-			System.out.println(aa.getFrom().getEmailPersonne());
 			//insert email principal
 			Email email = new Email();
 			email.setEmail(aa.getFrom().getEmailPersonne());
