@@ -26,9 +26,9 @@ import dao.PieceJointeDao;
 
 public class main {
 	private static final dao.DaoFactory daoFactory = dao.DaoFactory.getInstance();
-	//private static final String DOSSIER_PRINCIPAL = "/home/diallo/Documents/projetTER/corpus/president_2010/president_2010/";  
+	private static final String DOSSIER_PRINCIPAL = "/home/diallo/Documents/projetTER/corpus/president_2010/president_2010/";  
 	//private static final String DOSSIER_PRINCIPAL = "/home/etudiant/M1/S2/TER/president_2010/president_2010/president_2010-07/";  
-	private static final String DOSSIER_PRINCIPAL = "/home/etudiant/M1/S2/TER/president_2010/president_2010/"; 
+	//private static final String DOSSIER_PRINCIPAL = "/home/etudiant/M1/S2/TER/president_2010/president_2010/"; 
 	private static final String DOSSIER_1 = "president_2010-06/"; 
 	private static final String DOSSIER_2 = "president_2010-07/"; 
 	private static final String DOSSIER_3 = "president_2010-08/"; 
@@ -59,14 +59,7 @@ public class main {
 		expediteurDao = daoFactory.getExpediteurDao();
 		malDestinataireDao = daoFactory.getMailDestinataireDao();
 			//System.out.println(aa.getFrom().getNomPersonne() +" "+ aa.getFrom().getPrenomPersonne()+ " " +aa.getFrom().getEmailPersonne());
-			//insert email principal
-			Email email = new Email();
-			email.setEmail(aa.getFrom().getEmailPersonne());
-			email.setSignature(aa.getSignature());
-			if(emailDao.getEmail(email.getEmail()) == null) {
-				emailDao.ajouterEmail(email);
-			}
-			//insert institution expediteur principal
+		//insert institution expediteur principal
 			String institutionExpPrinc;
 			if(aa.getFrom().getInstitutionPersonne() != null) {
 				institutionExpPrinc = aa.getFrom().getInstitutionPersonne().getNomInstitution();
@@ -74,6 +67,14 @@ public class main {
 				institutionPrinc.setNomInstitution(institutionExpPrinc);
 				if(institutionDao.getInstitution(institutionExpPrinc) == null)
 					institutionDao.ajouterInstitution(institutionPrinc);
+			}
+		//insert email principal
+			Email email = new Email();
+			email.setEmail(aa.getFrom().getEmailPersonne());
+			email.setSignature(aa.getSignature());
+			email.setInstitution(aa.getFrom().getInstitutionPersonne().getNomInstitution());
+			if(emailDao.getEmail(email.getEmail()) == null) {
+				emailDao.ajouterEmail(email);
 			}
 			//insert personne principale
 			if(aa.getFrom().getNomPersonne() != "" && aa.getFrom().getPrenomPersonne() != "") {
@@ -123,12 +124,6 @@ public class main {
 			//insert Expediteur cc
 			if(aa.getDestinataireEnCopie() != null) {
 				for(Personne pers : aa.getDestinataireEnCopie()) {
-					Email emailcc = new Email();
-					emailcc.setEmail(pers.getEmailPersonne());
-					//insert email
-					if(emailDao.getEmail(emailcc.getEmail()) == null) {
-						emailDao.ajouterEmail(emailcc);
-					}
 					//insert institution expediteur cc
 					String institutionExpcc;
 					if(pers.getInstitutionPersonne() != null) {
@@ -137,6 +132,13 @@ public class main {
 						institutioncc.setNomInstitution(institutionExpcc);
 						if(institutionDao.getInstitution(institutionExpcc) == null)
 							institutionDao.ajouterInstitution(institutioncc);
+					}
+					Email emailcc = new Email();
+					emailcc.setEmail(pers.getEmailPersonne());
+					emailcc.setInstitution(pers.getInstitutionPersonne().getNomInstitution());
+					//insert email
+					if(emailDao.getEmail(emailcc.getEmail()) == null) {
+						emailDao.ajouterEmail(emailcc);
 					}
 					//insert personne
 					if(pers.getNomPersonne() != "" && pers.getPrenomPersonne() != "") {
@@ -171,12 +173,6 @@ public class main {
 			MailDestinataire mailDestinataire = new MailDestinataire();
 			mailDestinataire.setMail(mail);
 			for(Personne person : aa.getDestinataire()) {
-				Email emaildest = new Email();
-				emaildest.setEmail(person.getEmailPersonne());
-				//insert email
-				if(emailDao.getEmail(emaildest.getEmail()) == null) {
-					emailDao.ajouterEmail(emaildest);
-				}
 				//insert institution destinataire
 				String institutionvDest;
 				if(person.getInstitutionPersonne() != null) {
@@ -185,6 +181,13 @@ public class main {
 					institutionDest.setNomInstitution(institutionvDest);
 					if(institutionDao.getInstitution(institutionvDest) == null)
 						institutionDao.ajouterInstitution(institutionDest);
+				}
+				Email emaildest = new Email();
+				emaildest.setEmail(person.getEmailPersonne());
+				emaildest.setInstitution(person.getInstitutionPersonne().getNomInstitution());
+				//insert email
+				if(emailDao.getEmail(emaildest.getEmail()) == null) {
+					emailDao.ajouterEmail(emaildest);
 				}
 				//insert personne
 				if(person.getNomPersonne() != "" && person.getPrenomPersonne() != "") {
