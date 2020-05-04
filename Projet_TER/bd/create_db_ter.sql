@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Client :  localhost:3306
--- Généré le :  Mar 05 Mai 2020 à 00:23
+-- Généré le :  Mar 05 Mai 2020 à 01:10
 -- Version du serveur :  5.7.29-0ubuntu0.18.04.1
 -- Version de PHP :  7.2.24-0ubuntu0.18.04.4
 
@@ -79,6 +79,17 @@ CREATE TABLE `td_destinataire` (
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `td_destinataire_cc`
+--
+
+CREATE TABLE `td_destinataire_cc` (
+  `id_mail` varchar(200) NOT NULL,
+  `email_email` varchar(200) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `td_email`
 --
 
@@ -86,17 +97,6 @@ CREATE TABLE `td_email` (
   `email_email` varchar(200) NOT NULL,
   `signature_email` varchar(5000) DEFAULT NULL,
   `nom_institution` varchar(45) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `td_destinataire_cc`
---
-
-CREATE TABLE `td_destinataire_cc` (
-  `id_mail` varchar(200) NOT NULL,
-  `email_email` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -148,7 +148,8 @@ CREATE TABLE `td_personne` (
   `id_personne` int(11) NOT NULL,
   `nom_personne` varchar(100) DEFAULT NULL,
   `prenom_personne` varchar(150) DEFAULT NULL,
-  `email_email` varchar(200) NOT NULL
+  `email_email` varchar(200) NOT NULL,
+  `nom_institution` varchar(45) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -217,19 +218,19 @@ ALTER TABLE `td_destinataire`
   ADD KEY `fk_td_mail_has_td_email_td_mail2_idx` (`id_mail`);
 
 --
--- Index pour la table `td_email`
---
-ALTER TABLE `td_email`
-  ADD PRIMARY KEY (`email_email`),
-  ADD KEY `fk_email_institution` (`nom_institution`);
-
---
 -- Index pour la table `td_destinataire_cc`
 --
 ALTER TABLE `td_destinataire_cc`
   ADD PRIMARY KEY (`id_mail`,`email_email`),
   ADD KEY `fk_td_mail_has_td_email_td_email1_idx` (`email_email`),
   ADD KEY `fk_td_mail_has_td_email_td_mail1_idx` (`id_mail`);
+
+--
+-- Index pour la table `td_email`
+--
+ALTER TABLE `td_email`
+  ADD PRIMARY KEY (`email_email`),
+  ADD KEY `fk_email_institution` (`nom_institution`);
 
 --
 -- Index pour la table `td_institution`
@@ -258,7 +259,8 @@ ALTER TABLE `td_mail`
 --
 ALTER TABLE `td_personne`
   ADD PRIMARY KEY (`id_personne`),
-  ADD KEY `fk_td_personne_td_email1_idx` (`email_email`);
+  ADD KEY `fk_td_personne_td_email1_idx` (`email_email`),
+  ADD KEY `fk_td_personne_td_institution` (`nom_institution`);
 
 --
 -- Index pour la table `td_personne_fonction`
@@ -284,17 +286,17 @@ ALTER TABLE `td_piece_jointe`
 -- AUTO_INCREMENT pour la table `td_lien`
 --
 ALTER TABLE `td_lien`
-  MODIFY `id_lien` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14481;
+  MODIFY `id_lien` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29776;
 --
 -- AUTO_INCREMENT pour la table `td_personne`
 --
 ALTER TABLE `td_personne`
-  MODIFY `id_personne` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2334;
+  MODIFY `id_personne` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2922;
 --
 -- AUTO_INCREMENT pour la table `td_piece_jointe`
 --
 ALTER TABLE `td_piece_jointe`
-  MODIFY `id_piece_jointe` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1063;
+  MODIFY `id_piece_jointe` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2204;
 --
 -- Contraintes pour les tables exportées
 --
@@ -319,17 +321,17 @@ ALTER TABLE `td_destinataire`
   ADD CONSTRAINT `fk_td_mail_has_td_email_td_mail2` FOREIGN KEY (`id_mail`) REFERENCES `td_mail` (`id_mail`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
--- Contraintes pour la table `td_email`
---
-ALTER TABLE `td_email`
-  ADD CONSTRAINT `fk_email_institution` FOREIGN KEY (`nom_institution`) REFERENCES `td_institution` (`nom_institution`);
-
---
 -- Contraintes pour la table `td_destinataire_cc`
 --
 ALTER TABLE `td_destinataire_cc`
   ADD CONSTRAINT `fk_td_mail_has_td_email_td_email1` FOREIGN KEY (`email_email`) REFERENCES `td_email` (`email_email`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_td_mail_has_td_email_td_mail1` FOREIGN KEY (`id_mail`) REFERENCES `td_mail` (`id_mail`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Contraintes pour la table `td_email`
+--
+ALTER TABLE `td_email`
+  ADD CONSTRAINT `fk_email_institution` FOREIGN KEY (`nom_institution`) REFERENCES `td_institution` (`nom_institution`);
 
 --
 -- Contraintes pour la table `td_institution`
@@ -354,7 +356,8 @@ ALTER TABLE `td_mail`
 -- Contraintes pour la table `td_personne`
 --
 ALTER TABLE `td_personne`
-  ADD CONSTRAINT `fk_td_personne_td_email1` FOREIGN KEY (`email_email`) REFERENCES `td_email` (`email_email`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `fk_td_personne_td_email1` FOREIGN KEY (`email_email`) REFERENCES `td_email` (`email_email`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_td_personne_td_institution` FOREIGN KEY (`nom_institution`) REFERENCES `td_institution` (`nom_institution`);
 
 --
 -- Contraintes pour la table `td_personne_fonction`

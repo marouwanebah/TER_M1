@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS td_piece_jointe;
 DROP TABLE IF EXISTS `td_personne_fonction` ;
 DROP TABLE IF EXISTS `td_personne` ;
 DROP TABLE IF EXISTS `td_lien` ;
-DROP TABLE IF EXISTS `td_expediteur` ;
+DROP TABLE IF EXISTS `td_destinataire_cc` ;
 DROP TABLE IF EXISTS `td_destinataire` ;
 DROP TABLE IF EXISTS `tc_type_piece_jointe` ;
 DROP TABLE IF EXISTS `tc_fonction` ;

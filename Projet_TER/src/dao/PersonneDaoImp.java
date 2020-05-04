@@ -10,9 +10,9 @@ import dao.DaoFactory;
 
 public class PersonneDaoImp implements PersonneDAO {
 	private DaoFactory daoFactory;
-	private static final String SQL_INSERT = "INSERT INTO td_personne (email_email, nom_personne, prenom_personne)"
+	private static final String SQL_INSERT = "INSERT INTO td_personne (email_email, nom_personne, prenom_personne, nom_institution)"
 			+ " VALUES(?,?,?,?)";
-	private static final String SQL_SELECT_ONLY = "SELECT email_email, nom_personne, prenom_personne FROM td_personne WHERE email_email=?";
+	private static final String SQL_SELECT_ONLY = "SELECT email_email, nom_personne, prenom_personne, nom_institution FROM td_personne WHERE email_email=?";
 	
 	public PersonneDaoImp(DaoFactory daoFactory ) {
 		super();
@@ -32,6 +32,7 @@ public class PersonneDaoImp implements PersonneDAO {
             preparedStatement.setString(1, personne.getEmailPersonne());
             preparedStatement.setString(2, personne.getNomPersonne());
             preparedStatement.setString(3, personne.getPrenomPersonne());
+            preparedStatement.setString(4, personne.getInstitutionPersonne().getNomInstitution());
             int rowAffected = preparedStatement.executeUpdate();
             if(rowAffected == 1)
             	connexion.commit();
@@ -75,6 +76,8 @@ public class PersonneDaoImp implements PersonneDAO {
 				personne.setEmailPersonne(rs.getString("email_email"));
 				personne.setNomPersonne(rs.getString("nom_personne"));
 				personne.setPrenomPersonne(rs.getString("prenom_personne"));
+				personne.setPrenomPersonne(rs.getString("prenom_personne"));
+				personne.setInstitutionPersonne(institutionDao.getInstitution(rs.getString("nom_institution")));
 			}
 			preparedStatement.close();
 			connexion.close();
