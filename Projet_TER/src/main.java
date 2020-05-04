@@ -26,8 +26,18 @@ import dao.PieceJointeDao;
 
 public class main {
 	private static final dao.DaoFactory daoFactory = dao.DaoFactory.getInstance();
-	private static final String LIEN_FICHIER = "/home/diallo/Documents/projetTER/corpus/president_2010/president_2010/president_2010-06/";  
-	//private static final String LIEN_FICHIER = "/home/etudiant/M1/S2/TER/president_2010/president_2010/president_2010-07/";  
+	//private static final String DOSSIER_PRINCIPAL = "/home/diallo/Documents/projetTER/corpus/president_2010/president_2010/";  
+	//private static final String DOSSIER_PRINCIPAL = "/home/etudiant/M1/S2/TER/president_2010/president_2010/president_2010-07/";  
+	private static final String DOSSIER_PRINCIPAL = "/home/etudiant/M1/S2/TER/president_2010/president_2010/"; 
+	private static final String DOSSIER_1 = "president_2010-06/"; 
+	private static final String DOSSIER_2 = "president_2010-07/"; 
+	private static final String DOSSIER_3 = "president_2010-08/"; 
+	private static final String DOSSIER_4 = "president_2010-09/"; 
+	private static final String DOSSIER_5 = "president_2010-10/"; 
+	private static final String DOSSIER_6 = "president_2010-11/"; 
+	private static final String DOSSIER_7 = "president_2010-12/"; 
+	
+	
 	public static void insertBD(MailList aa){
 		EmailDao emailDao;
 		InstitutionDao institutionDao;
@@ -49,7 +59,6 @@ public class main {
 		expediteurDao = daoFactory.getExpediteurDao();
 		malDestinataireDao = daoFactory.getMailDestinataireDao();
 			//System.out.println(aa.getFrom().getNomPersonne() +" "+ aa.getFrom().getPrenomPersonne()+ " " +aa.getFrom().getEmailPersonne());
-			System.out.println(aa.getFrom().getEmailPersonne());
 			//insert email principal
 			Email email = new Email();
 			email.setEmail(aa.getFrom().getEmailPersonne());
@@ -75,8 +84,8 @@ public class main {
 			//insert fonction principale
 			else {
 				String vemail = email.getEmail(); 
-				String code = vemail.substring(0, 4);
 				String[] tabLibelle = vemail.split("@");
+				String code = tabLibelle[0];
 				String libelle = tabLibelle[0];
 				Fonction fonction = new Fonction();
 				fonction.setCodeFonction(code);
@@ -138,8 +147,8 @@ public class main {
 					//insert fonction cc
 					else {
 						String vemail = emailcc.getEmail(); 
-						String code = vemail.substring(0, 4);
 						String[] tabLibelle = vemail.split("@");
+						String code = tabLibelle[0];
 						String libelle = tabLibelle[0];
 						Fonction fonction = new Fonction();
 						fonction.setCodeFonction(code);
@@ -186,8 +195,8 @@ public class main {
 				//insert fonction dest
 				else {
 					String vemail = emaildest.getEmail(); 
-					String code = vemail.substring(0, 4);
 					String[] tabLibelle = vemail.split("@");
+					String code = tabLibelle[0];
 					String libelle = tabLibelle[0];
 					Fonction fonction = new Fonction();
 					fonction.setCodeFonction(code);
@@ -212,19 +221,87 @@ public class main {
 		
 		
 		parseur test;
-		MailList a;
-		ArrayList<MailList> listeMail = new ArrayList<MailList>(); 
+		MailList a = new MailList();
+		//ArrayList<MailList> listeMail = new ArrayList<MailList>(); 
 		
-		for(int i = 1; i<32; ++i) {
-			test = new parseur(LIEN_FICHIER+i);
+		
+		//test = new parseur(DOSSIER_PRINCIPAL+DOSSIER_3+5);
+		//test.getMailTest();
+	
+		//Dossier1 32 fichiers 
+		System.out.println("============Debut Insertion==============");
+		for(int i = 1; i<=32; ++i) {
+			System.out.println("Dossier " + DOSSIER_1 + "Fichier " + i);
+			test = new parseur(DOSSIER_PRINCIPAL+DOSSIER_1+i);
 			a= test.mailToObject();
-			listeMail.add(a); 
+			insertBD(a);
+			//test.getMailTest();	
+			//listeMail.add(a); 
 		}
+		//Dossier2 288 fichiers 
+		for(int i = 1; i<=288; ++i) {
+			System.out.println("Dossier " + DOSSIER_2 + "Fichier " + i);
+			test = new parseur(DOSSIER_PRINCIPAL+DOSSIER_2+i);
+			a= test.mailToObject();
+			insertBD(a);
+			//test.getMailTest();	
+			//listeMail.add(a); 
+		}
+		//Dossier3 137 fichiers 
+		for(int i = 1; i<=137; ++i) {
+			System.out.println("Dossier " + DOSSIER_3 + "Fichier " + i);
+			test = new parseur(DOSSIER_PRINCIPAL+DOSSIER_3+i);
+			a= test.mailToObject();
+			insertBD(a);
+			//test.getMailTest();	
+			//listeMail.add(a); 
+		}
+		//Dossier4 547 fichiers 
+		for(int i = 1; i<=547; ++i) {
+			System.out.println("Dossier " + DOSSIER_4 + "Fichier " + i);
+			test = new parseur(DOSSIER_PRINCIPAL+DOSSIER_4+i);
+			a= test.mailToObject();
+			insertBD(a);
+			//test.getMailTest();	
+			//listeMail.add(a); 
+		}
+		//Dossier5 458 fichiers 
+		for(int i = 1; i<=458; ++i) {
+			System.out.println("Dossier " + DOSSIER_5 + "Fichier " + i);
+			test = new parseur(DOSSIER_PRINCIPAL+DOSSIER_5+i);
+			a= test.mailToObject();
+			insertBD(a);
+			//test.getMailTest();	
+			//listeMail.add(a); 
+		}
+		//Dossier6 529 fichiers 
+		for(int i = 1; i<=529; ++i) {
+			System.out.println("Dossier " + DOSSIER_6 + "Fichier " + i);
+			test = new parseur(DOSSIER_PRINCIPAL+DOSSIER_6+i);
+			a= test.mailToObject();
+			insertBD(a);
+			//test.getMailTest();	
+			//listeMail.add(a); 
+		}
+		//Dossier7 380 fichiers 
+		for(int i = 1; i<=380; ++i) {
+			System.out.println("Dossier " + DOSSIER_7 + "Fichier " + i);
+			test = new parseur(DOSSIER_PRINCIPAL+DOSSIER_7+i);
+			a= test.mailToObject();
+			insertBD(a);
+			//test.getMailTest();	
+			//listeMail.add(a); 
+		}
+		System.out.println("============Fin Insertion==============");
 		
-		for(MailList aa : listeMail) {
+		
+		
+		
+		
+		/*for(MailList aa : listeMail) {
 			insertBD(aa);
 		}
-
+		/**/
 	
 
 	}
