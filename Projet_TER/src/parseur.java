@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Properties;
-import java.util.Scanner;
+
 
 import javax.mail.Address;
 import javax.mail.BodyPart;
@@ -40,8 +40,8 @@ public class parseur{
 
 	//ne jamais effacer le lien pour les autres mettre juste en commentaire 
 	//private static final String LIEN_FICHIER = "/home/etudiant/M1/S2/TER/Projet/TER_M1/Projet_TER/Data/president/";  
-	private static final String dossierAttachement = "/home/diallo/Documents/projetTER/corpus/president_2010/DATA/attachments/";
-	//private static final String dossierAttachement = "/home/etudiant/M1/S2/TER/Projet/TER_M1/Projet_TER/Data/Attachement/";
+	//private static final String dossierAttachement = "/home/diallo/Documents/projetTER/corpus/president_2010/DATA/attachments/";
+	private static final String dossierAttachement = "/home/etudiant/M1/S2/TER/Projet/TER_M1/Projet_TER/Data/Attachement/";
 	
 	private MimeMessage message; 
 	
@@ -93,15 +93,22 @@ public class parseur{
 	 * @throws UnsupportedEncodingException
 	 */
  
-	public ArrayList<Personne> getDestinataire(Message.RecipientType type) throws MessagingException, UnsupportedEncodingException{
+	public ArrayList<Personne> getDestinataire(Message.RecipientType type) throws UnsupportedEncodingException, MessagingException {
 		ArrayList<Personne> destinataire  = new ArrayList<>(); 
-		Address[] destinataireBrut = this.message.getRecipients(type);
-	    //recuperation de tous les destinataire 
-	    for(int num = 0; num < destinataireBrut.length ; num++) {
-	    	String element = destinataireBrut[num].toString(); 
-	    		Personne a = stringToPersonne(element);
-		    	destinataire.add(a);
-	    }
+		Address[] destinataireBrut ; 
+		if( this.message.getRecipients(type)!=null) {
+			destinataireBrut = this.message.getRecipients(type);
+	
+		    //recuperation de tous les destinataire 
+		    for(int num = 0; num < destinataireBrut.length ; num++) {
+		    	String element = destinataireBrut[num].toString(); 
+		    		Personne a = stringToPersonne(element);
+			    	destinataire.add(a);
+		    }
+		}
+		else {
+			System.out.println("pas de destinaire en to");
+		}
 		return destinataire;
 	}
 	/**
@@ -185,10 +192,9 @@ public class parseur{
 	 */
 
 	public ArrayList<PieceJointe> getPieceJointe() throws MessagingException, IOException{
-		String contentType = this.message.getContentType();
 		ArrayList<PieceJointe> attachments = new ArrayList<PieceJointe>(); 
 		//pour les mails de type multupart avec ou sans piéce joint piéce joint
-	    if(contentType.contains("multipart")){  
+	    if(this.message.isMimeType("multipart/*")){  
 	    	Multipart mp = (Multipart)this.message.getContent();
 	    	int numParts = mp.getCount();   
 	        for(int count = 0; count < numParts; count++)
@@ -198,7 +204,15 @@ public class parseur{
 	            if(MimeBodyPart.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
 	            	PieceJointe piece = new PieceJointe(); 
 	            	//Mail mail = new Mail();
-	            	String nomPiceJointe = MimeUtility.decodeText(part.getFileName());
+	            	String nomPiceJointe="sansNom";
+	            	
+	            	if (part.getFileName()!=null) {
+	            		nomPiceJointe="";
+	            		nomPiceJointe = MimeUtility.decodeText(part.getFileName());
+	            		
+	            	}
+						
+	            	
 	            	String messageID = GetMessageId(); 
 
 					File f = new File(dossierAttachement + nomPiceJointe);
@@ -320,9 +334,16 @@ public class parseur{
 
 	/**
 	 * fonction qui retourne la date d'envoie 
+	 * @throws MessagingException 
 	 */
 	public String getDate() throws MessagingException {
-		return this.message.getSentDate().toString(); 
+		String date ="no date"; 
+		if(this.message.getSentDate()!=null) {
+			date= this.message.getSentDate().toString();
+		}
+	
+		return date;
+
 	}
 
 	/**
@@ -360,6 +381,7 @@ public class parseur{
 	        result = message.getContent().toString();
 	    } 
 	    else if (message.isMimeType("text/html")) {
+
             String html = (String) message.getContent();
             result = result + "\n" + org.jsoup.Jsoup.parse(html).text(); 
 	    } else if (message.isMimeType("multipart/*")) {
@@ -369,20 +391,27 @@ public class parseur{
 	    return result;
 	}
 
-	private static String getTextFromMimeMultipart(MimeMultipart mimeMultipart)  throws MessagingException, IOException{
+	private static String getTextFromMimeMultipart(MimeMultipart mimeMultipart) throws MessagingException  {
 	    String result = "";
 	    int count = mimeMultipart.getCount();
 	    for (int i = 0; i < count; i++) {
 	        BodyPart bodyPart = mimeMultipart.getBodyPart(i);
-	        if (bodyPart.isMimeType("text/plain")) {
-	            result = result + "\n" + bodyPart.getContent();
-	            break; //Sans break affiche deux fois 
-	        } else if (bodyPart.isMimeType("text/html")) {
-	            String html = (String) bodyPart.getContent();
-	            result = result + "\n" + org.jsoup.Jsoup.parse(html).text();
-	        } else if (bodyPart.getContent() instanceof MimeMultipart){
-	            result = result + getTextFromMimeMultipart((MimeMultipart)bodyPart.getContent());
-	        }
+	        try {
+				if (bodyPart.isMimeType("text/plain")) {			
+				    result = result + "\n" + bodyPart.getContent().toString();
+				    break; //Sans break affiche deux fois 
+				} else if (bodyPart.isMimeType("text/html")) {
+				    String html =  MimeUtility.decodeText(bodyPart.getContent().toString());
+					result = result + "\n" + org.jsoup.Jsoup.parse(html).text();
+				} else if (bodyPart.getContent() instanceof MimeMultipart){
+				    result = result + getTextFromMimeMultipart((MimeMultipart)bodyPart.getContent());
+				}
+			} catch (MessagingException | IOException e) {
+				// TODO Auto-generated catch block
+				//System.out.println("Exception dans getTextFromMimeMultipart du a la gesti des iso 8859-16");
+				e.getSuppressed();
+				//e.printStackTrace();
+			}
 	    }  
 	    return result;
 	}
@@ -395,24 +424,29 @@ public class parseur{
 	 * @throws MessagingException
 	 * @throws IOException
 	 */
-	private static String getSignatureFromMimeMultipart(MimeMultipart mimeMultipart)  throws MessagingException, IOException{
+	private static String getSignatureFromMimeMultipart(MimeMultipart mimeMultipart) throws MessagingException  {
 	    String result = "";
 	    
 	    int count = mimeMultipart.getCount();
 	    for (int i = 0; i < count; i++) {
 	        BodyPart bodyPart = mimeMultipart.getBodyPart(i);
-	        if (bodyPart.isMimeType("text/html")) {
-				org.jsoup.nodes.Document doc=  Jsoup.parse(bodyPart.getContent().toString());
-				Elements a =doc.getElementsByTag("pre");
-				Elements b = doc.getElementsByClass("moz-signature");
-	
-				//System.out.println("je suis null"+  b);
-	            result = a.text()+b.text();
-	        } else if (bodyPart.getContent() instanceof MimeMultipart){
-	            result =  getSignatureFromMimeMultipart((MimeMultipart)bodyPart.getContent());
-	        }
-	        else 
-	        	System.out.println("rien found");
+	        try {
+				if (bodyPart.isMimeType("text/html")) {
+					org.jsoup.nodes.Document doc=  Jsoup.parse(bodyPart.getContent().toString());
+					Elements a =doc.getElementsByTag("pre");
+					Elements b = doc.getElementsByClass("moz-signature");
+
+					//System.out.println("je suis null"+  b);
+				    result = a.text()+b.text();
+				} else if (bodyPart.getContent() instanceof MimeMultipart){
+				    result =  getSignatureFromMimeMultipart((MimeMultipart)bodyPart.getContent());
+				}
+			} catch (MessagingException | IOException e) {
+				// TODO Auto-generated catch block
+				e.getSuppressed(); 
+				//e.printStackTrace();
+			}
+
 	    }
 	    return result;
 	}
@@ -430,8 +464,8 @@ public class parseur{
 		
 		//decodage systematique des ISO-8859-1
 		String element = MimeUtility.decodeText(e);
-		//les cas ou le mail a des destinataires non divulgués
-		if (element.contains("undisclosed-recipients:")) {
+		//les cas ou le mail a des destinataires non divulgués  destinataires inconnus:
+		if (element.contains("Undisclosed") || element.contains("undisclosed")  || element.contains("destinataires inconnus:")  || element.contains("recipient list not shown:")  ) {
 		    pers.setNomPersonne("destinataires non divulgués");
 		    pers.setPrenomPersonne("destinataires non divulgués");
 		    pers.setEmailPersonne("destinataires non divulgués");
@@ -448,7 +482,6 @@ public class parseur{
 			    String email = textSplited[2];
 			    String nomInsitution = InsitutionEmailSplit(email); 
 			    institution.setNomInstitution(nomInsitution);
-			    
 			    
 			    pers.setNomPersonne(nom);
 			    pers.setPrenomPersonne(prenom);
@@ -515,15 +548,22 @@ public class parseur{
 	 * @return
 	 */
 	public String InsitutionEmailSplit(String email) {
+		String institution=""; 
+		if (email.contains("@")) {
+
     	String[] emailSplited = email.split("@"); // exe francoi.calsel @ up.fr
-    	String[] partie2 = emailSplited[1].split("\\.");     // separation du nom et prenom ex francois.cassel 
-    	String institution=""; 
-    	if(partie2.length==2) {
-    		institution= partie2[0]; 
+    	if(emailSplited.length>0) {
+	    	String[] partie2 = emailSplited[1].split("\\.");     // separation du nom et prenom ex francois.cassel 
+	    	if(partie2.length>1){
+		    	if(partie2.length==2) {
+		    		institution= partie2[0]; 
+		    	}
+		    	if(partie2.length==3) {
+		    		institution =  partie2[0]+"."+partie2[1]; 
+		    	}
+	    	}
     	}
-    	if(partie2.length==3) {
-    		institution =  partie2[0]+"."+partie2[1]; 
-    	}
+		}
     	return institution; 
 	}
 }
