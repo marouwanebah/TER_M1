@@ -12,9 +12,9 @@ import beans.MailDestinataire;
 
 public class ExpediteurDaoImp implements ExpediteurDao {
 	private DaoFactory daoFactory;
-	private static final String SQL_INSERT = "INSERT INTO td_expediteur (id_mail, email_email)"
+	private static final String SQL_INSERT = "INSERT INTO td_destinataire_cc (id_mail, email_email)"
 			+ " VALUES(?,?)";
-	private static final String SQL_SELECT_ONLY = "SELECT id_mail, email_email FROM td_expediteur WHERE id_mail=? and email_email=?";
+	private static final String SQL_SELECT_ONLY = "SELECT id_mail, email_email FROM td_destinataire_cc WHERE id_mail=? and email_email=?";
 	
 	public ExpediteurDaoImp(DaoFactory daoFactory ) {
 		super();
