@@ -3,6 +3,7 @@ package beans;
 public class Email {
 	private String email;
 	private String signature;
+	private String institution;
 	public Email() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -19,5 +20,12 @@ public class Email {
 	public void setSignature(String signature) {
 		this.signature = signature;
 	}
+	public String getInstitution() {
+		return institution;
+	}
+	public void setInstitution(String institution) {
+		this.institution = institution;
+	}
+	
 	
 }

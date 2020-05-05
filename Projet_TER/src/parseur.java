@@ -53,6 +53,7 @@ public class parseur{
 	    props.setProperty("mail.mime.address.strict", "false");
 	    Session session = Session.getInstance(props, null);
 	    this.message = new MimeMessage(session, mailFileInputStream);
+	    
 		
 	}
 	

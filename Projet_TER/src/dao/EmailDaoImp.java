@@ -9,9 +9,9 @@ import beans.Email;
 
 public class EmailDaoImp implements EmailDao {
 	private DaoFactory daoFactory;
-	private static final String SQL_INSERT = "INSERT INTO td_email (email_email, signature_email)"
-			+ " VALUES(?,?)";
-	private static final String SQL_SELECT_ONLY = "SELECT email_email, signature_email FROM td_email WHERE email_email=?";
+	private static final String SQL_INSERT = "INSERT INTO td_email (email_email, signature_email, nom_institution)"
+			+ " VALUES(?,?,?)";
+	private static final String SQL_SELECT_ONLY = "SELECT email_email, signature_email, nom_institution FROM td_email WHERE email_email=?";
 	
 	public EmailDaoImp(DaoFactory daoFactory ) {
 		super();
@@ -29,7 +29,7 @@ public class EmailDaoImp implements EmailDao {
 
             preparedStatement.setString(1, email.getEmail());
             preparedStatement.setString(2, email.getSignature());
-            
+            preparedStatement.setString(3, email.getInstitution());
             int rowAffected = preparedStatement.executeUpdate();
             if(rowAffected == 1)
             	connexion.commit();
@@ -71,6 +71,7 @@ public class EmailDaoImp implements EmailDao {
 				email = new Email();
 				email.setEmail(rs.getString("email_email"));
 				email.setSignature(rs.getString("signature_email"));
+				email.setInstitution(rs.getString("signature_email"));
 			}
 			preparedStatement.close();
 			connexion.close();
