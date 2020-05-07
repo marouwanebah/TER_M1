@@ -38,13 +38,10 @@ import beans.PieceJointe;
 
 public class parseur{
 
-	//ne jamais effacer le lien pour les autres mettre juste en commentaire 
-	//private static final String LIEN_FICHIER = "/home/etudiant/M1/S2/TER/Projet/TER_M1/Projet_TER/Data/president/";  
 	//private static final String dossierAttachement = "/home/diallo/Documents/projetTER/corpus/president_2010/DATA/attachments/";
 	private static final String dossierAttachement = "/home/etudiant/M1/S2/TER/Projet/TER_M1/Projet_TER/Data/Attachement/";
 	
 	private MimeMessage message; 
-	
 	
 	public parseur(String messagePath) throws FileNotFoundException, MessagingException {
 		super();
@@ -94,7 +91,7 @@ public class parseur{
 	 * @throws UnsupportedEncodingException
 	 */
  
-	public ArrayList<Personne> getDestinataire(Message.RecipientType type) throws UnsupportedEncodingException, MessagingException {
+	public ArrayList<Personne> getDestinataire(Message.RecipientType type) throws UnsupportedEncodingException, MessagingException  {
 		ArrayList<Personne> destinataire  = new ArrayList<>(); 
 		Address[] destinataireBrut ; 
 		if( this.message.getRecipients(type)!=null) {
@@ -108,7 +105,13 @@ public class parseur{
 		    }
 		}
 		else {
-			System.out.println("pas de destinaire en to");
+			Personne a = new Personne();
+			Institution b = new Institution(); 
+			a.setEmailPersonne("Pas de Destinaire");
+			a.setNomPersonne("Pas de Destinaire");
+			a.setPrenomPersonne("Pas de Destinaire");
+			a.setInstitutionPersonne(b);
+			destinataire.add(a); 
 		}
 		return destinataire;
 	}
@@ -229,13 +232,6 @@ public class parseur{
 	                
 	                //contenue piéce joint to  string 
 	                FileInputStream inputStream = new FileInputStream(dossierAttachement+nomPiceJointe);
-	                //Creating a Scanner object
-	                //Scanner sc = new Scanner(inputStream);
-	                //Reading line by line from scanner to StringBuffer
-	                //StringBuffer sb = new StringBuffer();
-	                //while(sc.hasNext()){
-	                  // sb.append(sc.nextLine());
-	               // }
 	                
 	            	piece.setNomPieceJointe(nomPiceJointe);
 	            	piece.setMailId(messageID);
@@ -474,8 +470,9 @@ public class parseur{
 		}
 		else {
 			//supressiont de tous les caractère 
-			String elementNew= element.replace("<", "").replace(">", "").replace("'", "").replace("[", "").replace("]", "");
-		    String[] textSplited= elementNew.split(" ");
+			String elementNew= element.replace("<", "").replace(">", "").replace("'", "").replace("[", "");
+			element.replace("]", "").replace("\\", "").replace("//", "").replace("\"", ""); 
+			String[] textSplited= elementNew.split(" ");
 		    //si le text est =3 on a un format prenom, non et email 
 		    if(textSplited.length==3) {
 			    String prenom = textSplited[0];

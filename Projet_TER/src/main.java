@@ -1,4 +1,5 @@
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.mail.MessagingException;
@@ -24,18 +25,10 @@ import dao.PieceJointeDao;
 
 public class main {
 	private static final dao.DaoFactory daoFactory = dao.DaoFactory.getInstance();
-	//private static final String DOSSIER_PRINCIPAL = "/home/diallo/Documents/projetTER/corpus/president_2010/president_2010/";  
-	//private static final String DOSSIER_PRINCIPAL = "/home/etudiant/M1/S2/TER/president_2010/president_2010/president_2010-07/";  
+	//private static final String DOSSIER_PRINCIPAL = "/home/diallo/Documents/projetTER/corpus/president_2010/president_2010/";    
 	private static final String DOSSIER_PRINCIPAL = "/home/etudiant/M1/S2/TER/president_2010/president_2010/"; 
-	private static final String DOSSIER_1 = "president_2010-06/"; 
-	private static final String DOSSIER_2 = "president_2010-07/"; 
-	private static final String DOSSIER_3 = "president_2010-08/"; 
-	private static final String DOSSIER_4 = "president_2010-09/"; 
-	private static final String DOSSIER_5 = "president_2010-10/"; 
-	private static final String DOSSIER_6 = "president_2010-11/"; 
-	private static final String DOSSIER_7 = "president_2010-12/"; 
 	
-	
+		
 	public static void insertBD(MailList aa){
 		EmailDao emailDao;
 		InstitutionDao institutionDao;
@@ -225,12 +218,26 @@ public class main {
 		MailList a = new MailList();
 		//ArrayList<MailList> listeMail = new ArrayList<MailList>(); 
 		
-		
-		//test = new parseur(DOSSIER_PRINCIPAL+DOSSIER_3+5);
+		File[] files = new File(DOSSIER_PRINCIPAL).listFiles();
+		System.out.println("============Debut Insertion==============");
+		for (File file : files) {
+	        if (file.isDirectory()) {
+	            for(File fileInsideFolder : file.listFiles()) {
+	            	System.out.println(fileInsideFolder.getAbsolutePath());
+					test = new parseur(fileInsideFolder.getAbsolutePath());
+					a= test.mailToObject();
+					insertBD(a);
+	            }
+	        }
+	    }
+		System.out.println("============Fin Insertion==============");
+		 
+		//test = new parseur(DOSSIER_PRINCIPAL+DOSSIER_2+17);
 		//test.getMailTest();
 	
 		//Dossier1 32 fichiers 
-		System.out.println("============Debut Insertion==============");
+		/*
+
 		for(int i = 1; i<=32; ++i) {
 			System.out.println("Dossier " + DOSSIER_1 + "Fichier " + i);
 			test = new parseur(DOSSIER_PRINCIPAL+DOSSIER_1+i);
@@ -302,7 +309,7 @@ public class main {
 		/*for(MailList aa : listeMail) {
 			insertBD(aa);
 		}
-		/**/
+		*/
 	
 
 	}
