@@ -4,9 +4,7 @@ import beans.Lien;
 import beans.Personne;
 import beans.PieceJointe;
 
-enum TypeMail{
-	Simple, Multi 
-}
+
 public class MailList {
 
 	private String idMail;
@@ -19,7 +17,8 @@ public class MailList {
 	private ArrayList<PieceJointe> attachments;
 	private ArrayList<Lien> liens;
 	private String signature;
-
+	private String typeemail; 
+	
 	public MailList() {
 		
 	}
@@ -86,12 +85,13 @@ public class MailList {
 	public void setSignature(String signature) {
 		this.signature = signature;
 	}
-	private TypeMail typeemail; 
-	public TypeMail getTypeemail() {
+	
+
+	public String getTypeemail() {
 		return typeemail;
 	}
 
-	public void setTypeemail(TypeMail typeemail) {
+	public void setTypeemail(String typeemail) {
 		this.typeemail = typeemail;
 	}
 

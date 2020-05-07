@@ -116,23 +116,25 @@ public class parseur{
 		}
 		return destinataire;
 	}
-	public TypeMail getTypeMessage() throws MessagingException, IOException {
+	public String getTypeMessage() throws MessagingException, IOException {
 		
 		String a = this.GetMailContenu();
+		String Multi = "Multi"; 
+		String Simple = "Simple";
 		if(a.contains("-----Message d'origine-----")) {
-			return TypeMail.Multi; 
+			return Multi; 
 		}
 		else if( a.contains("De :") && a.contains("Envoyé ") && a.contains("Objet :")) {
-			return TypeMail.Multi; 
+			return Multi; 
 		}
 		else if(a.contains(">") && a.contains("a écrit :") ) {
-			return TypeMail.Multi; 
+			return Multi; 
 		}
 		else if(a.contains(">") && a.contains("a ?crit?:") ) {
-			return TypeMail.Multi; 
+			return Multi; 
 		}
 		
-		return TypeMail.Simple;
+		return Simple;
 		
 	}
 	/**

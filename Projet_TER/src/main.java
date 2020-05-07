@@ -218,9 +218,9 @@ public class main {
 		MailList a = new MailList();
 		//ArrayList<MailList> listeMail = new ArrayList<MailList>(); 
 		
-		test = new parseur(DOSSIER_PRINCIPAL+"president_2010-07/"+121);
+		test = new parseur(DOSSIER_PRINCIPAL+"president_2010-07/"+62);
 		test.getMailTest();
-		
+		/*
 		File[] files = new File(DOSSIER_PRINCIPAL).listFiles();
 		System.out.println("============Debut Insertion==============");
 		for (File file : files) {
@@ -234,6 +234,6 @@ public class main {
 	        }
 	    }
 		System.out.println("============Fin Insertion==============");
-		 
+		 */
 	}
 }
