@@ -4,7 +4,11 @@ import beans.Lien;
 import beans.Personne;
 import beans.PieceJointe;
 
+enum TypeMail{
+	Simple, Multi 
+}
 public class MailList {
+
 	private String idMail;
 	private Personne from; 
 	private ArrayList<Personne> destinataire;  
@@ -82,16 +86,24 @@ public class MailList {
 	public void setSignature(String signature) {
 		this.signature = signature;
 	}
+	private TypeMail typeemail; 
+	public TypeMail getTypeemail() {
+		return typeemail;
+	}
+
+	public void setTypeemail(TypeMail typeemail) {
+		this.typeemail = typeemail;
+	}
+
 	@Override
 	public String toString() {
 		return "MailList [idMail=" + idMail + ", from=" + from + ", destinataire=" + destinataire
 				+ ", destinataireEnCopie=" + destinataireEnCopie + ", sujet=" + sujet + ", Body=" + Body + ", date="
-				+ date + ", attachments=" + attachments + ", liens=" + liens + ", signature=" + signature + "]";
-	} 
+				+ date + ", attachments=" + attachments + ", liens=" + liens + ", signature=" + signature
+				+ ", typeemail=" + typeemail + "]";
+	}
 	
-	
-	
-	
+
 	
 
 

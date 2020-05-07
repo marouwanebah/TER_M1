@@ -218,6 +218,9 @@ public class main {
 		MailList a = new MailList();
 		//ArrayList<MailList> listeMail = new ArrayList<MailList>(); 
 		
+		test = new parseur(DOSSIER_PRINCIPAL+"president_2010-07/"+121);
+		test.getMailTest();
+		
 		File[] files = new File(DOSSIER_PRINCIPAL).listFiles();
 		System.out.println("============Debut Insertion==============");
 		for (File file : files) {
@@ -232,85 +235,5 @@ public class main {
 	    }
 		System.out.println("============Fin Insertion==============");
 		 
-		//test = new parseur(DOSSIER_PRINCIPAL+DOSSIER_2+17);
-		//test.getMailTest();
-	
-		//Dossier1 32 fichiers 
-		/*
-
-		for(int i = 1; i<=32; ++i) {
-			System.out.println("Dossier " + DOSSIER_1 + "Fichier " + i);
-			test = new parseur(DOSSIER_PRINCIPAL+DOSSIER_1+i);
-			a= test.mailToObject();
-			insertBD(a);
-			//test.getMailTest();	
-			//listeMail.add(a); 
-		}
-		//Dossier2 288 fichiers 
-		for(int i = 1; i<=288; ++i) {
-			System.out.println("Dossier " + DOSSIER_2 + "Fichier " + i);
-			test = new parseur(DOSSIER_PRINCIPAL+DOSSIER_2+i);
-			a= test.mailToObject();
-			insertBD(a);
-			//test.getMailTest();	
-			//listeMail.add(a); 
-		}
-		//Dossier3 137 fichiers 
-		for(int i = 1; i<=137; ++i) {
-			System.out.println("Dossier " + DOSSIER_3 + "Fichier " + i);
-			test = new parseur(DOSSIER_PRINCIPAL+DOSSIER_3+i);
-			a= test.mailToObject();
-			insertBD(a);
-			//test.getMailTest();	
-			//listeMail.add(a); 
-		}
-		//Dossier4 547 fichiers 
-		for(int i = 1; i<=547; ++i) {
-			System.out.println("Dossier " + DOSSIER_4 + "Fichier " + i);
-			test = new parseur(DOSSIER_PRINCIPAL+DOSSIER_4+i);
-			a= test.mailToObject();
-			insertBD(a);
-			//test.getMailTest();	
-			//listeMail.add(a); 
-		}
-		//Dossier5 458 fichiers 
-		for(int i = 1; i<=458; ++i) {
-			System.out.println("Dossier " + DOSSIER_5 + "Fichier " + i);
-			test = new parseur(DOSSIER_PRINCIPAL+DOSSIER_5+i);
-			a= test.mailToObject();
-			insertBD(a);
-			//test.getMailTest();	
-			//listeMail.add(a); 
-		}
-		//Dossier6 529 fichiers 
-		for(int i = 1; i<=529; ++i) {
-			System.out.println("Dossier " + DOSSIER_6 + "Fichier " + i);
-			test = new parseur(DOSSIER_PRINCIPAL+DOSSIER_6+i);
-			a= test.mailToObject();
-			insertBD(a);
-			//test.getMailTest();	
-			//listeMail.add(a); 
-		}
-		//Dossier7 380 fichiers 
-		for(int i = 1; i<=380; ++i) {
-			System.out.println("Dossier " + DOSSIER_7 + "Fichier " + i);
-			test = new parseur(DOSSIER_PRINCIPAL+DOSSIER_7+i);
-			a= test.mailToObject();
-			insertBD(a);
-			//test.getMailTest();	
-			//listeMail.add(a); 
-		}
-		System.out.println("============Fin Insertion==============");
-		
-		
-		
-		
-		
-		/*for(MailList aa : listeMail) {
-			insertBD(aa);
-		}
-		*/
-	
-
 	}
 }

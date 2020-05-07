@@ -78,6 +78,7 @@ public class parseur{
 		Address[] expediteurBrut = this.message.getFrom();
 		String element = expediteurBrut[0].toString();
 		expediteur = stringToPersonne(element); 
+		
 	    return expediteur;
 		
 	}
@@ -114,6 +115,25 @@ public class parseur{
 			destinataire.add(a); 
 		}
 		return destinataire;
+	}
+	public TypeMail getTypeMessage() throws MessagingException, IOException {
+		
+		String a = this.GetMailContenu();
+		if(a.contains("-----Message d'origine-----")) {
+			return TypeMail.Multi; 
+		}
+		else if( a.contains("De :") && a.contains("Envoyé ") && a.contains("Objet :")) {
+			return TypeMail.Multi; 
+		}
+		else if(a.contains(">") && a.contains("a écrit :") ) {
+			return TypeMail.Multi; 
+		}
+		else if(a.contains(">") && a.contains("a ?crit?:") ) {
+			return TypeMail.Multi; 
+		}
+		
+		return TypeMail.Simple;
+		
 	}
 	/**
 	 * fonction qui retourne le sujet du message 
@@ -288,6 +308,8 @@ public class parseur{
 
 	
 	public void getMailTest() throws MessagingException, IOException {
+		System.out.println("************************Type Message********************");
+		System.out.println(this.getTypeMessage()); 
 		System.out.println("************************MessageID********************");
 		System.out.println(this.GetMessageId()); 	
 		System.out.println("************************expéditeur********************");		
@@ -354,6 +376,7 @@ public class parseur{
 	public  MailList mailToObject() throws MessagingException, IOException {
 		MailList mailObject = new MailList(); 
 		
+		mailObject.setTypeemail(this.getTypeMessage());
 		mailObject.setIdMail(this.GetMessageId());
 		mailObject.setFrom(this.getExpediteur());
 		mailObject.setDestinataire(this.getDestinataire(RecipientType.TO)); 
