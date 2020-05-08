@@ -20,12 +20,12 @@ public class PersonneDaoImp implements PersonneDAO {
 	}
 	
 	@Override
-	public void ajouterPersonne(Personne personne) {
-		Connection connexion = null;
+	public void ajouterPersonne(Personne personne, Connection connexion) {
+		//Connection connexion = null;
         PreparedStatement preparedStatement = null;
 
         try {
-            connexion = daoFactory.getConnection();
+           // connexion = daoFactory.getConnection();
             connexion.setAutoCommit(false);
             preparedStatement = connexion.prepareStatement(SQL_INSERT);
 
@@ -50,7 +50,7 @@ public class PersonneDaoImp implements PersonneDAO {
         } finally {
         	 try {
                  if(preparedStatement != null) preparedStatement.close();
-                 if(connexion != null) connexion.close();
+                // if(connexion != null) connexion.close();
                  
              } catch (SQLException e) {
                  System.out.println(e.getMessage());
@@ -60,13 +60,13 @@ public class PersonneDaoImp implements PersonneDAO {
 	}
 
 	@Override
-	public Personne getPersonne(String email) {
+	public Personne getPersonne(String email, Connection connexion) {
 		Personne personne = null;
-		Connection connexion = null;
+		//Connection connexion = null;
 		InstitutionDao institutionDao  = daoFactory.getInstitutionDao();
         PreparedStatement preparedStatement = null;
 		try {
-			connexion = daoFactory.getConnection();
+			//connexion = daoFactory.getConnection();
 			preparedStatement = connexion.prepareStatement
 					(SQL_SELECT_ONLY);
 			preparedStatement.setString(1, email);
@@ -77,10 +77,10 @@ public class PersonneDaoImp implements PersonneDAO {
 				personne.setNomPersonne(rs.getString("nom_personne"));
 				personne.setPrenomPersonne(rs.getString("prenom_personne"));
 				personne.setPrenomPersonne(rs.getString("prenom_personne"));
-				personne.setInstitutionPersonne(institutionDao.getInstitution(rs.getString("nom_institution")));
+				personne.setInstitutionPersonne(institutionDao.getInstitution(rs.getString("nom_institution"), connexion));
 			}
 			preparedStatement.close();
-			connexion.close();
+			//connexion.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

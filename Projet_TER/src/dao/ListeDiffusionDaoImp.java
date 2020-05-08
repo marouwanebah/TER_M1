@@ -5,20 +5,21 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import beans.Email;
+import beans.ListeDiffusion;
+import beans.Mail;
 
-public class EmailDaoImp implements EmailDao {
+public class ListeDiffusionDaoImp implements ListeDiffusionDao {
 	private DaoFactory daoFactory;
-	private static final String SQL_INSERT = "INSERT INTO td_email (email_email, signature_email, nom_institution)"
-			+ " VALUES(?,?,?)";
-	private static final String SQL_SELECT_ONLY = "SELECT email_email, signature_email, nom_institution FROM td_email WHERE email_email=?";
+	private static final String SQL_INSERT = "INSERT INTO td_liste_diffusion (email_liste_diffusion)"
+			+ " VALUES(?)";
+	private static final String SQL_SELECT_ONLY = "SELECT email_liste_diffusion FROM  td_liste_diffusion WHERE email_liste_diffusion=?";
 	
-	public EmailDaoImp(DaoFactory daoFactory ) {
+	public ListeDiffusionDaoImp(DaoFactory daoFactory ) {
 		super();
 		this.daoFactory = daoFactory;
 	}
 	@Override
-	public void ajouterEmail(Email email, Connection connexion) {
+	public void ajouterListe(ListeDiffusion liste, Connection connexion) {
 		//Connection connexion = null;
         PreparedStatement preparedStatement = null;
 
@@ -27,15 +28,13 @@ public class EmailDaoImp implements EmailDao {
             connexion.setAutoCommit(false);
             preparedStatement = connexion.prepareStatement(SQL_INSERT);
 
-            preparedStatement.setString(1, email.getEmail());
-            preparedStatement.setString(2, email.getSignature());
-            preparedStatement.setString(3, email.getInstitution() != null ? email.getInstitution() : null);
+            preparedStatement.setString(1, liste.getEmailListeDiffusion());
             int rowAffected = preparedStatement.executeUpdate();
             if(rowAffected == 1)
             	connexion.commit();
             else
             	connexion.rollback();
-            	preparedStatement.close();
+            preparedStatement.close();
         } catch (SQLException ex) {
         	try{
                 if(connexion != null)
@@ -47,7 +46,7 @@ public class EmailDaoImp implements EmailDao {
         } finally {
         	 try {
                  if(preparedStatement != null) preparedStatement.close();
-                 //if(connexion != null) connexion.close();
+                // if(connexion != null) connexion.close();
                  
              } catch (SQLException e) {
                  System.out.println(e.getMessage());
@@ -57,21 +56,19 @@ public class EmailDaoImp implements EmailDao {
 	}
 
 	@Override
-	public Email getEmail(String vemail, Connection connexion) {
-		Email email = null;
+	public ListeDiffusion getListe(String emailListe, Connection connexion) {
+		ListeDiffusion liste = null;
 		//Connection connexion = null;
         PreparedStatement preparedStatement = null;
 		try {
 			//connexion = daoFactory.getConnection();
 			preparedStatement = connexion.prepareStatement
 					(SQL_SELECT_ONLY);
-			preparedStatement.setString(1, vemail);
+			preparedStatement.setString(1, emailListe);
 			ResultSet rs = preparedStatement.executeQuery();
 			if(rs.next()) {
-				email = new Email();
-				email.setEmail(rs.getString("email_email"));
-				email.setSignature(rs.getString("signature_email"));
-				email.setInstitution(rs.getString("signature_email"));
+				liste = new ListeDiffusion();
+				liste.setEmailListeDiffusion(rs.getString("email_liste_diffusion"));
 			}
 			preparedStatement.close();
 			//connexion.close();
@@ -79,7 +76,7 @@ public class EmailDaoImp implements EmailDao {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return email;
+		return liste;
 	}
 
 }

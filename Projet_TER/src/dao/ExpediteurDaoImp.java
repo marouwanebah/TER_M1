@@ -21,12 +21,12 @@ public class ExpediteurDaoImp implements ExpediteurDao {
 		this.daoFactory = daoFactory;
 	}
 	@Override
-	public void ajouterExpediteur(Expediteur expediteur) {
-		Connection connexion = null;
+	public void ajouterExpediteur(Expediteur expediteur, Connection connexion) {
+		//Connection connexion = null;
         PreparedStatement preparedStatement = null;
 
         try {
-            connexion = daoFactory.getConnection();
+            //connexion = daoFactory.getConnection();
             connexion.setAutoCommit(false);
             preparedStatement = connexion.prepareStatement(SQL_INSERT);
 
@@ -49,7 +49,7 @@ public class ExpediteurDaoImp implements ExpediteurDao {
         } finally {
         	 try {
                  if(preparedStatement != null) preparedStatement.close();
-                 if(connexion != null) connexion.close();
+                 //if(connexion != null) connexion.close();
                  
              } catch (SQLException e) {
                  System.out.println(e.getMessage());
@@ -59,14 +59,14 @@ public class ExpediteurDaoImp implements ExpediteurDao {
 	}
 
 	@Override
-	public Expediteur getExpediteur(Mail mail, Email email) {
+	public Expediteur getExpediteur(Mail mail, Email email, Connection connexion) {
 		Expediteur expediteur = null;
-		Connection connexion = null;
+		//Connection connexion = null;
 		MailDao mailDao = daoFactory.getMailDao();
 		EmailDao emailDao  = daoFactory.getEmailDao();
         PreparedStatement preparedStatement = null;
 		try {
-			connexion = daoFactory.getConnection();
+			//connexion = daoFactory.getConnection();
 			preparedStatement = connexion.prepareStatement
 					(SQL_SELECT_ONLY);
 			preparedStatement.setString(1, mail.getIdMail());
@@ -74,11 +74,11 @@ public class ExpediteurDaoImp implements ExpediteurDao {
 			ResultSet rs = preparedStatement.executeQuery();
 			if(rs.next()) {
 				expediteur = new Expediteur();
-				expediteur.setMail(mailDao.getMail(rs.getString("id_mail")));
-				expediteur.setEmail(emailDao.getEmail(rs.getString("email_email")));
+				expediteur.setMail(mailDao.getMail(rs.getString("id_mail"), connexion));
+				expediteur.setEmail(emailDao.getEmail(rs.getString("email_email"), connexion));
 			}
 			preparedStatement.close();
-			connexion.close();
+			//connexion.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

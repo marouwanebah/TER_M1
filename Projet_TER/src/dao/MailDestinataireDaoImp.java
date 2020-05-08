@@ -21,12 +21,12 @@ public class MailDestinataireDaoImp implements MailDestinataireDao {
 		this.daoFactory = daoFactory;
 	}
 	@Override
-	public void ajouterDestinataire(MailDestinataire mailDestinataire) {
-		Connection connexion = null;
+	public void ajouterDestinataire(MailDestinataire mailDestinataire, Connection connexion) {
+		//Connection connexion = null;
         PreparedStatement preparedStatement = null;
 
         try {
-            connexion = daoFactory.getConnection();
+           // connexion = daoFactory.getConnection();
             connexion.setAutoCommit(false);
             preparedStatement = connexion.prepareStatement(SQL_INSERT);
 
@@ -49,7 +49,7 @@ public class MailDestinataireDaoImp implements MailDestinataireDao {
         } finally {
         	 try {
                  if(preparedStatement != null) preparedStatement.close();
-                 if(connexion != null) connexion.close();
+               //  if(connexion != null) connexion.close();
                  
              } catch (SQLException e) {
                  System.out.println(e.getMessage());
@@ -59,14 +59,14 @@ public class MailDestinataireDaoImp implements MailDestinataireDao {
 	}
 
 	@Override
-	public MailDestinataire getMailDestinataire(Mail mail, Email email) {
+	public MailDestinataire getMailDestinataire(Mail mail, Email email, Connection connexion) {
 		MailDestinataire mailDestinataire = null;
-		Connection connexion = null;
+		//Connection connexion = null;
 		MailDao mailDao = daoFactory.getMailDao();
 		EmailDao emailDao  = daoFactory.getEmailDao();
         PreparedStatement preparedStatement = null;
 		try {
-			connexion = daoFactory.getConnection();
+			//connexion = daoFactory.getConnection();
 			preparedStatement = connexion.prepareStatement
 					(SQL_SELECT_ONLY);
 			preparedStatement.setString(1, mail.getIdMail());
@@ -74,11 +74,11 @@ public class MailDestinataireDaoImp implements MailDestinataireDao {
 			ResultSet rs = preparedStatement.executeQuery();
 			if(rs.next()) {
 				mailDestinataire = new MailDestinataire();
-				mailDestinataire.setMail(mailDao.getMail(rs.getString("id_mail")));
-				mailDestinataire.setEmail(emailDao.getEmail(rs.getString("email_email")));
+				mailDestinataire.setMail(mailDao.getMail(rs.getString("id_mail"), connexion));
+				mailDestinataire.setEmail(emailDao.getEmail(rs.getString("email_email"), connexion));
 			}
 			preparedStatement.close();
-			connexion.close();
+			//connexion.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
