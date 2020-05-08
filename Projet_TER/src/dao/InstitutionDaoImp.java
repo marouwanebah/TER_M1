@@ -18,12 +18,12 @@ public class InstitutionDaoImp implements InstitutionDao {
 		this.daoFactory = daoFactory;
 	}
 	@Override
-	public void ajouterInstitution(Institution institution) {
-		Connection connexion = null;
+	public void ajouterInstitution(Institution institution, Connection connexion) {
+		//Connection connexion = null;
         PreparedStatement preparedStatement = null;
 
         try {
-            connexion = daoFactory.getConnection();
+           // connexion = daoFactory.getConnection();
             connexion.setAutoCommit(false);
             preparedStatement = connexion.prepareStatement(SQL_INSERT);
 
@@ -46,7 +46,7 @@ public class InstitutionDaoImp implements InstitutionDao {
         } finally {
         	 try {
                  if(preparedStatement != null) preparedStatement.close();
-                 if(connexion != null) connexion.close();
+                 //if(connexion != null) connexion.close();
                  
              } catch (SQLException e) {
                  System.out.println(e.getMessage());
@@ -56,12 +56,12 @@ public class InstitutionDaoImp implements InstitutionDao {
 	}
 
 	@Override
-	public Institution getInstitution(String nomInstitution) {
+	public Institution getInstitution(String nomInstitution, Connection connexion) {
 		Institution institution = null;
-		Connection connexion = null;
+		//Connection connexion = null;
         PreparedStatement preparedStatement = null;
 		try {
-			connexion = daoFactory.getConnection();
+			//connexion = daoFactory.getConnection();
 			preparedStatement = connexion.prepareStatement
 					(SQL_SELECT_ONLY);
 			preparedStatement.setString(1, nomInstitution);
@@ -72,7 +72,7 @@ public class InstitutionDaoImp implements InstitutionDao {
 				
 			}
 			preparedStatement.close();
-			connexion.close();
+			//connexion.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
