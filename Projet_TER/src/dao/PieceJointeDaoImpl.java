@@ -17,12 +17,12 @@ public class PieceJointeDaoImpl implements PieceJointeDao {
 		this.daoFactory = daoFactory;
 	}
 	@Override
-	public void ajouterPieceJointe(PieceJointe pieceJointe) {
-		Connection connexion = null;
+	public void ajouterPieceJointe(PieceJointe pieceJointe, Connection connexion) {
+		//Connection connexion = null;
         PreparedStatement preparedStatement = null;
 
         try {
-            connexion = daoFactory.getConnection();
+           // connexion = daoFactory.getConnection();
             connexion.setAutoCommit(false);
             preparedStatement = connexion.prepareStatement(SQL_INSERT);
 
@@ -47,7 +47,7 @@ public class PieceJointeDaoImpl implements PieceJointeDao {
         } finally {
         	 try {
                  if(preparedStatement != null) preparedStatement.close();
-                 if(connexion != null) connexion.close();
+                // if(connexion != null) connexion.close();
                  
              } catch (SQLException e) {
                  System.out.println(e.getMessage());

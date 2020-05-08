@@ -24,8 +24,8 @@ public class DaoFactory {
         }
 
         DaoFactory instance = new DaoFactory(
-        		 "jdbc:mysql://localhost:3306/ter?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", "root", "root");
-        		//"jdbc:mysql://localhost:3306/ter?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", "sory", "123456");
+        		 //"jdbc:mysql://localhost:3306/ter?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", "root", "root");
+        		"jdbc:mysql://localhost:3306/ter?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", "sory", "123456");
         return instance;
     }
 
@@ -70,6 +70,9 @@ public class DaoFactory {
     }
     public InstitutionDao getInstitutionDao() {
     	return new InstitutionDaoImp(this);
+    }
+    public ListeDiffusionDao getListeDiffusionDao() {
+    	return new ListeDiffusionDaoImp(this);
     }
     
 }

@@ -18,7 +18,6 @@ public class MailList {
 	private ArrayList<Lien> liens;
 	private String signature;
 	private String typeemail; 
-	
 	public MailList() {
 		
 	}

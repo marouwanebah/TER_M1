@@ -17,12 +17,12 @@ public class LienDaoImp implements LienDao {
 		this.daoFactory = daoFactory;
 	}
 	@Override
-	public void ajouterLien(Lien lien) {
-		Connection connexion = null;
+	public void ajouterLien(Lien lien, Connection connexion) {
+		//Connection connexion = null;
         PreparedStatement preparedStatement = null;
 
         try {
-            connexion = daoFactory.getConnection();
+            //connexion = daoFactory.getConnection();
             connexion.setAutoCommit(false);
             preparedStatement = connexion.prepareStatement(SQL_INSERT);
 
@@ -47,7 +47,7 @@ public class LienDaoImp implements LienDao {
         } finally {
         	 try {
                  if(preparedStatement != null) preparedStatement.close();
-                 if(connexion != null) connexion.close();
+                 //if(connexion != null) connexion.close();
                  
              } catch (SQLException e) {
                  System.out.println(e.getMessage());

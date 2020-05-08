@@ -8,6 +8,7 @@ public class Mail {
 	private String dateEnvoiMail;
 	private String contenuMail; 
 	private Mail mailPere;
+	private String typeMail;
 	public Mail() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -47,6 +48,12 @@ public class Mail {
 	}
 	public void setMailPere(Mail mailPère) {
 		this.mailPere = mailPère;
+	}
+	public String getTypeMail() {
+		return typeMail;
+	}
+	public void setTypeMail(String typeMail) {
+		this.typeMail = typeMail;
 	}
 	
 }
