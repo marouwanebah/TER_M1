@@ -29,8 +29,8 @@ import dao.PieceJointeDao;
 
 public class main {
 	private static final dao.DaoFactory daoFactory = dao.DaoFactory.getInstance();
-	private static final String DOSSIER_PRINCIPAL = "/home/diallo/Documents/projetTER/corpus/president_2010/president_2010/";    
-	//private static final String DOSSIER_PRINCIPAL = "/home/etudiant/M1/S2/TER/president_2010/president_2010/"; 
+	//private static final String DOSSIER_PRINCIPAL = "/home/diallo/Documents/projetTER/corpus/president_2010/president_2010/";    
+	private static final String DOSSIER_PRINCIPAL = "/home/etudiant/M1/S2/TER/president_2010/president_2010/"; 
 	
 		
 	public static void insertBD(MailList aa, Connection connexion){
