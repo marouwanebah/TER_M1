@@ -296,8 +296,8 @@ public class parseur{
 					Elements links = doc.select("a[href]");
 					for (Element a : links) {
 						Lien lien = new Lien(); 
-						lien.setNomLien(a.attr("href"));  
-						lien.setContenuLien(a.text());
+						lien.setNomLien(a.text());  
+						lien.setContenuLien(a.attr("href"));
 						lien.setIdMail(this.GetMessageId());
 						
 						liens.add(lien); 

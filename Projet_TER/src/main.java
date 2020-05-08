@@ -60,7 +60,7 @@ public class main {
 			
 			//insert institution expediteur principal
 			String institutionExpPrinc;
-			if(aa.getFrom().getInstitutionPersonne() != null && !(aa.getFrom().getEmailPersonne().matches("(.*)list(.*)")) ) {
+			if(aa.getFrom().getInstitutionPersonne() != null) {
 				institutionExpPrinc = aa.getFrom().getInstitutionPersonne().getNomInstitution();
 				Institution institutionPrinc = new Institution();
 				institutionPrinc.setNomInstitution(institutionExpPrinc);
@@ -133,7 +133,7 @@ public class main {
 				for(Personne pers : aa.getDestinataireEnCopie()) {
 					//insert institution expediteur cc
 					String institutionExpcc;
-					if(pers.getInstitutionPersonne() != null && !(pers.getEmailPersonne().matches("(.*)list(.*)"))) {
+					if(pers.getInstitutionPersonne() != null) {
 						institutionExpcc = pers.getInstitutionPersonne().getNomInstitution();
 						Institution institutioncc = new Institution();
 						institutioncc.setNomInstitution(institutionExpcc);
@@ -190,7 +190,7 @@ public class main {
 			for(Personne person : aa.getDestinataire()) {
 				//insert institution destinataire
 				String institutionvDest;
-				if(person.getInstitutionPersonne() != null && !(person.getEmailPersonne().matches("(.*)list(.*)"))) {
+				if(person.getInstitutionPersonne() != null) {
 					institutionvDest = person.getInstitutionPersonne().getNomInstitution();
 					Institution institutionDest = new Institution();
 					institutionDest.setNomInstitution(institutionvDest);
@@ -250,9 +250,10 @@ public class main {
 		 	parseur test;
 	        MailList a = new MailList();
 	        Connection connexion = null;
+	        int i = 0;
 	        //ArrayList<MailList> listeMail = new ArrayList<MailList>();
 	       
-	        //test = new parseur(DOSSIER_PRINCIPAL+"president_2010-07/"+62);
+	        //test = new parseur("/home/diallo/Documents/projetTER/corpus/president_2010/president_2010/president_2010-11/502);
 	        //test.getMailTest();
 	       
 	        File[] files = new File(DOSSIER_PRINCIPAL).listFiles();
@@ -265,10 +266,13 @@ public class main {
 		                    System.out.println(fileInsideFolder.getAbsolutePath());
 		                    test = new parseur(fileInsideFolder.getAbsolutePath());
 		                    a= test.mailToObject();
+		                    System.out.println(a.getIdMail());
 		                    insertBD(a, connexion);
+		                    i++;
 		                }
 		            }
 		        }
+				System.out.println(i);
 		        System.out.println("============Fin Insertion==============");
 			} catch (SQLException ex) {
 	        	try{
