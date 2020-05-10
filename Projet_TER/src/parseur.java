@@ -146,7 +146,9 @@ public class parseur{
 	
 	public String GetSubject() throws MessagingException, UnsupportedEncodingException {
 		String element = this.message.getSubject();  
-		return element; 
+		//System.out.println(element.replace("[president]", ""));
+		return element.replace("[president]", "");
+		
 	}
 	
 	/**

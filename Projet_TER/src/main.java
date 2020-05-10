@@ -263,10 +263,10 @@ public class main {
 				for (File file : files) {
 		            if (file.isDirectory()) {
 		                for(File fileInsideFolder : file.listFiles()) {
-		                    System.out.println(fileInsideFolder.getAbsolutePath());
+		                  //  System.out.println(fileInsideFolder.getAbsolutePath());
 		                    test = new parseur(fileInsideFolder.getAbsolutePath());
 		                    a= test.mailToObject();
-		                    System.out.println(a.getIdMail());
+
 		                    insertBD(a, connexion);
 		                    i++;
 		                }
