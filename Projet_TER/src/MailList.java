@@ -13,6 +13,7 @@ public class MailList {
 	private ArrayList<Personne> destinataireEnCopie;
 	private String sujet; 
 	private String Body; 
+	private String ContenuePropre; 
 	private String date; 
 	private ArrayList<PieceJointe> attachments;
 	private ArrayList<Lien> liens;
@@ -22,6 +23,17 @@ public class MailList {
 		
 	}
 	
+	
+	public String getContenuePropre() {
+		return ContenuePropre;
+	}
+
+
+	public void setContenuePropre(String contenuePropre) {
+		ContenuePropre = contenuePropre;
+	}
+
+
 	public String getIdMail() {
 		return idMail;
 	}

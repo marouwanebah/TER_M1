@@ -49,9 +49,7 @@ public class parseur{
 	    Properties props = System.getProperties(); 
 	    props.setProperty("mail.mime.address.strict", "false");
 	    Session session = Session.getInstance(props, null);
-	    this.message = new MimeMessage(session, mailFileInputStream);
-	    
-		
+	    this.message = new MimeMessage(session, mailFileInputStream);		
 	}
 	
 	/**
@@ -79,8 +77,7 @@ public class parseur{
 		String element = expediteurBrut[0].toString();
 		expediteur = stringToPersonne(element); 
 		
-	    return expediteur;
-		
+	    return expediteur;		
 	}
 	/**
 	 * fonction qui prend en parametre type Message.RecipientType.TO pour les destinataires 
@@ -116,6 +113,13 @@ public class parseur{
 		}
 		return destinataire;
 	}
+	
+	/**
+	 * fonction qui retourne le type de message  simple pour les message sans fil de discution 
+	 * @return
+	 * @throws MessagingException
+	 * @throws IOException
+	 */
 	public String getTypeMessage() throws MessagingException, IOException {
 		
 		String a = this.GetMailContenu();
@@ -171,44 +175,52 @@ public class parseur{
 	 * @throws IOException
 	 */
 	public String getSignature() throws MessagingException, IOException {
-		String signature =""; 
-		String content = this.message.getContent().toString(); 
-		if(this.message.isMimeType("text/html" )) {
-
-			org.jsoup.nodes.Document doc=  Jsoup.parse(content);
-			Elements a = doc.getElementsByTag("pre"); 
-			Elements b = doc.getElementsByClass("moz-signature");
-			signature = a.text()+b.text();  
-	
-		}
-		else if(this.message.isMimeType("text/plain" )) {
+		
+		String contenueBrut = this.GetMailContenu(); 
+		if(this.getTypeMessage()=="Simple") {
 			
-		}
-		else if(this.message.isMimeType("multipart/*" )) {
-			
-			Multipart mp = (Multipart)this.message.getContent();
-			
-			int numParts = mp.getCount();
-			           
-			for(int count = 0; count < numParts; count++)
-			{	    
-				
-				MimeBodyPart part = (MimeBodyPart)mp.getBodyPart(count);
-			    //pour les parts qui sont de type content text.html on utlise la libraire jsoup  
-			    if(part.isMimeType("text/html")) {
-					org.jsoup.nodes.Document doc=  Jsoup.parse(part.getContent().toString());
-					//System.out.println(body);
-					Elements a =doc.getElementsByTag("pre");		
-					Elements b = doc.getElementsByClass("moz-signature");
-					signature = a.text()+b.text();      	
-			      }    
-			    if(part.getContent() instanceof MimeMultipart){
-			    	signature +=getSignatureFromMimeMultipart((MimeMultipart) part.getContent());
-			    	
-			    }
+			if(contenueBrut.contains("salutations")){
+				String[] splitContenut = contenueBrut.split("salutations");
+				return splitContenut[1].replace(",", "").replace(".", "");
 			}
-		}	
-		return signature;
+			else if(contenueBrut.contains("Cordialement")){
+				String[] splitContenut = contenueBrut.split("Cordialement");
+				if(splitContenut.length==2) {
+					return splitContenut[1].replace(",", "").replace(".", "");
+				}
+			}
+			else if(contenueBrut.contains("cordialement")){
+				String[] splitContenut = contenueBrut.split("cordialement");
+				if(splitContenut.length==2) {
+					return splitContenut[1].replace(",", "").replace(".", "");
+				}
+			} 
+			else if(contenueBrut.contains("Bien sincèrement")){
+				String[] splitContenut = contenueBrut.split("Bien sincèrement");
+				return splitContenut[1].replace(",", "").replace(".", "");
+			}
+			else if(contenueBrut.contains("Respectueusement")){
+				String[] splitContenut = contenueBrut.split("Respectueusement");
+				return splitContenut[1].replace(",", "").replace(".", "");
+			}
+			else if(contenueBrut.contains("--")){
+				String[] splitContenut = contenueBrut.split("--",2);
+				if(splitContenut.length==2) {
+					return splitContenut[1].replace(",", "").replace(".", "");
+				}
+			}
+			
+		//cas particulier 
+			else if(contenueBrut.contains("lunam")){
+				String[] splitContenut = contenueBrut.split("lunam",2);
+				if(splitContenut.length==2) {
+					return splitContenut[1];
+				}
+			}
+		}
+	
+		return null;
+		
 		
 	}
 	/**
@@ -239,8 +251,7 @@ public class parseur{
 	            		nomPiceJointe = MimeUtility.decodeText(part.getFileName());
 	            		
 	            	}
-						
-	            	
+						            	
 	            	String messageID = GetMessageId(); 
 
 					File f = new File(dossierAttachement + nomPiceJointe);
@@ -304,7 +315,7 @@ public class parseur{
 						
 						liens.add(lien); 
 					}
-			      }    
+			    }    
 			}
 		}
 		return liens ; 
@@ -351,8 +362,64 @@ public class parseur{
 		for(Lien p : liens) {
 			System.out.println(p.toString());
 		}
+		System.out.println("************************ BODY cleanned ********************");
+		System.out.println(this.getContenueCleaned());
 	}
 	
+	public String getContenueCleaned() throws MessagingException, IOException {
+		
+		String contenueBrut = this.GetMailContenu(); 
+		
+		
+		ArrayList<Lien>  liens = this.getLiens();  
+		
+		for (Lien a : liens) {
+			//System.out.println(a.getContenuLien().substring(0, 40));
+			String contenu = a.getContenuLien();
+			if(contenueBrut.contains(contenu)) {
+			//	System.out.println(a.getContenuLien());
+				contenueBrut= contenueBrut.replace(contenu, "");
+			}		 
+		}
+		
+		if(this.getTypeMessage()=="Simple") {
+			if(contenueBrut.contains("Cordialement")){
+				String[] splitContenut = contenueBrut.split("Cordialement");
+				return splitContenut[0];
+			}
+			else if(contenueBrut.contains("cordialement")){
+				String[] splitContenut = contenueBrut.split("cordialement");
+				return splitContenut[0];
+			}
+			else if(contenueBrut.contains("Bien sincèrement")){
+				String[] splitContenut = contenueBrut.split("Bien sincèrement");
+				return splitContenut[0];
+			}
+			else if(contenueBrut.contains("salutations")){
+				String[] splitContenut = contenueBrut.split("salutations");
+				return splitContenut[0].replace(",", "");
+			}
+			else if(contenueBrut.contains("Respectueusement")){
+				String[] splitContenut = contenueBrut.split("Respectueusement");
+				return splitContenut[0];
+			}
+			else if (contenueBrut.contains("--")){
+				String[] splitContenut = contenueBrut.split("--", 2 );
+				return splitContenut[0];
+			}
+			//cas particulier  de lunam 
+			else if(contenueBrut.contains("lunam")){
+				String[] splitContenut = contenueBrut.split("lunam",2);
+				if(splitContenut.length==2) {
+					return splitContenut[0];
+				}
+			}
+			
+			return contenueBrut;
+		}
+		
+		return null;
+	}
 	
 
 	/**
@@ -394,6 +461,7 @@ public class parseur{
 		mailObject.setDate(this.getDate());
 		mailObject.setSignature(this.getSignature());
 		mailObject.setBody(this.GetMailContenu());
+		mailObject.setContenuePropre(this.getContenueCleaned());
 		mailObject.setLiens(this.getLiens());
 	 //   MailList a = new MailList(message.getMessageID(),from, destinataire, message.getSubject(), body, message.getSentDate().toString(), attachments, liens);
 	     return mailObject;   
@@ -448,12 +516,14 @@ public class parseur{
 	 * @throws MessagingException
 	 * @throws IOException
 	 */
+	/*
 	private static String getSignatureFromMimeMultipart(MimeMultipart mimeMultipart) throws MessagingException  {
 	    String result = "";
-	    
+	  
 	    int count = mimeMultipart.getCount();
 	    for (int i = 0; i < count; i++) {
 	        BodyPart bodyPart = mimeMultipart.getBodyPart(i);
+	
 	        try {
 				if (bodyPart.isMimeType("text/html")) {
 					org.jsoup.nodes.Document doc=  Jsoup.parse(bodyPart.getContent().toString());
@@ -462,7 +532,9 @@ public class parseur{
 
 					//System.out.println("je suis null"+  b);
 				    result = a.text()+b.text();
-				} else if (bodyPart.getContent() instanceof MimeMultipart){
+				}		
+
+				else if (bodyPart.getContent() instanceof MimeMultipart){
 				    result =  getSignatureFromMimeMultipart((MimeMultipart)bodyPart.getContent());
 				}
 			} catch (MessagingException | IOException e) {
@@ -474,6 +546,7 @@ public class parseur{
 	    }
 	    return result;
 	}
+	*/
 	/**
 	 * fontion qui prend en parametre un chaine de caratére ou juste un mail et qui 
 	 * retourne une personne (nom, prenom , mail) 
@@ -568,26 +641,25 @@ public class parseur{
 	}
 	
 	/**
-	 * fonction qui retourne l'instution 
+	 * fonction qui retourne l'instution  et qui prend en paramtre en email 
 	 * @param email
 	 * @return
 	 */
 	public String InsitutionEmailSplit(String email) {
 		String institution=""; 
 		if (email.contains("@")) {
-
-    	String[] emailSplited = email.split("@"); // exe francoi.calsel @ up.fr
-    	if(emailSplited.length>0) {
-	    	String[] partie2 = emailSplited[1].split("\\.");     // separation du nom et prenom ex francois.cassel 
-	    	if(partie2.length>1){
-		    	if(partie2.length==2) {
-		    		institution= partie2[0]; 
-		    	}
-		    	if(partie2.length==3) {
-		    		institution =  partie2[0]+"."+partie2[1]; 
+	    	String[] emailSplited = email.split("@"); // exe francoi.calsel @ up.fr
+	    	if(emailSplited.length>0) {
+		    	String[] partie2 = emailSplited[1].split("\\.");     // separation du nom et prenom ex francois.cassel 
+		    	if(partie2.length>1){
+			    	if(partie2.length==2) {
+			    		institution= partie2[0]; 
+			    	}
+			    	if(partie2.length==3) {
+			    		institution =  partie2[0]+"."+partie2[1]; 
+			    	}
 		    	}
 	    	}
-    	}
 		}
     	return institution; 
 	}
