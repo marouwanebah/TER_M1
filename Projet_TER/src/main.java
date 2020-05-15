@@ -29,10 +29,10 @@ import dao.PieceJointeDao;
 
 public class main {
 	private static final dao.DaoFactory daoFactory = dao.DaoFactory.getInstance();
-	//private static final String DOSSIER_PRINCIPAL = "/home/diallo/Documents/projetTER/corpus/president_2010/president_2010/";    
-	private static final String DOSSIER_PRINCIPAL = "/home/etudiant/M1/S2/TER/president_2010/president_2010/";
+	private static final String DOSSIER_PRINCIPAL = "/home/diallo/Documents/projetTER/corpus/president_2010/president_2010/";    
+	//private static final String DOSSIER_PRINCIPAL = "/home/etudiant/M1/S2/TER/president_2010/president_2010/";
 	
-	private static final String LIEN_FICHIER = "/home/etudiant/M1/S2/TER/president_2010/president_2010/president_2010-10/";
+	//private static final String LIEN_FICHIER = "/home/etudiant/M1/S2/TER/president_2010/president_2010/president_2010-10/";
 		
 	public static void insertBD(MailList aa, Connection connexion){
 		EmailDao emailDao;
@@ -71,7 +71,6 @@ public class main {
 		//insert email principal
 			Email email = new Email();
 			email.setEmail(aa.getFrom().getEmailPersonne());
-			email.setSignature(aa.getSignature());
 			email.setInstitution(aa.getFrom().getInstitutionPersonne().getNomInstitution());
 			if(emailDao.getEmail(email.getEmail(), connexion) == null) {
 				emailDao.ajouterEmail(email, connexion);
@@ -112,6 +111,8 @@ public class main {
 			mail.setExpediteur(email);
 			mail.setMailPere(mailPere);
 			mail.setTypeMail(aa.getTypeemail());
+			mail.setContenuMailPropre(aa.getContenuePropre());
+			mail.setSignatureMail(aa.getSignature());
 			if(mailDao.getMail(mail.getIdMail(), connexion) == null)
 				mailDao.ajouterMail(mail, connexion);
 			//insert piece jointe
