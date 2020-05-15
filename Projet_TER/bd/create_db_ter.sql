@@ -95,7 +95,6 @@ CREATE TABLE `td_destinataire_cc` (
 
 CREATE TABLE `td_email` (
   `email_email` varchar(200) NOT NULL,
-  `signature_email` varchar(5000) DEFAULT NULL,
   `nom_institution` varchar(45) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -118,8 +117,8 @@ CREATE TABLE `td_institution` (
 
 CREATE TABLE `td_lien` (
   `id_lien` int(11) NOT NULL,
-  `nom_lien` varchar(200) DEFAULT NULL,
-  `contenu_lien` varchar(20000) DEFAULT NULL,
+  `nom_lien` longtext DEFAULT NULL,
+  `contenu_lien` longtext DEFAULT NULL,
   `id_mail` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -146,7 +145,10 @@ CREATE TABLE `td_mail` (
   `contenu_mail` longtext,
   `email_email` varchar(200) NOT NULL,
   `id_mail_pere` varchar(200) DEFAULT NULL,
-  `type_mail` varchar(45) NOT NULL
+  `type_mail` varchar(45) NOT NULL,
+  `contenu_mail_propre` longtext,
+  `signature_mail` longtext DEFAULT NULL,
+  `vecteur_mail` longtext DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -160,7 +162,7 @@ CREATE TABLE `td_personne` (
   `nom_personne` varchar(100) DEFAULT NULL,
   `prenom_personne` varchar(150) DEFAULT NULL,
   `email_email` varchar(200) NOT NULL,
-  `nom_institution` varchar(45) NOT NULL
+  `nom_institution` varchar(45) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------

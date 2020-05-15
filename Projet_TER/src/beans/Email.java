@@ -2,7 +2,6 @@ package beans;
 
 public class Email {
 	private String email;
-	private String signature;
 	private String institution;
 	public Email() {
 		super();
@@ -13,12 +12,6 @@ public class Email {
 	}
 	public void setEmail(String email) {
 		this.email = email;
-	}
-	public String getSignature() {
-		return signature;
-	}
-	public void setSignature(String signature) {
-		this.signature = signature;
 	}
 	public String getInstitution() {
 		return institution;
