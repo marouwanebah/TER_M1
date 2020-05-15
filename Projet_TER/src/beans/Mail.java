@@ -9,6 +9,8 @@ public class Mail {
 	private String contenuMail; 
 	private Mail mailPere;
 	private String typeMail;
+	private String contenuMailPropre;
+	private String signatureMail;
 	public Mail() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -55,5 +57,18 @@ public class Mail {
 	public void setTypeMail(String typeMail) {
 		this.typeMail = typeMail;
 	}
+	public String getContenuMailPropre() {
+		return contenuMailPropre;
+	}
+	public void setContenuMailPropre(String contenuMailPropre) {
+		this.contenuMailPropre = contenuMailPropre;
+	}
+	public String getSignatureMail() {
+		return signatureMail;
+	}
+	public void setSignatureMail(String signatureMail) {
+		this.signatureMail = signatureMail;
+	}
+	
 	
 }
