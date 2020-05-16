@@ -38,8 +38,8 @@ import beans.PieceJointe;
 
 public class parseur{
 
-	private static final String dossierAttachement = "/home/diallo/Documents/projetTER/corpus/president_2010/DATA/attachments/";
-	//private static final String dossierAttachement = "/home/etudiant/M1/S2/TER/Projet/TER_M1/Projet_TER/Data/Attachement/";
+	//private static final String dossierAttachement = "/home/diallo/Documents/projetTER/corpus/president_2010/DATA/attachments/";
+	private static final String dossierAttachement = "/home/etudiant/M1/S2/TER/Projet/TER_M1/Projet_TER/Data/Attachement/";
 	
 	private MimeMessage message; 
 	
@@ -195,6 +195,14 @@ public class parseur{
 					return splitContenut[1].replace(",", "").replace(".", "");
 				}
 			} 
+			else if(contenueBrut.contains("Sincèrement")){
+				String[] splitContenut = contenueBrut.split("Sincèrement");
+				return splitContenut[1].replace(",", "").replace(".", "");
+			}
+			else if(contenueBrut.contains("Bonne réception")){
+				String[] splitContenut = contenueBrut.split("Bonne réception");
+				return splitContenut[1].replace(",", "").replace(".", "");
+			}
 			else if(contenueBrut.contains("Bien sincèrement")){
 				String[] splitContenut = contenueBrut.split("Bien sincèrement");
 				return splitContenut[1].replace(",", "").replace(".", "");
@@ -217,7 +225,55 @@ public class parseur{
 					return splitContenut[1];
 				}
 			}
+		}else {
+			if(contenueBrut.contains("-----Message d'origine-----")) {
+				String[] splitContenut = contenueBrut.split("-----Message d'origine-----",2);
+				if(splitContenut.length==2) {
+					if (splitContenut[0].contains("Francis YGUEL")) {
+						//System.out.println("test "+  splitContenut[0]);
+						String[] SplitFinale = splitContenut[0].split("Francis YGUEL");
+						if(SplitFinale.length==2) {
+							return SplitFinale[1].replace(",", "").replace(".", "");
+						}	
+					}
+					if (splitContenut[0].contains("Cordialement")) {
+						String[] SplitFinale = splitContenut[0].split("Cordialement");
+						if(SplitFinale.length==2) {
+							return SplitFinale[1].replace(",", "").replace(".", "");
+						}	
+					}
+				}
+			}
+			if(contenueBrut.contains(">") && contenueBrut.contains("a écrit :") ) {
+				String[] splitContenut = contenueBrut.split(">",2);
+
+				if(splitContenut[0].contains("cordialement")) {
+					String[] splitSignatureEtSuite = splitContenut[0].split("cordialement",2); 
+					String[] SplitFinale = splitSignatureEtSuite[1].split("Le"); 
+					
+					return SplitFinale[0];
+				}
+				else if(splitContenut[0].contains("Cordialement")) {
+
+					String[] splitSignatureEtSuite = splitContenut[0].split("Cordialement",2); 
+					return splitSignatureEtSuite[1];
+				}
+			}
+			if(contenueBrut.contains("Envoyé ") && contenueBrut.contains("Objet :")  && contenueBrut.contains("De :") ) {
+				String[] splitContenut = contenueBrut.split("De :",2);
+				if(splitContenut[0].contains("cordialement")) {
+					String[] splitSignatureEtSuite = splitContenut[0].split("cordialement",2); 
+					String[] SplitFinale = splitSignatureEtSuite[1].split("Le"); 
+					return SplitFinale[0];
+				}
+				if(splitContenut[0].contains("lunam")) {
+					String[] splitSignatureEtSuite = splitContenut[0].split("lunam",2); 
+					return splitSignatureEtSuite[1];
+				}
+			}
+
 		}
+			
 	
 		return null;
 		
@@ -395,6 +451,14 @@ public class parseur{
 				String[] splitContenut = contenueBrut.split("Bien sincèrement");
 				return splitContenut[0];
 			}
+			else if(contenueBrut.contains("Sincèrement")){
+				String[] splitContenut = contenueBrut.split("Sincèrement");
+				return splitContenut[0];
+			}
+			else if(contenueBrut.contains("Bonne réception")){
+				String[] splitContenut = contenueBrut.split("Bonne réception");
+				return splitContenut[0].replace(",", "");
+			}
 			else if(contenueBrut.contains("salutations")){
 				String[] splitContenut = contenueBrut.split("salutations");
 				return splitContenut[0].replace(",", "");
@@ -416,6 +480,49 @@ public class parseur{
 			}
 			
 			return contenueBrut;
+			//contenur multi 
+		}else {
+			if(contenueBrut.contains("-----Message d'origine-----")) {
+				String[] splitContenut = contenueBrut.split("-----Message d'origine-----",2);
+				if(splitContenut.length==2) {
+					if (splitContenut[0].contains("Francis YGUEL")) {
+						//System.out.println("test "+  splitContenut[0]);
+						String[] SplitFinale = splitContenut[0].split("Francis YGUEL");
+						if(SplitFinale.length==2) {
+							return SplitFinale[0];
+						}	
+					}
+					if (splitContenut[0].contains("Cordialement")) {
+						String[] SplitFinale = splitContenut[0].split("Cordialement");
+						if(SplitFinale.length==2) {
+							return SplitFinale[0];
+						}	
+					}
+				}
+			}
+			if(contenueBrut.contains(">") && contenueBrut.contains("a écrit :") ) {
+				String[] splitContenut = contenueBrut.split(">",2);
+				if(splitContenut[0].contains("cordialement")) {
+					String[] splitSignatureEtSuite = splitContenut[0].split("cordialement",2);
+					return splitSignatureEtSuite[0]; 
+				}
+				else if(splitContenut[0].contains("Cordialement")) {
+					String[] splitSignatureEtSuite = splitContenut[0].split("Cordialement",2); 
+					return splitSignatureEtSuite[0];
+				}
+			}
+			if(contenueBrut.contains("Envoyé ") && contenueBrut.contains("Objet :")  && contenueBrut.contains("De :") ) {
+				String[] splitContenut = contenueBrut.split("De :",2);
+				if(splitContenut[0].contains("cordialement")) {
+					String[] splitSignatureEtSuite = splitContenut[0].split("cordialement",2); 
+					return splitSignatureEtSuite[0];
+				}
+				if(splitContenut[0].contains("lunam")) {
+					String[] splitSignatureEtSuite = splitContenut[0].split("lunam",2); 
+					return splitSignatureEtSuite[0];
+				}
+			}
+			
 		}
 		
 		return null;
