@@ -248,7 +248,7 @@ public class main {
 	
 	public static void main(String[] args) throws MessagingException, IOException {
 		
-		
+		// test pour madame touria 
 		 	parseur test;
 	        MailList a = new MailList();
 	        Connection connexion = null;
