@@ -29,10 +29,10 @@ import dao.PieceJointeDao;
 
 public class main {
 	private static final dao.DaoFactory daoFactory = dao.DaoFactory.getInstance();
-	private static final String DOSSIER_PRINCIPAL = "/home/diallo/Documents/projetTER/corpus/president_2010/president_2010/";    
-	//private static final String DOSSIER_PRINCIPAL = "/home/etudiant/M1/S2/TER/president_2010/president_2010/";
+	//private static final String DOSSIER_PRINCIPAL = "/home/diallo/Documents/projetTER/corpus/president_2010/president_2010/";    
+	private static final String DOSSIER_PRINCIPAL = "/home/etudiant/M1/S2/TER/president_2010/president_2010/";
 	
-	//private static final String LIEN_FICHIER = "/home/etudiant/M1/S2/TER/president_2010/president_2010/president_2010-10/";
+	private static final String LIEN_FICHIER = "/home/etudiant/M1/S2/TER/president_2010/president_2010/president_2010-10/";
 		
 	public static void insertBD(MailList aa, Connection connexion){
 		EmailDao emailDao;
@@ -254,11 +254,11 @@ public class main {
 	        Connection connexion = null;
 	        int i = 0;
 	        //ArrayList<MailList> listeMail = new ArrayList<MailList>();
-	       //332 
-	      // test = new parseur(LIEN_FICHIER+443);
+	       //332  2 18 21  24 42 47 63 65 						49	
+	       //test = new parseur(LIEN_FICHIER+112);
 	       //test.getMailTest();
 	       
-	       
+	        
 	        File[] files = new File(DOSSIER_PRINCIPAL).listFiles();
 	        System.out.println("============Debut Insertion==============");
 	        try {
@@ -266,7 +266,7 @@ public class main {
 				for (File file : files) {
 		            if (file.isDirectory()) {
 		                for(File fileInsideFolder : file.listFiles()) {
-		                    System.out.println(fileInsideFolder.getAbsolutePath());
+		                  //  System.out.println(fileInsideFolder.getAbsolutePath());
 		                    test = new parseur(fileInsideFolder.getAbsolutePath());
 		                    a= test.mailToObject();
 		                   // System.out.println(i++);
