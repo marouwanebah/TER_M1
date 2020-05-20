@@ -6,6 +6,8 @@ import java.sql.SQLException;
 
 import javax.mail.MessagingException;
 
+import org.annolab.tt4j.TreeTaggerWrapper;
+
 import beans.Email;
 import beans.Expediteur;
 import beans.Fonction;
@@ -29,10 +31,15 @@ import dao.PieceJointeDao;
 
 public class main {
 	private static final dao.DaoFactory daoFactory = dao.DaoFactory.getInstance();
-	//private static final String DOSSIER_PRINCIPAL = "/home/diallo/Documents/projetTER/corpus/president_2010/president_2010/";    
-	private static final String DOSSIER_PRINCIPAL = "/home/etudiant/M1/S2/TER/president_2010/president_2010/";
-	
 	private static final String LIEN_FICHIER = "/home/etudiant/M1/S2/TER/president_2010/president_2010/president_2010-10/";
+	
+	// ********************** lien sory ******************************************//
+	//private static final String DOSSIER_PRINCIPAL = "/home/diallo/Documents/projetTER/corpus/president_2010/president_2010/"; 
+	// ********************** lien Marwane ******************************************//
+	private static final String DOSSIER_PRINCIPAL = "/home/etudiant/M1/S2/TER/president_2010/president_2010/";
+	// ********************** lien Mmr Touria ******************************************//
+	//private static final String DOSSIER_PRINCIPAL = "/home/touria/Bureau/Corpus/president_2010/president_2010/";
+
 		
 	public static void insertBD(MailList aa, Connection connexion){
 		EmailDao emailDao;
@@ -253,12 +260,17 @@ public class main {
 	        MailList a = new MailList();
 	        Connection connexion = null;
 	        int i = 0;
+	        
+	        
+	        
+	        
+	        
 	        //ArrayList<MailList> listeMail = new ArrayList<MailList>();
 	       //332  2 18 21  24 42 47 63 65 						49	
-	       //test = new parseur(LIEN_FICHIER+112);
-	       //test.getMailTest();
+	       test = new parseur(LIEN_FICHIER+361);
+	       test.getMailTest();
 	       
-	        
+	       
 	        File[] files = new File(DOSSIER_PRINCIPAL).listFiles();
 	        System.out.println("============Debut Insertion==============");
 	        try {
@@ -293,8 +305,8 @@ public class main {
 	                 System.out.println(e.getMessage());
 	             }
 	        }
-	    
+	    	
 
-	        /* */
+	        /*  */
 	}
 }
