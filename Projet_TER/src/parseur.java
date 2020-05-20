@@ -10,7 +10,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import java.util.Properties;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.mail.Address;
 import javax.mail.BodyPart;
@@ -432,23 +433,43 @@ public class parseur{
 		System.out.println(this.getContenueCleaned());
 	}
 	
+	/**
+	 * Returns a list with all links contained in the input
+	 */
+	public static ArrayList<String> extractUrls(String text)
+	{
+		ArrayList<String> containedUrls = new ArrayList<String>();
+	    String urlRegex = "((https?|ftp|gopher|telnet|file):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)";
+	    Pattern pattern = Pattern.compile(urlRegex, Pattern.CASE_INSENSITIVE);
+	    Matcher urlMatcher = pattern.matcher(text);
+
+	    while (urlMatcher.find())
+	    {
+	        containedUrls.add(text.substring(urlMatcher.start(0),
+	                urlMatcher.end(0)));
+	    }
+
+	    return containedUrls;
+	}
 	public String getContenueCleaned() throws MessagingException, IOException {
 		
 		String withCharacters  = this.GetMailContenu().replace('\u0092','\'').replace('\u0095','-').replace('\u0096','à'); 
-		String contenueBrut = StringEscapeUtils.unescapeHtml(withCharacters).replace(">", "").replace("<", "");
+		String contenueBruttt = StringEscapeUtils.unescapeHtml(withCharacters).replace(">", "").replace("<", "");
+		//String contenueBruttt = StringEscapeUtils.
+		String contenueBrut = Jsoup.parse(contenueBruttt).text();
+		
 		
 		String contenuAnglais= "Contenu en anglais"; 
 
 		
-		ArrayList<Lien>  liens = this.getLiens();  
+		ArrayList<String>  liens =  extractUrls(contenueBrut) ;  
 		
 		//suprresion des liens 
-		for (Lien a : liens) {
+		for (String lien : liens) {
 			//System.out.println(a.getContenuLien().substring(0, 40));
-			String contenu = a.getContenuLien();
-			if(contenueBrut.contains(contenu)) {
-			//	System.out.println(a.getContenuLien());
-				contenueBrut= contenueBrut.replace(contenu, "");
+			if(contenueBrut.contains(lien)) {
+	
+				contenueBrut= contenueBrut.replace(lien, "");
 			}		 
 		}
 		
@@ -528,6 +549,14 @@ public class parseur{
 						return splitContenut[0];
 				}
 			}
+			else if (contenueBrut.contains("Evelyne PUGLIA")){
+				String[] splitContenut = contenueBrut.split("Evelyne PUGLIA", 2 );
+				if (contenueAnglais(splitContenut[0])) {
+					return contenuAnglais; 
+				}
+				else 
+					return splitContenut[0];
+			}
 			if (contenueAnglais(contenueBrut)) {
 				return contenuAnglais; 
 			}
@@ -542,6 +571,17 @@ public class parseur{
 					if (splitContenut[0].contains("Francis YGUEL")) {
 						//System.out.println("test "+  splitContenut[0]);
 						String[] SplitFinale = splitContenut[0].split("Francis YGUEL");
+						if(SplitFinale.length==2) {
+							if (contenueAnglais(SplitFinale[0])) {
+								return contenuAnglais; 
+							}
+							else 
+								return SplitFinale[0];
+						}	
+					}
+					if (splitContenut[0].contains("Evelyne PUGLIA")) {
+						//System.out.println("test "+  splitContenut[0]);
+						String[] SplitFinale = splitContenut[0].split("Evelyne PUGLIA");
 						if(SplitFinale.length==2) {
 							if (contenueAnglais(SplitFinale[0])) {
 								return contenuAnglais; 
@@ -608,7 +648,7 @@ public class parseur{
 	
 	public boolean contenueAnglais(String contenu) throws UnsupportedEncodingException, MessagingException {
 		//verification si le contenu est en anglais 
-		if ( contenu.contains("Universities") || contenu.contains("Dear") || contenu.contains("I am")  || contenu.contains("will") ) {
+		if ( contenu.contains("Universities") || contenu.contains("Dear") || contenu.contains("I am")  || contenu.contains("will") || contenu.contains("your") || contenu.contains("that")  ) {
 			return true;
 		}
 		else

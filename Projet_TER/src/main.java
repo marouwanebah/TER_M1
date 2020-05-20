@@ -305,8 +305,23 @@ public class main {
 	                 System.out.println(e.getMessage());
 	             }
 	        }
-	    	
 
-	        /*  */
+	        /*
+            System.setProperty("treetagger.home", "/opt/treetagger");
+            TreeTaggerWrapper tt = new TreeTaggerWrapper<String>();
+            try {
+                    tt.setModel("/opt/treetagger/models/english.par:iso8859-1");
+                    tt.setHandler(new TokenHandler<String>() {
+                            public void token(String token, String pos, String lemma) {
+                                    System.out.println(token + "\t" + pos + "\t" + lemma);
+                            }
+                    });
+                    tt.process(asList(new String[] { "This", "is", "a", "test", "." }));
+            }
+            finally {
+                    tt.destroy();
+            }
+
+	          */
 	}
 }
