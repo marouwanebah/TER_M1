@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+
 import java.util.Properties;
 
 
@@ -23,7 +24,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
-
+import org.apache.commons.lang.StringEscapeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -38,9 +39,16 @@ import beans.PieceJointe;
 
 public class parseur{
 
+	// ********************** lien sory ******************************************//
 	//private static final String dossierAttachement = "/home/diallo/Documents/projetTER/corpus/president_2010/DATA/attachments/";
+
+	// ********************** lien Marwane ******************************************//
 	private static final String dossierAttachement = "/home/etudiant/M1/S2/TER/Projet/TER_M1/Projet_TER/Data/Attachement/";
-	
+
+	// ********************** lien Mm Touria ******************************************//
+	//private static final String dossierAttachement = "/home/touria/Bureau/Corpus/Data/Attachement/";
+		
+		
 	private MimeMessage message; 
 	
 	public parseur(String messagePath) throws FileNotFoundException, MessagingException {
@@ -53,7 +61,7 @@ public class parseur{
 	}
 	
 	/**
-	 * 
+	 * fonction qui retourne l'id du message 
 	 * @return
 	 * @throws MessagingException
 	 */
@@ -150,8 +158,9 @@ public class parseur{
 	
 	public String GetSubject() throws MessagingException, UnsupportedEncodingException {
 		String element = this.message.getSubject();  
+		String decodage = MimeUtility.decodeText(element).replace("[president]", "");
 		//System.out.println(element.replace("[president]", ""));
-		return element.replace("[president]", "");
+		return decodage;
 		
 	}
 	
@@ -165,7 +174,6 @@ public class parseur{
 	public String GetMailContenu() throws MessagingException, IOException {
 
 		String body = getTextFromMessage(message);     
-		//body = MimeUtility.decodeText(body);
 		return body; 
 	}
 	/**
@@ -176,7 +184,9 @@ public class parseur{
 	 */
 	public String getSignature() throws MessagingException, IOException {
 		
-		String contenueBrut = this.GetMailContenu(); 
+		String withCharacters  = this.GetMailContenu().replace('\u0092','\'').replace('\u0095','-').replace('\u0096','à'); 
+		String contenueBrut = StringEscapeUtils.unescapeHtml(withCharacters);
+		
 		if(this.getTypeMessage()=="Simple") {
 			
 			if(contenueBrut.contains("salutations")){
@@ -424,11 +434,15 @@ public class parseur{
 	
 	public String getContenueCleaned() throws MessagingException, IOException {
 		
-		String contenueBrut = this.GetMailContenu(); 
+		String withCharacters  = this.GetMailContenu().replace('\u0092','\'').replace('\u0095','-').replace('\u0096','à'); 
+		String contenueBrut = StringEscapeUtils.unescapeHtml(withCharacters).replace(">", "").replace("<", "");
 		
+		String contenuAnglais= "Contenu en anglais"; 
+
 		
 		ArrayList<Lien>  liens = this.getLiens();  
 		
+		//suprresion des liens 
 		for (Lien a : liens) {
 			//System.out.println(a.getContenuLien().substring(0, 40));
 			String contenu = a.getContenuLien();
@@ -441,45 +455,85 @@ public class parseur{
 		if(this.getTypeMessage()=="Simple") {
 			if(contenueBrut.contains("Cordialement")){
 				String[] splitContenut = contenueBrut.split("Cordialement");
-				return splitContenut[0];
+				if (contenueAnglais(splitContenut[0])) {
+					return contenuAnglais; 
+				}
+				else 
+					return splitContenut[0];
 			}
 			else if(contenueBrut.contains("cordialement")){
 				String[] splitContenut = contenueBrut.split("cordialement");
-				return splitContenut[0];
+				if (contenueAnglais(splitContenut[0])) {
+					return contenuAnglais; 
+				}
+				else 
+					return splitContenut[0];
 			}
 			else if(contenueBrut.contains("Bien sincèrement")){
 				String[] splitContenut = contenueBrut.split("Bien sincèrement");
-				return splitContenut[0];
+				if (contenueAnglais(splitContenut[0])) {
+					return contenuAnglais; 
+				}
+				else 
+					return splitContenut[0];
 			}
 			else if(contenueBrut.contains("Sincèrement")){
 				String[] splitContenut = contenueBrut.split("Sincèrement");
-				return splitContenut[0];
+				if (contenueAnglais(splitContenut[0])) {
+					return contenuAnglais; 
+				}
+				else 
+					return splitContenut[0];
 			}
 			else if(contenueBrut.contains("Bonne réception")){
 				String[] splitContenut = contenueBrut.split("Bonne réception");
-				return splitContenut[0].replace(",", "");
+				if (contenueAnglais(splitContenut[0])) {
+					return contenuAnglais; 
+				}
+				else 
+					return splitContenut[0].replace(",", "");
 			}
 			else if(contenueBrut.contains("salutations")){
 				String[] splitContenut = contenueBrut.split("salutations");
-				return splitContenut[0].replace(",", "");
+				if (contenueAnglais(splitContenut[0])) {
+					return contenuAnglais; 
+				}
+				else 
+					return splitContenut[0].replace(",", "");
 			}
 			else if(contenueBrut.contains("Respectueusement")){
 				String[] splitContenut = contenueBrut.split("Respectueusement");
-				return splitContenut[0];
+				if (contenueAnglais(splitContenut[0])) {
+					return contenuAnglais; 
+				}
+				else 
+					return splitContenut[0];
 			}
 			else if (contenueBrut.contains("--")){
 				String[] splitContenut = contenueBrut.split("--", 2 );
-				return splitContenut[0];
+				if (contenueAnglais(splitContenut[0])) {
+					return contenuAnglais; 
+				}
+				else 
+					return splitContenut[0];
 			}
 			//cas particulier  de lunam 
 			else if(contenueBrut.contains("lunam")){
 				String[] splitContenut = contenueBrut.split("lunam",2);
 				if(splitContenut.length==2) {
-					return splitContenut[0];
+					if (contenueAnglais(splitContenut[0])) {
+						return contenuAnglais; 
+					}
+					else 
+						return splitContenut[0];
 				}
 			}
-			
-			return contenueBrut;
+			if (contenueAnglais(contenueBrut)) {
+				return contenuAnglais; 
+			}
+			else 
+				return contenueBrut;
+		
 			//contenur multi 
 		}else {
 			if(contenueBrut.contains("-----Message d'origine-----")) {
@@ -489,13 +543,21 @@ public class parseur{
 						//System.out.println("test "+  splitContenut[0]);
 						String[] SplitFinale = splitContenut[0].split("Francis YGUEL");
 						if(SplitFinale.length==2) {
-							return SplitFinale[0];
+							if (contenueAnglais(SplitFinale[0])) {
+								return contenuAnglais; 
+							}
+							else 
+								return SplitFinale[0];
 						}	
 					}
 					if (splitContenut[0].contains("Cordialement")) {
 						String[] SplitFinale = splitContenut[0].split("Cordialement");
 						if(SplitFinale.length==2) {
-							return SplitFinale[0];
+							if (contenueAnglais(SplitFinale[0])) {
+								return contenuAnglais; 
+							}
+							else 
+								return SplitFinale[0];
 						}	
 					}
 				}
@@ -504,22 +566,38 @@ public class parseur{
 				String[] splitContenut = contenueBrut.split(">",2);
 				if(splitContenut[0].contains("cordialement")) {
 					String[] splitSignatureEtSuite = splitContenut[0].split("cordialement",2);
-					return splitSignatureEtSuite[0]; 
+					if (contenueAnglais(splitSignatureEtSuite[0])) {
+						return contenuAnglais; 
+					}
+					else 
+						return splitSignatureEtSuite[0];  
 				}
 				else if(splitContenut[0].contains("Cordialement")) {
 					String[] splitSignatureEtSuite = splitContenut[0].split("Cordialement",2); 
-					return splitSignatureEtSuite[0];
+					if (contenueAnglais(splitSignatureEtSuite[0])) {
+						return contenuAnglais; 
+					}
+					else 
+						return splitSignatureEtSuite[0]; 
 				}
 			}
 			if(contenueBrut.contains("Envoyé ") && contenueBrut.contains("Objet :")  && contenueBrut.contains("De :") ) {
 				String[] splitContenut = contenueBrut.split("De :",2);
 				if(splitContenut[0].contains("cordialement")) {
 					String[] splitSignatureEtSuite = splitContenut[0].split("cordialement",2); 
-					return splitSignatureEtSuite[0];
+					if (contenueAnglais(splitSignatureEtSuite[0])) {
+						return contenuAnglais; 
+					}
+					else 
+						return splitSignatureEtSuite[0]; 
 				}
 				if(splitContenut[0].contains("lunam")) {
 					String[] splitSignatureEtSuite = splitContenut[0].split("lunam",2); 
-					return splitSignatureEtSuite[0];
+					if (contenueAnglais(splitSignatureEtSuite[0])) {
+						return contenuAnglais; 
+					}
+					else 
+						return splitSignatureEtSuite[0]; 
 				}
 			}
 			
@@ -528,7 +606,14 @@ public class parseur{
 		return null;
 	}
 	
-
+	public boolean contenueAnglais(String contenu) throws UnsupportedEncodingException, MessagingException {
+		//verification si le contenu est en anglais 
+		if ( contenu.contains("Universities") || contenu.contains("Dear") || contenu.contains("I am")  || contenu.contains("will") ) {
+			return true;
+		}
+		else
+			return false ; 
+	}
 	/**
 	 * fonction qui retourne la date d'envoie 
 	 * @throws MessagingException 
