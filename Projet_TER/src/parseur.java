@@ -1,5 +1,6 @@
 
 
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -360,7 +361,6 @@ public class parseur{
 				
 				liens.add(lien); 
 			}
-	
 		}
 		else if(this.message.isMimeType("multipart/*" )) {
 			Multipart mp = (Multipart)this.message.getContent();
@@ -392,16 +392,16 @@ public class parseur{
 	public void getMailTest() throws MessagingException, IOException {
 		System.out.println("************************Type Message********************");
 		System.out.println(this.getTypeMessage()); 
-		System.out.println("************************MessageID********************");
+		System.out.println("************************MessageID***********************");
 		System.out.println(this.GetMessageId()); 	
-		System.out.println("************************expéditeur********************");		
+		System.out.println("************************expéditeur**********************");		
 		System.out.println(this.getExpediteur().toString());
 		System.out.println("************************Destinataire********************");		
 		ArrayList<Personne>  destinatire = this.getDestinataire(Message.RecipientType.TO);
 		for (Personne a : destinatire) {
 			System.out.println(a.toString());
 		}
-		System.out.println("************************en copie********************");
+		System.out.println("************************en copie************************");
 		Address[] test = this.message.getRecipients(Message.RecipientType.CC); 
 		if(test==null) {
 			System.out.println("pas de personne en copie ");
@@ -413,23 +413,23 @@ public class parseur{
 				System.out.println(a.toString());
 			}
 		}
-		System.out.println("************************subject********************");
+		System.out.println("**************************subject***********************");
 		System.out.println("sujet: "+this.GetSubject());
-		System.out.println("************************BODY********************");
+		System.out.println("***************************BODY*************************");
 		System.out.println(this.GetMailContenu()); 
-		System.out.println("************************attachement********************");
+		System.out.println("************************attachement*********************");
 		ArrayList<PieceJointe> arrayPiece=  this.getPieceJointe();
 		for(PieceJointe p : arrayPiece) {
 			System.out.println(p.toString());
 		}
-		System.out.println("************************Signature********************");
+		System.out.println("************************Signature***********************");
 		System.out.println(this.getSignature());
-		System.out.println("************************Liens ********************");
+		System.out.println("**************************Liens ************************");
 		ArrayList<Lien> liens=  this.getLiens();
 		for(Lien p : liens) {
 			System.out.println(p.toString());
 		}
-		System.out.println("************************ BODY cleanned ********************");
+		System.out.println("********************** BODY cleanned ********************");
 		System.out.println(this.getContenueCleaned());
 	}
 	
@@ -454,9 +454,9 @@ public class parseur{
 	public String getContenueCleaned() throws MessagingException, IOException {
 		
 		String withCharacters  = this.GetMailContenu().replace('\u0092','\'').replace('\u0095','-').replace('\u0096','à'); 
-		String contenueBruttt = StringEscapeUtils.unescapeHtml(withCharacters).replace(">", "").replace("<", "");
+		String contenueBrut = StringEscapeUtils.unescapeHtml(withCharacters).replace(">", "").replace("<", "");
 		//String contenueBruttt = StringEscapeUtils.
-		String contenueBrut = Jsoup.parse(contenueBruttt).text();
+		//String contenueBrut = Jsoup.parse(contenueBruttt).text();
 		
 		
 		String contenuAnglais= "Contenu en anglais"; 
@@ -827,8 +827,7 @@ public class parseur{
 		    	pers.setEmailPersonne(email);
 		    	pers.setNomPersonne(nomEmailSplit(email));
 		    	pers.setPrenomPersonne(prenomEmailSplit(email));
-			    pers.setInstitutionPersonne(institution);
-		    	
+			    pers.setInstitutionPersonne(institution);	    	
 		    	
 		    }
 
@@ -894,5 +893,46 @@ public class parseur{
 	    	}
 		}
     	return institution; 
+	}
+	
+	public String contenuPourGraphique() throws MessagingException, IOException {
+		String resultat =""; 
+		
+		resultat = "******************* Type Message ******************* \n"+ this.getTypeMessage()+"\n"; 
+		resultat += "******************* Message ID ******************* \n"+ this.GetMessageId()+"\n"; 
+		resultat += "******************* Expéditeur *******************  \n"+ this.getExpediteur().getEmailPersonne() + " "+this.getExpediteur().getNomPersonne()  +"\n";  
+		resultat += "*******************Destinataire ******************* \n"; 
+		ArrayList<Personne>  destinatire = this.getDestinataire(Message.RecipientType.TO);
+		for (Personne a : destinatire) {
+			resultat += a.getNomPersonne()+" "+ a.getPrenomPersonne() + " "+a.getEmailPersonne()+"\n" ; 
+		}
+		resultat += "*******************Destinataire en copie:******************* \n";
+		Address[] test = this.message.getRecipients(Message.RecipientType.CC); 
+		if(test==null) {
+			resultat += "pas de personne en copie \n " ;
+		}else 
+		{
+			ArrayList<Personne>  destinatireCC = this.getDestinataire(Message.RecipientType.CC);
+			for (Personne a : destinatireCC) {
+				resultat += a.getNomPersonne()+" "+ a.getPrenomPersonne() + " "+a.getEmailPersonne()+"\n" ; 
+			}
+		}
+		resultat += "******************* Sujet******************* \n "+ this.GetSubject()+"\n";  
+		resultat += "******************* Contenur brut ******************* :\n"+ this.GetMailContenu()+"\n"; 
+		resultat += "******************* attachement *******************:\n";
+		ArrayList<PieceJointe> arrayPiece=  this.getPieceJointe();
+		for(PieceJointe p : arrayPiece) {
+			resultat += p.getNomPieceJointe()+" "+p.getContenuJointe()+ "\n";
+		}
+		resultat += "******************** Signature*******************  \n"+ this.getSignature()+"\n"; 
+		resultat += "Liens :\n";
+		ArrayList<Lien> liens=  this.getLiens();
+		for(Lien p : liens) {
+			resultat += p.getNomLien()+"\n";
+		}
+		resultat += "**********Contenue Nettoyer*******  :\n"+ this.getContenueCleaned()+"\n"; 
+		
+		return resultat; 
+
 	}
 }
