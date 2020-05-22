@@ -270,7 +270,7 @@ public class main {
 	       test = new parseur(LIEN_FICHIER+361);
 	       test.getMailTest();
 	       
-	       
+	      
 	        File[] files = new File(DOSSIER_PRINCIPAL).listFiles();
 	        System.out.println("============Debut Insertion==============");
 	        try {
@@ -291,7 +291,7 @@ public class main {
 		        System.out.println("============Fin Insertion==============");
 			} catch (SQLException ex) {
 	        	try{
-	                if(connexion != null)
+	                   if(connexion != null)
 	                	connexion.rollback();
 	            }catch(SQLException e){
 	                System.out.println(e.getMessage());
@@ -305,7 +305,8 @@ public class main {
 	                 System.out.println(e.getMessage());
 	             }
 	        }
-
+	        /*   */
+	        Vue vuetest = new Vue(); 
 	        /*
             System.setProperty("treetagger.home", "/opt/treetagger");
             TreeTaggerWrapper tt = new TreeTaggerWrapper<String>();
@@ -321,7 +322,7 @@ public class main {
             finally {
                     tt.destroy();
             }
-
+			cmd/tree-tagger-french > resultat.txt	
 	          */
 	}
 }
