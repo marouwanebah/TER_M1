@@ -261,10 +261,7 @@ public class main {
 	        Connection connexion = null;
 	        int i = 0;
 	        
-	        
-	        
-	        
-	        
+       
 	        //ArrayList<MailList> listeMail = new ArrayList<MailList>();
 	       //332  2 18 21  24 42 47 63 65 						49	
 	       test = new parseur(LIEN_FICHIER+361);
