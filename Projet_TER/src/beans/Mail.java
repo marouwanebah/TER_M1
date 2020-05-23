@@ -11,6 +11,7 @@ public class Mail {
 	private String typeMail;
 	private String contenuMailPropre;
 	private String signatureMail;
+	private String vecteurMail;
 	public Mail() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -68,6 +69,12 @@ public class Mail {
 	}
 	public void setSignatureMail(String signatureMail) {
 		this.signatureMail = signatureMail;
+	}
+	public String getVecteurMail() {
+		return vecteurMail;
+	}
+	public void setVecteurMail(String vecteurMail) {
+		this.vecteurMail = vecteurMail;
 	}
 	
 	
