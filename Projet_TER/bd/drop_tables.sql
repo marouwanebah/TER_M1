@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS `td_destinataire_cc` ;
 DROP TABLE IF EXISTS `td_destinataire` ;
 DROP TABLE IF EXISTS `tc_type_piece_jointe` ;
 DROP TABLE IF EXISTS `tc_fonction` ;
+DROP TABLE IF EXISTS `td_liste_diffusion` ;
 DROP TABLE IF EXISTS `td_mail` ;
 DROP TABLE IF EXISTS `td_email` ;
 DROP TABLE IF EXISTS `td_institution` ;

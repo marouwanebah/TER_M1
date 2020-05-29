@@ -18,12 +18,12 @@ public class FonctionDaoImp implements FonctionDao {
 		this.daoFactory = daoFactory;
 	}
 	@Override
-	public void ajouterFonction(Fonction fonction) {
-		Connection connexion = null;
+	public void ajouterFonction(Fonction fonction, Connection connexion) {
+		//Connection connexion = null;
         PreparedStatement preparedStatement = null;
 
         try {
-            connexion = daoFactory.getConnection();
+            //connexion = daoFactory.getConnection();
             connexion.setAutoCommit(false);
             preparedStatement = connexion.prepareStatement(SQL_INSERT);
 
@@ -48,7 +48,7 @@ public class FonctionDaoImp implements FonctionDao {
         } finally {
         	 try {
                  if(preparedStatement != null) preparedStatement.close();
-                 if(connexion != null) connexion.close();
+                // if(connexion != null) connexion.close();
                  
              } catch (SQLException e) {
                  System.out.println(e.getMessage());
@@ -58,13 +58,13 @@ public class FonctionDaoImp implements FonctionDao {
 	}
 
 	@Override
-	public Fonction getFonction(String email) {
+	public Fonction getFonction(String email, Connection connexion) {
 		Fonction fonction = null;
-		Connection connexion = null;
+		//Connection connexion = null;
 		EmailDao emailDao  = daoFactory.getEmailDao();
         PreparedStatement preparedStatement = null;
 		try {
-			connexion = daoFactory.getConnection();
+			//connexion = daoFactory.getConnection();
 			preparedStatement = connexion.prepareStatement
 					(SQL_SELECT_ONLY);
 			preparedStatement.setString(1, email);
@@ -73,10 +73,10 @@ public class FonctionDaoImp implements FonctionDao {
 				fonction = new Fonction();
 				fonction.setCodeFonction(rs.getString("code_fonction"));
 				fonction.setLibelleFonction(rs.getString("libelle_fonction"));
-				fonction.setEmail(emailDao.getEmail(rs.getString("email_email")));
+				fonction.setEmail(emailDao.getEmail(rs.getString("email_email"), connexion));
 			}
 			preparedStatement.close();
-			connexion.close();
+			//connexion.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

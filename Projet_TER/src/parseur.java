@@ -1,5 +1,7 @@
 
 
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -7,9 +9,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Properties;
 
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.mail.Address;
 import javax.mail.BodyPart;
@@ -23,7 +28,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
-
+import org.apache.commons.lang.StringEscapeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -38,13 +43,17 @@ import beans.PieceJointe;
 
 public class parseur{
 
-	//ne jamais effacer le lien pour les autres mettre juste en commentaire 
-	//private static final String LIEN_FICHIER = "/home/etudiant/M1/S2/TER/Projet/TER_M1/Projet_TER/Data/president/";  
+	// ********************** lien sory ******************************************//
 	//private static final String dossierAttachement = "/home/diallo/Documents/projetTER/corpus/president_2010/DATA/attachments/";
+
+	// ********************** lien Marwane ******************************************//
 	private static final String dossierAttachement = "/home/etudiant/M1/S2/TER/Projet/TER_M1/Projet_TER/Data/Attachement/";
-	
+
+	// ********************** lien Mm Touria ******************************************//
+	//private static final String dossierAttachement = "/home/touria/Bureau/Corpus/Data/Attachement/";
+		
+		
 	private MimeMessage message; 
-	
 	
 	public parseur(String messagePath) throws FileNotFoundException, MessagingException {
 		super();
@@ -52,13 +61,11 @@ public class parseur{
 	    Properties props = System.getProperties(); 
 	    props.setProperty("mail.mime.address.strict", "false");
 	    Session session = Session.getInstance(props, null);
-	    this.message = new MimeMessage(session, mailFileInputStream);
-	    
-		
+	    this.message = new MimeMessage(session, mailFileInputStream);		
 	}
 	
 	/**
-	 * 
+	 * fonction qui retourne l'id du message 
 	 * @return
 	 * @throws MessagingException
 	 */
@@ -81,8 +88,8 @@ public class parseur{
 		Address[] expediteurBrut = this.message.getFrom();
 		String element = expediteurBrut[0].toString();
 		expediteur = stringToPersonne(element); 
-	    return expediteur;
 		
+	    return expediteur;		
 	}
 	/**
 	 * fonction qui prend en parametre type Message.RecipientType.TO pour les destinataires 
@@ -94,7 +101,7 @@ public class parseur{
 	 * @throws UnsupportedEncodingException
 	 */
  
-	public ArrayList<Personne> getDestinataire(Message.RecipientType type) throws UnsupportedEncodingException, MessagingException {
+	public ArrayList<Personne> getDestinataire(Message.RecipientType type) throws UnsupportedEncodingException, MessagingException  {
 		ArrayList<Personne> destinataire  = new ArrayList<>(); 
 		Address[] destinataireBrut ; 
 		if( this.message.getRecipients(type)!=null) {
@@ -108,9 +115,43 @@ public class parseur{
 		    }
 		}
 		else {
-			System.out.println("pas de destinaire en to");
+			Personne a = new Personne();
+			Institution b = new Institution(); 
+			a.setEmailPersonne("Pas de Destinaire");
+			a.setNomPersonne("Pas de Destinaire");
+			a.setPrenomPersonne("Pas de Destinaire");
+			a.setInstitutionPersonne(b);
+			destinataire.add(a); 
 		}
 		return destinataire;
+	}
+	
+	/**
+	 * fonction qui retourne le type de message  simple pour les message sans fil de discution 
+	 * @return
+	 * @throws MessagingException
+	 * @throws IOException
+	 */
+	public String getTypeMessage() throws MessagingException, IOException {
+		
+		String a = this.GetMailContenu();
+		String Multi = "Multi"; 
+		String Simple = "Simple";
+		if(a.contains("-----Message d'origine-----")) {
+			return Multi; 
+		}
+		else if( a.contains("De :") && a.contains("Envoyé ") && a.contains("Objet :")) {
+			return Multi; 
+		}
+		else if(a.contains(">") && a.contains("a écrit :") ) {
+			return Multi; 
+		}
+		else if(a.contains(">") && a.contains("a ?crit?:") ) {
+			return Multi; 
+		}
+		
+		return Simple;
+		
 	}
 	/**
 	 * fonction qui retourne le sujet du message 
@@ -121,7 +162,10 @@ public class parseur{
 	
 	public String GetSubject() throws MessagingException, UnsupportedEncodingException {
 		String element = this.message.getSubject();  
-		return element; 
+		String decodage = MimeUtility.decodeText(element).replace("[president]", "");
+		//System.out.println(element.replace("[president]", ""));
+		return decodage;
+		
 	}
 	
 	/**
@@ -134,7 +178,6 @@ public class parseur{
 	public String GetMailContenu() throws MessagingException, IOException {
 
 		String body = getTextFromMessage(message);     
-		//body = MimeUtility.decodeText(body);
 		return body; 
 	}
 	/**
@@ -144,44 +187,110 @@ public class parseur{
 	 * @throws IOException
 	 */
 	public String getSignature() throws MessagingException, IOException {
-		String signature =""; 
-		String content = this.message.getContent().toString(); 
-		if(this.message.isMimeType("text/html" )) {
-
-			org.jsoup.nodes.Document doc=  Jsoup.parse(content);
-			Elements a = doc.getElementsByTag("pre"); 
-			Elements b = doc.getElementsByClass("moz-signature");
-			signature = a.text()+b.text();  
-	
-		}
-		else if(this.message.isMimeType("text/plain" )) {
+		
+		String withCharacters  = this.GetMailContenu().replace('\u0092','\'').replace('\u0095','-').replace('\u0096','à'); 
+		String contenueBrut = StringEscapeUtils.unescapeHtml(withCharacters);
+		
+		if(this.getTypeMessage()=="Simple") {
 			
-		}
-		else if(this.message.isMimeType("multipart/*" )) {
-			
-			Multipart mp = (Multipart)this.message.getContent();
-			
-			int numParts = mp.getCount();
-			           
-			for(int count = 0; count < numParts; count++)
-			{	    
-				
-				MimeBodyPart part = (MimeBodyPart)mp.getBodyPart(count);
-			    //pour les parts qui sont de type content text.html on utlise la libraire jsoup  
-			    if(part.isMimeType("text/html")) {
-					org.jsoup.nodes.Document doc=  Jsoup.parse(part.getContent().toString());
-					//System.out.println(body);
-					Elements a =doc.getElementsByTag("pre");		
-					Elements b = doc.getElementsByClass("moz-signature");
-					signature = a.text()+b.text();      	
-			      }    
-			    if(part.getContent() instanceof MimeMultipart){
-			    	signature +=getSignatureFromMimeMultipart((MimeMultipart) part.getContent());
-			    	
-			    }
+			if(contenueBrut.contains("salutations")){
+				String[] splitContenut = contenueBrut.split("salutations");
+				return splitContenut[1].replace(",", "").replace(".", "");
 			}
-		}	
-		return signature;
+			else if(contenueBrut.contains("Cordialement")){
+				String[] splitContenut = contenueBrut.split("Cordialement");
+				if(splitContenut.length==2) {
+					return splitContenut[1].replace(",", "").replace(".", "");
+				}
+			}
+			else if(contenueBrut.contains("cordialement")){
+				String[] splitContenut = contenueBrut.split("cordialement");
+				if(splitContenut.length==2) {
+					return splitContenut[1].replace(",", "").replace(".", "");
+				}
+			} 
+			else if(contenueBrut.contains("Sincèrement")){
+				String[] splitContenut = contenueBrut.split("Sincèrement");
+				return splitContenut[1].replace(",", "").replace(".", "");
+			}
+			else if(contenueBrut.contains("Bonne réception")){
+				String[] splitContenut = contenueBrut.split("Bonne réception");
+				return splitContenut[1].replace(",", "").replace(".", "");
+			}
+			else if(contenueBrut.contains("Bien sincèrement")){
+				String[] splitContenut = contenueBrut.split("Bien sincèrement");
+				return splitContenut[1].replace(",", "").replace(".", "");
+			}
+			else if(contenueBrut.contains("Respectueusement")){
+				String[] splitContenut = contenueBrut.split("Respectueusement");
+				return splitContenut[1].replace(",", "").replace(".", "");
+			}
+			else if(contenueBrut.contains("--")){
+				String[] splitContenut = contenueBrut.split("--",2);
+				if(splitContenut.length==2) {
+					return splitContenut[1].replace(",", "").replace(".", "");
+				}
+			}
+			
+		//cas particulier 
+			else if(contenueBrut.contains("lunam")){
+				String[] splitContenut = contenueBrut.split("lunam",2);
+				if(splitContenut.length==2) {
+					return splitContenut[1];
+				}
+			}
+		}else {
+			if(contenueBrut.contains("-----Message d'origine-----")) {
+				String[] splitContenut = contenueBrut.split("-----Message d'origine-----",2);
+				if(splitContenut.length==2) {
+					if (splitContenut[0].contains("Francis YGUEL")) {
+						//System.out.println("test "+  splitContenut[0]);
+						String[] SplitFinale = splitContenut[0].split("Francis YGUEL");
+						if(SplitFinale.length==2) {
+							return SplitFinale[1].replace(",", "").replace(".", "");
+						}	
+					}
+					if (splitContenut[0].contains("Cordialement")) {
+						String[] SplitFinale = splitContenut[0].split("Cordialement");
+						if(SplitFinale.length==2) {
+							return SplitFinale[1].replace(",", "").replace(".", "");
+						}	
+					}
+				}
+			}
+			if(contenueBrut.contains(">") && contenueBrut.contains("a écrit :") ) {
+				String[] splitContenut = contenueBrut.split(">",2);
+
+				if(splitContenut[0].contains("cordialement")) {
+					String[] splitSignatureEtSuite = splitContenut[0].split("cordialement",2); 
+					String[] SplitFinale = splitSignatureEtSuite[1].split("Le"); 
+					
+					return SplitFinale[0];
+				}
+				else if(splitContenut[0].contains("Cordialement")) {
+
+					String[] splitSignatureEtSuite = splitContenut[0].split("Cordialement",2); 
+					return splitSignatureEtSuite[1];
+				}
+			}
+			if(contenueBrut.contains("Envoyé ") && contenueBrut.contains("Objet :")  && contenueBrut.contains("De :") ) {
+				String[] splitContenut = contenueBrut.split("De :",2);
+				if(splitContenut[0].contains("cordialement")) {
+					String[] splitSignatureEtSuite = splitContenut[0].split("cordialement",2); 
+					String[] SplitFinale = splitSignatureEtSuite[1].split("Le"); 
+					return SplitFinale[0];
+				}
+				if(splitContenut[0].contains("lunam")) {
+					String[] splitSignatureEtSuite = splitContenut[0].split("lunam",2); 
+					return splitSignatureEtSuite[1];
+				}
+			}
+
+		}
+			
+	
+		return null;
+		
 		
 	}
 	/**
@@ -212,8 +321,7 @@ public class parseur{
 	            		nomPiceJointe = MimeUtility.decodeText(part.getFileName());
 	            		
 	            	}
-						
-	            	
+						            	
 	            	String messageID = GetMessageId(); 
 
 					File f = new File(dossierAttachement + nomPiceJointe);
@@ -229,13 +337,6 @@ public class parseur{
 	                
 	                //contenue piéce joint to  string 
 	                FileInputStream inputStream = new FileInputStream(dossierAttachement+nomPiceJointe);
-	                //Creating a Scanner object
-	                //Scanner sc = new Scanner(inputStream);
-	                //Reading line by line from scanner to StringBuffer
-	                //StringBuffer sb = new StringBuffer();
-	                //while(sc.hasNext()){
-	                  // sb.append(sc.nextLine());
-	               // }
 	                
 	            	piece.setNomPieceJointe(nomPiceJointe);
 	            	piece.setMailId(messageID);
@@ -262,7 +363,6 @@ public class parseur{
 				
 				liens.add(lien); 
 			}
-	
 		}
 		else if(this.message.isMimeType("multipart/*" )) {
 			Multipart mp = (Multipart)this.message.getContent();
@@ -278,13 +378,13 @@ public class parseur{
 					Elements links = doc.select("a[href]");
 					for (Element a : links) {
 						Lien lien = new Lien(); 
-						lien.setNomLien(a.attr("href"));  
-						lien.setContenuLien(a.text());
+						lien.setNomLien(a.text());  
+						lien.setContenuLien(a.attr("href"));
 						lien.setIdMail(this.GetMessageId());
 						
 						liens.add(lien); 
 					}
-			      }    
+			    }    
 			}
 		}
 		return liens ; 
@@ -292,16 +392,18 @@ public class parseur{
 
 	
 	public void getMailTest() throws MessagingException, IOException {
-		System.out.println("************************MessageID********************");
+		System.out.println("************************Type Message********************");
+		System.out.println(this.getTypeMessage()); 
+		System.out.println("************************MessageID***********************");
 		System.out.println(this.GetMessageId()); 	
-		System.out.println("************************expéditeur********************");		
+		System.out.println("************************expéditeur**********************");		
 		System.out.println(this.getExpediteur().toString());
 		System.out.println("************************Destinataire********************");		
 		ArrayList<Personne>  destinatire = this.getDestinataire(Message.RecipientType.TO);
 		for (Personne a : destinatire) {
 			System.out.println(a.toString());
 		}
-		System.out.println("************************en copie********************");
+		System.out.println("************************en copie************************");
 		Address[] test = this.message.getRecipients(Message.RecipientType.CC); 
 		if(test==null) {
 			System.out.println("pas de personne en copie ");
@@ -313,26 +415,247 @@ public class parseur{
 				System.out.println(a.toString());
 			}
 		}
-		System.out.println("************************subject********************");
+		System.out.println("**************************subject***********************");
 		System.out.println("sujet: "+this.GetSubject());
-		System.out.println("************************BODY********************");
+		System.out.println("***************************BODY*************************");
 		System.out.println(this.GetMailContenu()); 
-		System.out.println("************************attachement********************");
+		System.out.println("************************attachement*********************");
 		ArrayList<PieceJointe> arrayPiece=  this.getPieceJointe();
 		for(PieceJointe p : arrayPiece) {
 			System.out.println(p.toString());
 		}
-		System.out.println("************************Signature********************");
+		System.out.println("************************Signature***********************");
 		System.out.println(this.getSignature());
-		System.out.println("************************Liens ********************");
+		System.out.println("**************************Liens ************************");
 		ArrayList<Lien> liens=  this.getLiens();
 		for(Lien p : liens) {
 			System.out.println(p.toString());
 		}
+		System.out.println("********************** BODY cleanned ********************");
+		System.out.println(this.getContenueCleaned());
 	}
 	
-	
+	/**
+	 * Returns a list with all links contained in the input
+	 */
+	public static ArrayList<String> extractUrls(String text)
+	{
+		ArrayList<String> containedUrls = new ArrayList<String>();
+	    String urlRegex = "((https?|ftp|gopher|telnet|file):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)";
+	    Pattern pattern = Pattern.compile(urlRegex, Pattern.CASE_INSENSITIVE);
+	    Matcher urlMatcher = pattern.matcher(text);
 
+	    while (urlMatcher.find())
+	    {
+	        containedUrls.add(text.substring(urlMatcher.start(0),
+	                urlMatcher.end(0)));
+	    }
+
+	    return containedUrls;
+	}
+	public String getContenueCleaned() throws MessagingException, IOException {
+		
+		
+		String withCharacters  = this.GetMailContenu().replace('\u0092','\'').replace('\u0095','-').replace('\u0096','à'); 
+		String decoded= decode(withCharacters); 
+		String contenueBrut = decoded.replace(">", "").replace("<", "");
+		//String contenueBruttt = StringEscapeUtils.
+		//String contenueBrut = Jsoup.parse(contenueBruttt).text();
+		
+		String contenuAnglais= "Contenu en anglais"; 
+
+		ArrayList<String>  liens =  extractUrls(contenueBrut) ;  
+		
+		//suprresion des liens 
+		for (String lien : liens) {
+			//System.out.println(a.getContenuLien().substring(0, 40));
+			if(contenueBrut.contains(lien)) {
+	
+				contenueBrut= contenueBrut.replace(lien, "");
+			}		 
+		}
+		
+		if(this.getTypeMessage()=="Simple") {
+			if(contenueBrut.contains("Cordialement")){
+				String[] splitContenut = contenueBrut.split("Cordialement");
+				if (contenueAnglais(splitContenut[0])) {
+					return contenuAnglais; 
+				}
+				else 
+					return splitContenut[0];
+			}
+			else if(contenueBrut.contains("cordialement")){
+				String[] splitContenut = contenueBrut.split("cordialement");
+				if (contenueAnglais(splitContenut[0])) {
+					return contenuAnglais; 
+				}
+				else 
+					return splitContenut[0];
+			}
+			else if(contenueBrut.contains("Bien sincèrement")){
+				String[] splitContenut = contenueBrut.split("Bien sincèrement");
+				if (contenueAnglais(splitContenut[0])) {
+					return contenuAnglais; 
+				}
+				else 
+					return splitContenut[0];
+			}
+			else if(contenueBrut.contains("Sincèrement")){
+				String[] splitContenut = contenueBrut.split("Sincèrement");
+				if (contenueAnglais(splitContenut[0])) {
+					return contenuAnglais; 
+				}
+				else 
+					return splitContenut[0];
+			}
+			else if(contenueBrut.contains("Bonne réception")){
+				String[] splitContenut = contenueBrut.split("Bonne réception");
+				if (contenueAnglais(splitContenut[0])) {
+					return contenuAnglais; 
+				}
+				else 
+					return splitContenut[0].replace(",", "");
+			}
+			else if(contenueBrut.contains("salutations")){
+				String[] splitContenut = contenueBrut.split("salutations");
+				if (contenueAnglais(splitContenut[0])) {
+					return contenuAnglais; 
+				}
+				else 
+					return splitContenut[0].replace(",", "");
+			}
+			else if(contenueBrut.contains("Respectueusement")){
+				String[] splitContenut = contenueBrut.split("Respectueusement");
+				if (contenueAnglais(splitContenut[0])) {
+					return contenuAnglais; 
+				}
+				else 
+					return splitContenut[0];
+			}
+			else if (contenueBrut.contains("--")){
+				String[] splitContenut = contenueBrut.split("--", 2 );
+				if (contenueAnglais(splitContenut[0])) {
+					return contenuAnglais; 
+				}
+				else 
+					return splitContenut[0];
+			}
+			//cas particulier  de lunam 
+			else if(contenueBrut.contains("lunam")){
+				String[] splitContenut = contenueBrut.split("lunam",2);
+				if(splitContenut.length==2) {
+					if (contenueAnglais(splitContenut[0])) {
+						return contenuAnglais; 
+					}
+					else 
+						return splitContenut[0];
+				}
+			}
+			else if (contenueBrut.contains("Evelyne PUGLIA")){
+				String[] splitContenut = contenueBrut.split("Evelyne PUGLIA", 2 );
+				if (contenueAnglais(splitContenut[0])) {
+					return contenuAnglais; 
+				}
+				else 
+					return splitContenut[0];
+			}
+			if (contenueAnglais(contenueBrut)) {
+				return contenuAnglais; 
+			}
+			else 
+				return contenueBrut;
+		
+			//contenur multi 
+		}else {
+			if(contenueBrut.contains("-----Message d'origine-----")) {
+				String[] splitContenut = contenueBrut.split("-----Message d'origine-----",2);
+				if(splitContenut.length==2) {
+					if (splitContenut[0].contains("Francis YGUEL")) {
+						//System.out.println("test "+  splitContenut[0]);
+						String[] SplitFinale = splitContenut[0].split("Francis YGUEL");
+						if(SplitFinale.length==2) {
+							if (contenueAnglais(SplitFinale[0])) {
+								return contenuAnglais; 
+							}
+							else 
+								return SplitFinale[0];
+						}	
+					}
+					if (splitContenut[0].contains("Evelyne PUGLIA")) {
+						//System.out.println("test "+  splitContenut[0]);
+						String[] SplitFinale = splitContenut[0].split("Evelyne PUGLIA");
+						if(SplitFinale.length==2) {
+							if (contenueAnglais(SplitFinale[0])) {
+								return contenuAnglais; 
+							}
+							else 
+								return SplitFinale[0];
+						}	
+					}
+					if (splitContenut[0].contains("Cordialement")) {
+						String[] SplitFinale = splitContenut[0].split("Cordialement");
+						if(SplitFinale.length==2) {
+							if (contenueAnglais(SplitFinale[0])) {
+								return contenuAnglais; 
+							}
+							else 
+								return SplitFinale[0];
+						}	
+					}
+				}
+			}
+			if(contenueBrut.contains(">") && contenueBrut.contains("a écrit :") ) {
+				String[] splitContenut = contenueBrut.split(">",2);
+				if(splitContenut[0].contains("cordialement")) {
+					String[] splitSignatureEtSuite = splitContenut[0].split("cordialement",2);
+					if (contenueAnglais(splitSignatureEtSuite[0])) {
+						return contenuAnglais; 
+					}
+					else 
+						return splitSignatureEtSuite[0];  
+				}
+				else if(splitContenut[0].contains("Cordialement")) {
+					String[] splitSignatureEtSuite = splitContenut[0].split("Cordialement",2); 
+					if (contenueAnglais(splitSignatureEtSuite[0])) {
+						return contenuAnglais; 
+					}
+					else 
+						return splitSignatureEtSuite[0]; 
+				}
+			}
+			if(contenueBrut.contains("Envoyé ") && contenueBrut.contains("Objet :")  && contenueBrut.contains("De :") ) {
+				String[] splitContenut = contenueBrut.split("De :",2);
+				if(splitContenut[0].contains("cordialement")) {
+					String[] splitSignatureEtSuite = splitContenut[0].split("cordialement",2); 
+					if (contenueAnglais(splitSignatureEtSuite[0])) {
+						return contenuAnglais; 
+					}
+					else 
+						return splitSignatureEtSuite[0]; 
+				}
+				if(splitContenut[0].contains("lunam")) {
+					String[] splitSignatureEtSuite = splitContenut[0].split("lunam",2); 
+					if (contenueAnglais(splitSignatureEtSuite[0])) {
+						return contenuAnglais; 
+					}
+					else 
+						return splitSignatureEtSuite[0]; 
+				}
+			}
+			
+		}
+		
+		return null;
+	}
+	
+	public boolean contenueAnglais(String contenu) throws UnsupportedEncodingException, MessagingException {
+		//verification si le contenu est en anglais 
+		if ( contenu.contains("Universities") || contenu.contains("Dear") || contenu.contains("I am")  || contenu.contains("will") || contenu.contains("your") || contenu.contains("that")  ) {
+			return true;
+		}
+		else
+			return false ; 
+	}
 	/**
 	 * fonction qui retourne la date d'envoie 
 	 * @throws MessagingException 
@@ -358,6 +681,7 @@ public class parseur{
 	public  MailList mailToObject() throws MessagingException, IOException {
 		MailList mailObject = new MailList(); 
 		
+		mailObject.setTypeemail(this.getTypeMessage());
 		mailObject.setIdMail(this.GetMessageId());
 		mailObject.setFrom(this.getExpediteur());
 		mailObject.setDestinataire(this.getDestinataire(RecipientType.TO)); 
@@ -371,27 +695,65 @@ public class parseur{
 		mailObject.setDate(this.getDate());
 		mailObject.setSignature(this.getSignature());
 		mailObject.setBody(this.GetMailContenu());
+		mailObject.setContenuePropre(this.getContenueCleaned());
 		mailObject.setLiens(this.getLiens());
 	 //   MailList a = new MailList(message.getMessageID(),from, destinataire, message.getSubject(), body, message.getSentDate().toString(), attachments, liens);
 	     return mailObject;   
 	}  
 	
-	private static  String getTextFromMessage(Message message) throws MessagingException, IOException {
+	private static  String getTextFromMessage(Message message)  {
+		System.setProperty("mail.mime.decodetext.strict", "false");
 	    String result = "";
-	    if (message.isMimeType("text/plain")) {
-	        result = message.getContent().toString();
-	    } 
-	    else if (message.isMimeType("text/html")) {
+	    
+	    try {
+			if (message.isMimeType("text/plain")) {
+	
+				try {
+					result = MimeUtility.decodeText(message.getContent().toString());
+					
+					
+				} catch (UnsupportedEncodingException uex) {
+				    InputStream is = message.getInputStream();
+				    /*
+				     * Read the input stream into a byte array.
+				     * Choose a charset in some heuristic manner, use
+				     * that charset in the java.lang.String constructor
+				     * to convert the byte array into a String.
+				     */
+ 
+				    result=  convertInputStreamToString(MimeUtility.decode(is, "UTF-8"));
+				} catch (Exception ex) {
+				    // Handle other exceptions appropriately
+				}
+			} 
+			else if (message.isMimeType("text/html")) {
 
-            String html = (String) message.getContent();
-            result = result + "\n" + org.jsoup.Jsoup.parse(html).text(); 
-	    } else if (message.isMimeType("multipart/*")) {
-	        MimeMultipart mimeMultipart = (MimeMultipart) message.getContent();
-	        result = getTextFromMimeMultipart(mimeMultipart);
-	    }
+			    String html = MimeUtility.decodeText(message.getContent().toString());
+			    String centenu = org.jsoup.Jsoup.parse(html).text(); 
+			    result = result + "\n" + StringEscapeUtils.unescapeHtml(centenu);
+			} else if (message.isMimeType("multipart/*")) {
+			    MimeMultipart mimeMultipart = (MimeMultipart) message.getContent();
+			    result = getTextFromMimeMultipart(mimeMultipart);
+			}
+		} catch (MessagingException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	    return result;
 	}
 
+	private static String convertInputStreamToString(InputStream inputStream)
+			throws IOException {
+
+		        ByteArrayOutputStream result = new ByteArrayOutputStream();
+		        byte[] buffer = new byte[1024];
+		        int length;
+		        while ((length = inputStream.read(buffer)) != -1) {
+		            result.write(buffer, 0, length);
+		        }
+		        return result.toString(StandardCharsets.UTF_8.name());
+
+		    }
 	private static String getTextFromMimeMultipart(MimeMultipart mimeMultipart) throws MessagingException  {
 	    String result = "";
 	    int count = mimeMultipart.getCount();
@@ -399,11 +761,12 @@ public class parseur{
 	        BodyPart bodyPart = mimeMultipart.getBodyPart(i);
 	        try {
 				if (bodyPart.isMimeType("text/plain")) {			
-				    result = result + "\n" + bodyPart.getContent().toString();
+				    result = result + "\n" +  MimeUtility.decodeText(bodyPart.getContent().toString());;
 				    break; //Sans break affiche deux fois 
 				} else if (bodyPart.isMimeType("text/html")) {
 				    String html =  MimeUtility.decodeText(bodyPart.getContent().toString());
-					result = result + "\n" + org.jsoup.Jsoup.parse(html).text();
+				    String centenu = org.jsoup.Jsoup.parse(html).text();  	
+				    result = result + "\n" + StringEscapeUtils.unescapeHtml(centenu);
 				} else if (bodyPart.getContent() instanceof MimeMultipart){
 				    result = result + getTextFromMimeMultipart((MimeMultipart)bodyPart.getContent());
 				}
@@ -416,6 +779,42 @@ public class parseur{
 	    }  
 	    return result;
 	}
+	
+	public String decode(String s){
+		String ENCODED_PART_REGEX_PATTERN="=\\?([^?]+)\\?([^?]+)\\?([^?]+)\\?=";
+
+	    Pattern pattern=Pattern.compile(ENCODED_PART_REGEX_PATTERN);
+
+	    Matcher m=pattern.matcher(s);
+
+	    ArrayList<String> encodedParts=new ArrayList<String>();
+
+	    while(m.find())
+	    {
+	        encodedParts.add(m.group(0));
+
+	    }
+
+	    if(encodedParts.size()>0)
+	    {
+	        try
+	        {
+	            for(String encoded:encodedParts)
+	            {
+	                s=s.replace(encoded, MimeUtility.decodeText(encoded));
+	            }
+
+	            return s;
+
+	        } catch(Exception ex)
+	        {
+	            return s;
+	        }
+	    }
+	    else
+	        return s;
+
+	}
 
 	/**
 	 * fonction qui recuperer les signatures dans les mail de type multipart qui on une partie text/hml
@@ -425,12 +824,14 @@ public class parseur{
 	 * @throws MessagingException
 	 * @throws IOException
 	 */
+	/*
 	private static String getSignatureFromMimeMultipart(MimeMultipart mimeMultipart) throws MessagingException  {
 	    String result = "";
-	    
+	  
 	    int count = mimeMultipart.getCount();
 	    for (int i = 0; i < count; i++) {
 	        BodyPart bodyPart = mimeMultipart.getBodyPart(i);
+	
 	        try {
 				if (bodyPart.isMimeType("text/html")) {
 					org.jsoup.nodes.Document doc=  Jsoup.parse(bodyPart.getContent().toString());
@@ -439,7 +840,9 @@ public class parseur{
 
 					//System.out.println("je suis null"+  b);
 				    result = a.text()+b.text();
-				} else if (bodyPart.getContent() instanceof MimeMultipart){
+				}		
+
+				else if (bodyPart.getContent() instanceof MimeMultipart){
 				    result =  getSignatureFromMimeMultipart((MimeMultipart)bodyPart.getContent());
 				}
 			} catch (MessagingException | IOException e) {
@@ -451,6 +854,7 @@ public class parseur{
 	    }
 	    return result;
 	}
+	*/
 	/**
 	 * fontion qui prend en parametre un chaine de caratére ou juste un mail et qui 
 	 * retourne une personne (nom, prenom , mail) 
@@ -474,8 +878,9 @@ public class parseur{
 		}
 		else {
 			//supressiont de tous les caractère 
-			String elementNew= element.replace("<", "").replace(">", "").replace("'", "").replace("[", "").replace("]", "");
-		    String[] textSplited= elementNew.split(" ");
+			String elementNew= element.replace("<", "").replace(">", "").replace("'", "").replace("[", "");
+			element.replace("]", "").replace("\\", "").replace("//", "").replace("\"", ""); 
+			String[] textSplited= elementNew.split(" ");
 		    //si le text est =3 on a un format prenom, non et email 
 		    if(textSplited.length==3) {
 			    String prenom = textSplited[0];
@@ -498,8 +903,7 @@ public class parseur{
 		    	pers.setEmailPersonne(email);
 		    	pers.setNomPersonne(nomEmailSplit(email));
 		    	pers.setPrenomPersonne(prenomEmailSplit(email));
-			    pers.setInstitutionPersonne(institution);
-		    	
+			    pers.setInstitutionPersonne(institution);	    	
 		    	
 		    }
 
@@ -544,27 +948,67 @@ public class parseur{
 	}
 	
 	/**
-	 * fonction qui retourne l'instution 
+	 * fonction qui retourne l'instution  et qui prend en paramtre en email 
 	 * @param email
 	 * @return
 	 */
 	public String InsitutionEmailSplit(String email) {
 		String institution=""; 
 		if (email.contains("@")) {
-
-    	String[] emailSplited = email.split("@"); // exe francoi.calsel @ up.fr
-    	if(emailSplited.length>0) {
-	    	String[] partie2 = emailSplited[1].split("\\.");     // separation du nom et prenom ex francois.cassel 
-	    	if(partie2.length>1){
-		    	if(partie2.length==2) {
-		    		institution= partie2[0]; 
-		    	}
-		    	if(partie2.length==3) {
-		    		institution =  partie2[0]+"."+partie2[1]; 
+	    	String[] emailSplited = email.split("@"); // exe francoi.calsel @ up.fr
+	    	if(emailSplited.length>0) {
+		    	String[] partie2 = emailSplited[1].split("\\.");     // separation du nom et prenom ex francois.cassel 
+		    	if(partie2.length>1){
+			    	if(partie2.length==2) {
+			    		institution= partie2[0]; 
+			    	}
+			    	if(partie2.length==3) {
+			    		institution =  partie2[0]+"."+partie2[1]; 
+			    	}
 		    	}
 	    	}
-    	}
 		}
     	return institution; 
+	}
+	
+	public String contenuPourGraphique() throws MessagingException, IOException {
+		String resultat =""; 
+		
+		resultat = "******************* Type Message ******************* \n"+ this.getTypeMessage()+"\n"; 
+		resultat += "******************* Message ID ******************* \n"+ this.GetMessageId()+"\n"; 
+		resultat += "******************* Expéditeur *******************  \n"+ this.getExpediteur().getEmailPersonne() + " "+this.getExpediteur().getNomPersonne()  +"\n";  
+		resultat += "*******************Destinataire ******************* \n"; 
+		ArrayList<Personne>  destinatire = this.getDestinataire(Message.RecipientType.TO);
+		for (Personne a : destinatire) {
+			resultat += a.getNomPersonne()+" "+ a.getPrenomPersonne() + " "+a.getEmailPersonne()+"\n" ; 
+		}
+		resultat += "*******************Destinataire en copie:******************* \n";
+		Address[] test = this.message.getRecipients(Message.RecipientType.CC); 
+		if(test==null) {
+			resultat += "pas de personne en copie \n " ;
+		}else 
+		{
+			ArrayList<Personne>  destinatireCC = this.getDestinataire(Message.RecipientType.CC);
+			for (Personne a : destinatireCC) {
+				resultat += a.getNomPersonne()+" "+ a.getPrenomPersonne() + " "+a.getEmailPersonne()+"\n" ; 
+			}
+		}
+		resultat += "******************* Sujet******************* \n "+ this.GetSubject()+"\n";  
+		resultat += "******************* Contenur brut ******************* :\n"+ this.GetMailContenu()+"\n"; 
+		resultat += "******************* attachement *******************:\n";
+		ArrayList<PieceJointe> arrayPiece=  this.getPieceJointe();
+		for(PieceJointe p : arrayPiece) {
+			resultat += p.getNomPieceJointe()+" "+p.getContenuJointe()+ "\n";
+		}
+		resultat += "******************** Signature*******************  \n"+ this.getSignature()+"\n"; 
+		resultat += "Liens :\n";
+		ArrayList<Lien> liens=  this.getLiens();
+		for(Lien p : liens) {
+			resultat += p.getNomLien()+"\n";
+		}
+		resultat += "**********Contenue Nettoyer*******  :\n"+ this.getContenueCleaned()+"\n"; 
+		
+		return resultat; 
+
 	}
 }

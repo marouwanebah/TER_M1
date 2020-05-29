@@ -4,22 +4,36 @@ import beans.Lien;
 import beans.Personne;
 import beans.PieceJointe;
 
+
 public class MailList {
+
 	private String idMail;
 	private Personne from; 
 	private ArrayList<Personne> destinataire;  
 	private ArrayList<Personne> destinataireEnCopie;
 	private String sujet; 
 	private String Body; 
+	private String ContenuePropre; 
 	private String date; 
 	private ArrayList<PieceJointe> attachments;
 	private ArrayList<Lien> liens;
 	private String signature;
-
+	private String typeemail; 
 	public MailList() {
 		
 	}
 	
+	
+	public String getContenuePropre() {
+		return ContenuePropre;
+	}
+
+
+	public void setContenuePropre(String contenuePropre) {
+		ContenuePropre = contenuePropre;
+	}
+
+
 	public String getIdMail() {
 		return idMail;
 	}
@@ -82,16 +96,25 @@ public class MailList {
 	public void setSignature(String signature) {
 		this.signature = signature;
 	}
+	
+
+	public String getTypeemail() {
+		return typeemail;
+	}
+
+	public void setTypeemail(String typeemail) {
+		this.typeemail = typeemail;
+	}
+
 	@Override
 	public String toString() {
 		return "MailList [idMail=" + idMail + ", from=" + from + ", destinataire=" + destinataire
 				+ ", destinataireEnCopie=" + destinataireEnCopie + ", sujet=" + sujet + ", Body=" + Body + ", date="
-				+ date + ", attachments=" + attachments + ", liens=" + liens + ", signature=" + signature + "]";
-	} 
+				+ date + ", attachments=" + attachments + ", liens=" + liens + ", signature=" + signature
+				+ ", typeemail=" + typeemail + "]";
+	}
 	
-	
-	
-	
+
 	
 
 

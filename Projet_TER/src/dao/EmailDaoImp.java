@@ -9,33 +9,32 @@ import beans.Email;
 
 public class EmailDaoImp implements EmailDao {
 	private DaoFactory daoFactory;
-	private static final String SQL_INSERT = "INSERT INTO td_email (email_email, signature_email, nom_institution)"
-			+ " VALUES(?,?,?)";
-	private static final String SQL_SELECT_ONLY = "SELECT email_email, signature_email, nom_institution FROM td_email WHERE email_email=?";
+	private static final String SQL_INSERT = "INSERT INTO td_email (email_email, nom_institution)"
+			+ " VALUES(?,?)";
+	private static final String SQL_SELECT_ONLY = "SELECT email_email, nom_institution FROM td_email WHERE email_email=?";
 	
 	public EmailDaoImp(DaoFactory daoFactory ) {
 		super();
 		this.daoFactory = daoFactory;
 	}
 	@Override
-	public void ajouterEmail(Email email) {
-		Connection connexion = null;
+	public void ajouterEmail(Email email, Connection connexion) {
+		//Connection connexion = null;
         PreparedStatement preparedStatement = null;
 
         try {
-            connexion = daoFactory.getConnection();
+            //connexion = daoFactory.getConnection();
             connexion.setAutoCommit(false);
             preparedStatement = connexion.prepareStatement(SQL_INSERT);
 
             preparedStatement.setString(1, email.getEmail());
-            preparedStatement.setString(2, email.getSignature());
-            preparedStatement.setString(3, email.getInstitution());
+            preparedStatement.setString(2, email.getInstitution() != null ? email.getInstitution() : null);
             int rowAffected = preparedStatement.executeUpdate();
             if(rowAffected == 1)
             	connexion.commit();
             else
             	connexion.rollback();
-            preparedStatement.close();
+            	preparedStatement.close();
         } catch (SQLException ex) {
         	try{
                 if(connexion != null)
@@ -47,7 +46,7 @@ public class EmailDaoImp implements EmailDao {
         } finally {
         	 try {
                  if(preparedStatement != null) preparedStatement.close();
-                 if(connexion != null) connexion.close();
+                 //if(connexion != null) connexion.close();
                  
              } catch (SQLException e) {
                  System.out.println(e.getMessage());
@@ -57,12 +56,12 @@ public class EmailDaoImp implements EmailDao {
 	}
 
 	@Override
-	public Email getEmail(String vemail) {
+	public Email getEmail(String vemail, Connection connexion) {
 		Email email = null;
-		Connection connexion = null;
+		//Connection connexion = null;
         PreparedStatement preparedStatement = null;
 		try {
-			connexion = daoFactory.getConnection();
+			//connexion = daoFactory.getConnection();
 			preparedStatement = connexion.prepareStatement
 					(SQL_SELECT_ONLY);
 			preparedStatement.setString(1, vemail);
@@ -70,11 +69,10 @@ public class EmailDaoImp implements EmailDao {
 			if(rs.next()) {
 				email = new Email();
 				email.setEmail(rs.getString("email_email"));
-				email.setSignature(rs.getString("signature_email"));
-				email.setInstitution(rs.getString("signature_email"));
+				email.setInstitution(rs.getString("nom_institution"));
 			}
 			preparedStatement.close();
-			connexion.close();
+			//connexion.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

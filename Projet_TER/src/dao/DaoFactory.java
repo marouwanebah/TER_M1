@@ -71,5 +71,8 @@ public class DaoFactory {
     public InstitutionDao getInstitutionDao() {
     	return new InstitutionDaoImp(this);
     }
+    public ListeDiffusionDao getListeDiffusionDao() {
+    	return new ListeDiffusionDaoImp(this);
+    }
     
 }

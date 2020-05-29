@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Client :  localhost:3306
--- Généré le :  Mar 05 Mai 2020 à 01:10
+-- Généré le :  Ven 08 Mai 2020 à 00:49
 -- Version du serveur :  5.7.29-0ubuntu0.18.04.1
 -- Version de PHP :  7.2.24-0ubuntu0.18.04.4
 
@@ -95,7 +95,6 @@ CREATE TABLE `td_destinataire_cc` (
 
 CREATE TABLE `td_email` (
   `email_email` varchar(200) NOT NULL,
-  `signature_email` varchar(5000) DEFAULT NULL,
   `nom_institution` varchar(45) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -118,9 +117,19 @@ CREATE TABLE `td_institution` (
 
 CREATE TABLE `td_lien` (
   `id_lien` int(11) NOT NULL,
-  `nom_lien` varchar(200) DEFAULT NULL,
-  `contenu_lien` varchar(20000) DEFAULT NULL,
+  `nom_lien` longtext DEFAULT NULL,
+  `contenu_lien` longtext DEFAULT NULL,
   `id_mail` varchar(200) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `td_liste_diffusion`
+--
+
+CREATE TABLE `td_liste_diffusion` (
+  `email_liste_diffusion` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -135,7 +144,11 @@ CREATE TABLE `td_mail` (
   `sujet_mail` varchar(500) DEFAULT NULL,
   `contenu_mail` longtext,
   `email_email` varchar(200) NOT NULL,
-  `id_mail_pere` varchar(200) DEFAULT NULL
+  `id_mail_pere` varchar(200) DEFAULT NULL,
+  `type_mail` varchar(45) NOT NULL,
+  `contenu_mail_propre` longtext,
+  `signature_mail` longtext DEFAULT NULL,
+  `vecteur_mail` longtext DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -149,7 +162,7 @@ CREATE TABLE `td_personne` (
   `nom_personne` varchar(100) DEFAULT NULL,
   `prenom_personne` varchar(150) DEFAULT NULL,
   `email_email` varchar(200) NOT NULL,
-  `nom_institution` varchar(45) NOT NULL
+  `nom_institution` varchar(45) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -247,6 +260,12 @@ ALTER TABLE `td_lien`
   ADD KEY `fk_td_lien_td_mail_idx` (`id_mail`);
 
 --
+-- Index pour la table `td_liste_diffusion`
+--
+ALTER TABLE `td_liste_diffusion`
+  ADD PRIMARY KEY (`email_liste_diffusion`);
+
+--
 -- Index pour la table `td_mail`
 --
 ALTER TABLE `td_mail`
@@ -286,17 +305,17 @@ ALTER TABLE `td_piece_jointe`
 -- AUTO_INCREMENT pour la table `td_lien`
 --
 ALTER TABLE `td_lien`
-  MODIFY `id_lien` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29776;
+  MODIFY `id_lien` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44256;
 --
 -- AUTO_INCREMENT pour la table `td_personne`
 --
 ALTER TABLE `td_personne`
-  MODIFY `id_personne` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2922;
+  MODIFY `id_personne` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5092;
 --
 -- AUTO_INCREMENT pour la table `td_piece_jointe`
 --
 ALTER TABLE `td_piece_jointe`
-  MODIFY `id_piece_jointe` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2204;
+  MODIFY `id_piece_jointe` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3266;
 --
 -- Contraintes pour les tables exportées
 --
@@ -344,6 +363,12 @@ ALTER TABLE `td_institution`
 --
 ALTER TABLE `td_lien`
   ADD CONSTRAINT `fk_td_lien_td_mail` FOREIGN KEY (`id_mail`) REFERENCES `td_mail` (`id_mail`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Contraintes pour la table `td_liste_diffusion`
+--
+ALTER TABLE `td_liste_diffusion`
+  ADD CONSTRAINT `fk_liste_email` FOREIGN KEY (`email_liste_diffusion`) REFERENCES `td_email` (`email_email`);
 
 --
 -- Contraintes pour la table `td_mail`
