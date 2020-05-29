@@ -1,6 +1,7 @@
 
 
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -8,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import java.util.Properties;
@@ -453,15 +455,15 @@ public class parseur{
 	}
 	public String getContenueCleaned() throws MessagingException, IOException {
 		
+		
 		String withCharacters  = this.GetMailContenu().replace('\u0092','\'').replace('\u0095','-').replace('\u0096','à'); 
-		String contenueBrut = StringEscapeUtils.unescapeHtml(withCharacters).replace(">", "").replace("<", "");
+		String decoded= decode(withCharacters); 
+		String contenueBrut = decoded.replace(">", "").replace("<", "");
 		//String contenueBruttt = StringEscapeUtils.
 		//String contenueBrut = Jsoup.parse(contenueBruttt).text();
 		
-		
 		String contenuAnglais= "Contenu en anglais"; 
 
-		
 		ArrayList<String>  liens =  extractUrls(contenueBrut) ;  
 		
 		//suprresion des liens 
@@ -699,22 +701,59 @@ public class parseur{
 	     return mailObject;   
 	}  
 	
-	private static  String getTextFromMessage(Message message) throws MessagingException, IOException {
+	private static  String getTextFromMessage(Message message)  {
+		System.setProperty("mail.mime.decodetext.strict", "false");
 	    String result = "";
-	    if (message.isMimeType("text/plain")) {
-	        result = message.getContent().toString();
-	    } 
-	    else if (message.isMimeType("text/html")) {
+	    
+	    try {
+			if (message.isMimeType("text/plain")) {
+	
+				try {
+					result = MimeUtility.decodeText(message.getContent().toString());
+					
+					
+				} catch (UnsupportedEncodingException uex) {
+				    InputStream is = message.getInputStream();
+				    /*
+				     * Read the input stream into a byte array.
+				     * Choose a charset in some heuristic manner, use
+				     * that charset in the java.lang.String constructor
+				     * to convert the byte array into a String.
+				     */
+ 
+				    result=  convertInputStreamToString(MimeUtility.decode(is, "UTF-8"));
+				} catch (Exception ex) {
+				    // Handle other exceptions appropriately
+				}
+			} 
+			else if (message.isMimeType("text/html")) {
 
-            String html = (String) message.getContent();
-            result = result + "\n" + org.jsoup.Jsoup.parse(html).text(); 
-	    } else if (message.isMimeType("multipart/*")) {
-	        MimeMultipart mimeMultipart = (MimeMultipart) message.getContent();
-	        result = getTextFromMimeMultipart(mimeMultipart);
-	    }
+			    String html = MimeUtility.decodeText(message.getContent().toString());
+			    String centenu = org.jsoup.Jsoup.parse(html).text(); 
+			    result = result + "\n" + StringEscapeUtils.unescapeHtml(centenu);
+			} else if (message.isMimeType("multipart/*")) {
+			    MimeMultipart mimeMultipart = (MimeMultipart) message.getContent();
+			    result = getTextFromMimeMultipart(mimeMultipart);
+			}
+		} catch (MessagingException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	    return result;
 	}
 
+	private static String convertInputStreamToString(InputStream inputStream)
+			throws IOException {
+
+		        ByteArrayOutputStream result = new ByteArrayOutputStream();
+		        byte[] buffer = new byte[1024];
+		        int length;
+		        while ((length = inputStream.read(buffer)) != -1) {
+		            result.write(buffer, 0, length);
+		        }
+		        return result.toString(StandardCharsets.UTF_8.name());
+
+		    }
 	private static String getTextFromMimeMultipart(MimeMultipart mimeMultipart) throws MessagingException  {
 	    String result = "";
 	    int count = mimeMultipart.getCount();
@@ -722,11 +761,12 @@ public class parseur{
 	        BodyPart bodyPart = mimeMultipart.getBodyPart(i);
 	        try {
 				if (bodyPart.isMimeType("text/plain")) {			
-				    result = result + "\n" + bodyPart.getContent().toString();
+				    result = result + "\n" +  MimeUtility.decodeText(bodyPart.getContent().toString());;
 				    break; //Sans break affiche deux fois 
 				} else if (bodyPart.isMimeType("text/html")) {
 				    String html =  MimeUtility.decodeText(bodyPart.getContent().toString());
-					result = result + "\n" + org.jsoup.Jsoup.parse(html).text();
+				    String centenu = org.jsoup.Jsoup.parse(html).text();  	
+				    result = result + "\n" + StringEscapeUtils.unescapeHtml(centenu);
 				} else if (bodyPart.getContent() instanceof MimeMultipart){
 				    result = result + getTextFromMimeMultipart((MimeMultipart)bodyPart.getContent());
 				}
@@ -738,6 +778,42 @@ public class parseur{
 			}
 	    }  
 	    return result;
+	}
+	
+	public String decode(String s){
+		String ENCODED_PART_REGEX_PATTERN="=\\?([^?]+)\\?([^?]+)\\?([^?]+)\\?=";
+
+	    Pattern pattern=Pattern.compile(ENCODED_PART_REGEX_PATTERN);
+
+	    Matcher m=pattern.matcher(s);
+
+	    ArrayList<String> encodedParts=new ArrayList<String>();
+
+	    while(m.find())
+	    {
+	        encodedParts.add(m.group(0));
+
+	    }
+
+	    if(encodedParts.size()>0)
+	    {
+	        try
+	        {
+	            for(String encoded:encodedParts)
+	            {
+	                s=s.replace(encoded, MimeUtility.decodeText(encoded));
+	            }
+
+	            return s;
+
+	        } catch(Exception ex)
+	        {
+	            return s;
+	        }
+	    }
+	    else
+	        return s;
+
 	}
 
 	/**
