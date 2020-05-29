@@ -15,7 +15,6 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 
-import org.annolab.tt4j.TreeTaggerWrapper;
 
 import beans.Email;
 import beans.Expediteur;
@@ -41,14 +40,16 @@ import dao.PieceJointeDao;
 public class main {
 	private static final dao.DaoFactory daoFactory = dao.DaoFactory.getInstance();
 	private static final String LIEN_FICHIER = "/home/etudiant/M1/S2/TER/president_2010/president_2010/president_2010-10/";
-	private static final String DOSSIER_VECTEUR = "/home/diallo/Documents/projetTER/contenu_propre/";
-
+	
 	// ********************** lien sory ******************************************//
-	private static final String DOSSIER_PRINCIPAL = "/home/diallo/Documents/projetTER/corpus/president_2010/president_2010/";
+	//private static final String DOSSIER_PRINCIPAL = "/home/diallo/Documents/projetTER/corpus/president_2010/president_2010/";
+	//private static final String DOSSIER_VECTEUR = "/home/diallo/Documents/projetTER/contenu_propre/";
+
 	// ********************** lien Marwane
 	// ******************************************//
-	// private static final String DOSSIER_PRINCIPAL =
-	// "/home/etudiant/M1/S2/TER/president_2010/president_2010/";
+	private static final String DOSSIER_PRINCIPAL ="/home/etudiant/M1/S2/TER/president_2010/president_2010/";
+	private static final String DOSSIER_VECTEUR = "/home/etudiant/M1/S2/TER/contenu_propre/";
+
 	// ********************** lien Mmr Touria
 	// ******************************************//
 	// private static final String DOSSIER_PRINCIPAL =
@@ -328,39 +329,50 @@ public class main {
 		Connection connexion = null;
 		int i = 0;
 
+		
+		  //ArrayList<MailList> listeMail = new ArrayList<MailList>(); //332 2 18 21 24
+		 // 42 47 63 65 49 test = new parseur(LIEN_FICHIER+361); test.getMailTest();
+		  
 		/*
-		 * //ArrayList<MailList> listeMail = new ArrayList<MailList>(); //332 2 18 21 24
-		 * 42 47 63 65 49 test = new parseur(LIEN_FICHIER+361); test.getMailTest();
-		 * 
-		 * 
-		 * File[] files = new File(DOSSIER_PRINCIPAL).listFiles();
-		 * System.out.println("============Debut Insertion=============="); try {
-		 * connexion = daoFactory.getConnection(); for (File file : files) { if
-		 * (file.isDirectory()) { for(File fileInsideFolder : file.listFiles()) { //
-		 * System.out.println(fileInsideFolder.getAbsolutePath()); test = new
-		 * parseur(fileInsideFolder.getAbsolutePath()); a= test.mailToObject(); //
-		 * System.out.println(i++); insertBD(a, connexion);
-		 * 
-		 * } } } System.out.println(i);
-		 * System.out.println("============Fin Insertion=============="); } catch
-		 * (SQLException ex) { try{ if(connexion != null) connexion.rollback();
-		 * }catch(SQLException e){ System.out.println(e.getMessage()); }
-		 * System.out.println(ex.getMessage()); } finally { try { if(connexion != null)
-		 * connexion.close();
-		 * 
-		 * } catch (SQLException e) { System.out.println(e.getMessage()); } }
-		 * 
-		 * Vue vuetest = new Vue();
-		 * 
-		 * System.setProperty("treetagger.home", "/opt/treetagger"); TreeTaggerWrapper
-		 * tt = new TreeTaggerWrapper<String>(); try {
-		 * tt.setModel("/opt/treetagger/models/english.par:iso8859-1");
-		 * tt.setHandler(new TokenHandler<String>() { public void token(String token,
-		 * String pos, String lemma) { System.out.println(token + "\t" + pos + "\t" +
-		 * lemma); } }); tt.process(asList(new String[] { "This", "is", "a", "test", "."
-		 * })); } finally { tt.destroy(); } cmd/tree-tagger-french > resultat.txt
-		 */
+		File[] files = new File(DOSSIER_PRINCIPAL).listFiles();
+		System.out.println("============Debut Insertion==============");
+		try {
+			connexion = daoFactory.getConnection(); 
+			for (File file : files) { 
+				if(file.isDirectory()) { 
+					for(File fileInsideFolder : file.listFiles()) {
+						//System.out.println(fileInsideFolder.getAbsolutePath());
+						test = new parseur(fileInsideFolder.getAbsolutePath());
+						a= test.mailToObject(); //
+						//System.out.println(i++);
+						insertBD(a, connexion);
+					} 
+				}
+			} 
+			System.out.println(i);
+			System.out.println("============Fin Insertion=============="); 
+		} catch(SQLException ex) { 
+		try{ 
+			if(connexion != null) 
+				connexion.rollback();
+		  }catch(SQLException e){ 
+			  System.out.println(e.getMessage()); 
+		  }
+		  	System.out.println(ex.getMessage()); 
+		  }
+		  finally { 
+			  try { if(connexion != null)
+		  connexion.close();
+		  
+		  } catch (SQLException e) {
+			  System.out.println(e.getMessage());
+		  	} 
+		  }
+		   */
+		 Vue vuetest = new Vue();
+		 
 
+/*
 		try {
 			connexion = daoFactory.getConnection();
 			System.out.println("============Debut MAJ==============");
@@ -382,6 +394,7 @@ public class main {
 			} catch (SQLException e) {
 				System.out.println(e.getMessage());
 			}
-		}
+		}*/
 	}
+	
 }
